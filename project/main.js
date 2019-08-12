@@ -2,16 +2,16 @@
 1.need to continue from p.6 - loader.
 2. needs to adjust for mobile
 */
-
+"use strict";
 function main() {
     homePage();
     jQuery("#home").click(homePage);
-    let liveReports = document.getElementById('liveReports').addEventListener('click', liveReportsPage);
-    let about = document.getElementById('about').addEventListener('click', aboutPage);
-
+    jQuery("#liveReports").click(liveReportsPage);
+    jQuery("#about").click(aboutPage);
 }
 
 function homePage() { //creating the home page
+    jQuery('#currentPage').empty();
     let currentPage = document.getElementById('currentPage');
     let row = document.createElement('div');
     row.id = 'row';
@@ -30,15 +30,8 @@ function homePage() { //creating the home page
             cardGrid.appendChild(card);
 
             let cardBody = document.createElement('div');
-            cardBody.className = 'card-body';
-            cardBody.classList.add('border-primary');
-            cardBody.classList.add('mb-3');
+            cardBody.classList.add('card-body', 'border-primary', 'mb-3');
             card.appendChild(cardBody);
-
-           /*  let toggleButton = document.createElement('h2');
-            cardHeader.className = 'card-title';
-            cardBody.appendChild(toggleButton);
-            $( ".target" ).toggle(); */
 
             let cardHeader = document.createElement('h2');
             cardHeader.className = 'card-title';
@@ -75,13 +68,17 @@ function homePage() { //creating the home page
                         let img = document.createElement('img');
                         img.src = coinInfo.image.small
 
-                        let price = document.createElement('div');
-                        price.innerHTML = `<b>USD:</b> ${coinInfo.market_data.total_volume.usd} &#36<br>
+                        let value = document.createElement('div');
+                        let coinValue = `<b>USD:</b> ${coinInfo.market_data.total_volume.usd} &#36<br>
                         <b>EUR:</b> ${coinInfo.market_data.total_volume.eur} \u20AC<br>
                         <b>ILS:</b> ${coinInfo.market_data.total_volume.ils} &#8362`;
+                        value.innerHTML = coinValue;
 
                         info.appendChild(img);
-                        info.appendChild(price);
+                        info.appendChild(value);
+
+                        window.localStorage.setItem('img' + i, JSON.stringify(img.src));
+                        window.localStorage.setItem('coinValue' + i, JSON.stringify(coinValue));
                     }
                 });
             });
@@ -90,12 +87,46 @@ function homePage() { //creating the home page
 }
 
 function liveReportsPage() { //creating the live reports page
-
+    jQuery('#currentPage').empty();
 }
 
 function aboutPage() { //creating the about page
-
+    jQuery('#currentPage').empty().append(`<div> <p> <span> <u> About Myself </u> </span> <br>
+    <img width = 152 height = 202 opacity=1 src = styles/images/mor.jpg> </img> <br> <br>
+    <span> My name is Mor. <br> I'm 28 years old.<br> I came to lear fullstack so i could fine a 
+    decent job but i don't know if it's going to happend. </span> <br> </p> <br>
+    <p> <span> <u> The Project </u> <br> this project is making me insane. </span> </p> </div>`);
 }
 
 
-main();
+    main();
+/* progressBar();
+function progressBar() {
+    let currentPage = document.getElementById('currentPage'); //needs to change to info element (id= info+1)
+    let progress = document.createElement('div');
+    progress.className = 'progress';
+    currentPage.appendChild(progress);
+
+    let progressBar = document.createElement('div');
+    progressBar.classList.add('progress-bar', 'progress-bar-info', 'progress-bar-striped');
+    progressBar.setAttribute('role', 'progressbar');
+    progressBar.setAttribute('aria-valuenow', '0');
+    progressBar.setAttribute('aria-valuemin', '0');
+    progressBar.setAttribute('aria-valuemax', '100');
+    //progressBar.style('width', '50%');
+    progressBar.setAttribute('style', 'width: 50%');
+    progress.appendChild(progressBar);
+    let width = 0;
+
+    //let id = setInterval(frame, 100);
+    let id = setInterval(function () {
+        if (width >= 100) {
+            clearInterval(id);
+            currentPage.removeChild(progress);
+        } else {
+            width++;
+            progressBar.style.width = width + '%';
+            progressBar.innerHTML = width * 1 + '%';
+        }
+    }, 100);
+} */
