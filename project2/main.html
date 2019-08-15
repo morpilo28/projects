@@ -7,12 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>project 2</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css">
     <link rel="stylesheet" href="styles/main.css">
 </head>
 
 <body>
-    <div id="background" class="background">
+    <div id="morModal"></div>
+    <div id="mainPage" class="mainPage">
         <h1 class="header">Cryptonite</h1>
         <nav class="navbar">
             <button id="home">Home(coins)</button> |
@@ -22,11 +22,11 @@
             <input id="search" type="text">
             <button class="search-button">Search</button>
         </nav>
+        <div id="loader"></div>
         <div id="currentPage"></div>
     </div>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"></script>
     <script src="temp-main.js"></script>
 </body>
 
