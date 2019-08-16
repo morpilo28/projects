@@ -1,15 +1,16 @@
-/* 
-last update: 15/08/19 11:53
-
+/* ----- updated - 17.08.19 00:48 -----
 1. need to continue from p.6 - save to local storage.
-2. make everything jquery?
-3. needs to adjust for mobile
-
+2. needs to adjust for mobile
+3. check for duplicate code and arrange everything
 */
 "use strict";
-
+jQuery.noConflict();
 const app = {
     PURGE_IN_SECONDS: 120,
+    newResultArray: [],
+    numOfSecondsPast: 0,
+    countSelectedCoins: 0,
+    selectedCoinsArray: [],
 };
 
 function main() {
@@ -20,13 +21,32 @@ function main() {
 }
 
 function homePage() { //creating the home page
-    jQuery('#currentPage').empty();
-    let currentPage = document.getElementById('currentPage');
-    let row = document.createElement('div');
-    row.id = 'row';
-    currentPage.appendChild(row);
+    jQuery('#currentPage').empty().append('<div id="row"></div>');
+    jQuery('#ModalElement').append(`<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-dialog-centered"> 
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">please choose which coin to remove</h4>
+        </div>
+        <div class="modal-body">
+            <button id="btnRemoveCoin0" class="btnRemoveCoin"></button> <br>
+            <button id="btnRemoveCoin1" class="btnRemoveCoin"></button> <br>
+            <button id="btnRemoveCoin2" class="btnRemoveCoin"></button> <br>
+            <button id="btnRemoveCoin3" class="btnRemoveCoin"></button> <br>
+            <button id="btnRemoveCoin4" class="btnRemoveCoin"></button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="closeBtn btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>`);
+    for (let i = 0; i < 5; i++) {
+        jQuery('#btnRemoveCoin' + i).click(removeCoin);
+    }
 
-    jQuery('.background').css('height', '416%');
     getAllCoins();
 }
 
@@ -46,125 +66,35 @@ function getAllCoins() {
     loader(jQuery('#mainPage'));
     jQuery.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
         jQuery('#loader').remove();
-        let first100coins = getCoinCards(result);
-
-        for (let i = 0; i < 100; i++) {
-            let click = 0;
-            jQuery('#button' + i).click(function () {
-                //document.getElementById('button' + i).addEventListener('click', function () {
-                if (click == 0) {
-                    loader(jQuery('#info' + i));
-                    jQuery.get("https://api.coingecko.com/api/v3/coins/" + first100coins[i].id, function (coinInfo) {
-                        jQuery('#loader').remove();
-                        let info = document.getElementById('info' + i);
-
-                        let img = document.createElement('img');
-                        img.src = coinInfo.image.small
-
-                        let value = document.createElement('div');
-                        let coinValue = `<b>USD:</b> ${coinInfo.market_data.total_volume.usd} &#36<br>
-                    <b>EUR:</b> ${coinInfo.market_data.total_volume.eur} \u20AC<br>
-                    <b>ILS:</b> ${coinInfo.market_data.total_volume.ils} &#8362`;
-                        value.innerHTML = coinValue;
-
-                        info.appendChild(img);
-                        info.appendChild(value);
-
-                        window.localStorage.setItem('img' + i, JSON.stringify(img.src));
-                        window.localStorage.setItem('coinValue' + i, JSON.stringify(coinValue));
-                    });
-                    click++;
-                } else {
-                    jQuery('#info' + i).empty();
-                    click = 0;
-                }
-            });
-        }
+        app.newResultArray = [...result];
+        app.newResultArray.splice(100);
+        getCoinCards(app.newResultArray);
     });
 }
 
-function getCoinCards(result) {
-    let first100coins = [];
-    for (let i = 0; i < 100; i++) {
-        let cardGrid = document.createElement('div');
-        cardGrid.className = "col-md-3";
-        row.appendChild(cardGrid);
+function getCoinCards(resultArray) {
+    for (let i = 0; i < resultArray.length; i++) {
+        jQuery('#row').append('<div id="cardGrid"></div>');//cardGrid
+        jQuery('#cardGrid').append('<div id="card" class = "cardDesign card w-50"></div>');//card
+        jQuery('#card').append(`<div id="cardBody${i}" class="cardBody card-body border-primary mb-3"></div>`);//cardBody
+        jQuery('#cardBody' + i).append(`
+        <label class="switch">
+            <input id="myToggle${i}" data-coin-name="${resultArray[i].symbol}" type="checkbox"> 
+            <div class="slider"></div> 
+        </label> 
+        <h2 class="card-title${i}"></h2>`);
+        jQuery('#myToggle' + i).change(counterChoice);
+        jQuery('.card-title' + i).text(`${resultArray[i].symbol}`);
+        jQuery('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
+        jQuery('.card-subtitle' + i).html(`${resultArray[i].name} <br><br>`);
+        jQuery('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" > </button>`);
+        jQuery(`#button${i}`).text('More Info').click(isButtonPushed);
+        jQuery('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
 
-        let card = document.createElement('div');
-        card.className = 'card w-100';
-        cardGrid.appendChild(card);
-
-        let cardBody = document.createElement('div');
-        cardBody.id = 'cardBody' + i;
-        cardBody.classList.add('card-body', 'border-primary', 'mb-3');
-        card.appendChild(cardBody);
-
-        //toggleSwitch(cardBody, i);
-
-        let cardHeader = document.createElement('h2');
-        cardHeader.className = 'card-title';
-        cardBody.appendChild(cardHeader);
-        cardHeader.innerText = result[i].symbol;
-
-        let cardSubtitle = document.createElement('h7');
-        cardSubtitle.className = 'card-subtitle';
-        cardBody.appendChild(cardSubtitle);
-        cardSubtitle.innerHTML = result[i].name + '<br><br>';
-
-        let infoButton = document.createElement('button');
-        infoButton.className = 'info-button';
-        infoButton.setAttribute('data-toggle', 'collapse');
-        infoButton.setAttribute('data-target', '#info' + i);
-        infoButton.id = 'button' + i;
-        cardBody.appendChild(infoButton);
-        infoButton.innerHTML = 'More Info';
-
-        let info = document.createElement('div');
-        info.id = 'info' + i;
-        info.className = 'collapse';
-        cardBody.appendChild(info);
-
-        first100coins.push(result[i]);
+        /* 
+        
+        */
     }
-    return first100coins;
-}
-
-function toggleSwitch(cardBody, i) {
-    let buttonSwitch = document.createElement('div');
-    buttonSwitch.classList.add('toggle', 'btn', 'btn-dark'); // to switch to off - buttonSwitch.classList.add('toggle','btn','btn-light', 'off');
-    buttonSwitch.setAttribute('data-toggle', 'toggle');
-    buttonSwitch.setAttribute('role', 'button');
-    buttonSwitch.setAttribute('style', 'width:61.0833px');
-    buttonSwitch.setAttribute('style', 'height:38px');
-    cardBody.appendChild(buttonSwitch);
-
-    let cardSwitch = document.createElement('input');
-    cardSwitch.id = 'cardSwitch' + i;
-    cardSwitch.setAttribute('type', 'checkbox');
-    //cardSwitch.setAttribute('checked', 'true');
-    cardSwitch.setAttribute('data-toggle', 'toggle');
-    cardSwitch.setAttribute('data-size', 'xs');
-    cardSwitch.setAttribute('data-onstyle', 'dark');
-    buttonSwitch.appendChild(cardSwitch);
-
-    let toggle = document.createElement('div');
-    toggle.classList.add('toggle-group');
-    buttonSwitch.appendChild(toggle);
-
-    let label1 = document.createElement('label');
-    label1.classList.add('btn', 'btn-dark', 'toggle-on');
-    label1.innerText = 'On';
-    toggle.appendChild(label1);
-
-    let label2 = document.createElement('label');
-    label2.classList.add('btn', 'btn-light', 'toggle-off');
-    label2.innerText = 'Off';
-    toggle.appendChild(label2);
-
-    let span = document.createElement('span');
-    span.classList.add('toggle-handle', 'btn', 'btn-light');
-    span.innerText = 'Off';
-    toggle.appendChild(span);
 }
 
 function loader(parentElementId) {
@@ -172,5 +102,84 @@ function loader(parentElementId) {
     jQuery('#loader').append('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
 }
 
+function isButtonPushed() { // needs to make the interval starts only when info is collapsed (and after 2 minutes)
+    let idx = (this.id).slice(6);
+    loader(jQuery('#info' + idx));
+
+    let localStorageItem = JSON.parse(window.localStorage.getItem('localStorageObj' + idx));
+
+    if (localStorageItem == null) {
+        //let infoElement = document.getElementById('info' + idx);
+        //console.log(infoElement);
+        //if ((infoElement.classList.contains('show')) == false) {
+        let timePast = setInterval(() => {
+            app.numOfSecondsPast++;
+            console.log(app.numOfSecondsPast);
+        }, 1000);
+        //}
+        let isFirst = true;
+        getCoinInfoFromAjax(timePast, idx, isFirst);
+    } else { // if there's something in local storage - if (localStorageItem != null)
+        if (app.numOfSecondsPast < app.PURGE_IN_SECONDS) {
+            jQuery('#loader').remove();
+            jQuery('#info' + idx).empty();
+            jQuery('#info' + idx).append('<img id= "img' + idx + '" src="' + localStorageItem.img + '"></img><div>' + localStorageItem.info + '</div>');
+        } else {
+            app.numOfSecondsPast = 0;
+            let timePast = setInterval(() => {
+                app.numOfSecondsPast++;
+                //console.log(app.numOfSecondsPast);
+            }, 1000);
+            let isFirst = false;
+            jQuery('#info' + idx).empty();
+            getCoinInfoFromAjax(timePast, idx, isFirst);
+        }
+    }
+
+}
+
+function getCoinInfoFromAjax(timePast, idx, isFirst) {
+    if (!isFirst) { // check if it works
+        clearInterval(timePast);
+    }
+    jQuery.get("https://api.coingecko.com/api/v3/coins/" + app.newResultArray[idx].id, function (coinInfo) {
+        jQuery('#loader').remove();
+        let coinValue = `<b>USD:</b> ${coinInfo.market_data.total_volume.usd} &#36<br>
+                        <b>EUR:</b> ${coinInfo.market_data.total_volume.eur} \u20AC<br>
+                        <b>ILS:</b> ${coinInfo.market_data.total_volume.ils} &#8362`;
+        jQuery('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.image.small + '"></img><div>' + coinValue + '</div>');
+        let localStorageObj = {
+            img: jQuery('#img' + idx).attr('src'),
+            info: coinValue,
+        };
+        window.localStorage.setItem('localStorageObj' + idx, JSON.stringify(localStorageObj));
+    });
+}
+
 main();
+
+function counterChoice() {
+    if (this.checked) {
+        //add the coin to app.selectedCoinsArray
+        app.selectedCoinsArray.push(jQuery(this).attr('data-coin-name'));
+        console.log(app.selectedCoinsArray);
+        app.countSelectedCoins++;
+        jQuery('#btnRemoveCoin' + (app.countSelectedCoins - 1)).text(jQuery(this).attr('data-coin-name'));
+        if (app.countSelectedCoins > 5) {
+            jQuery("#myModal").modal('show');
+        }
+    }
+    else {
+        app.countSelectedCoins--;
+    }
+}
+
+function removeCoin() {
+    for (let i = 0; i < app.selectedCoinsArray.length; i++) {
+        if (app.selectedCoinsArray[i] == (jQuery(this).text())) {
+            app.selectedCoinsArray.splice(i, 1);
+        }
+    }
+    console.log(app.selectedCoinsArray);
+}
 
