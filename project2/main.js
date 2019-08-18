@@ -83,7 +83,7 @@ function getCoinCards(resultArray) {
             <div class="slider"></div> 
         </label> 
         <h2 class="card-title${i}"></h2>`);
-        jQuery('#myToggle' + i).change(counterChoice);
+        jQuery('#myToggle' + i).change(addOrRemoveCoin);
         jQuery('.card-title' + i).text(`${resultArray[i].symbol}`);
         jQuery('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
         jQuery('.card-subtitle' + i).html(`${resultArray[i].name} <br><br>`);
@@ -158,7 +158,7 @@ function getCoinInfoFromAjax(timePast, idx, isFirst) {
 
 main();
 
-function counterChoice() {
+function addOrRemoveCoin() {
     if (this.checked) {
         //add the coin to app.selectedCoinsArray
         app.selectedCoinsArray.push(jQuery(this).attr('data-coin-name'));

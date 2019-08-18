@@ -1,7 +1,8 @@
-/* ----- updated - 17.08.19 00:48 -----
-1. need to continue from p.6 - save to local storage.
-2. needs to adjust for mobile
-3. check for duplicate code and arrange everything
+/* ----- updated - 18.08.19 20:38 -----
+1. needs to continue from p.6 - save to local storage.
+2. needs to fix disabling of toggle switch when remove and replace from array
+3. needs to adjust for mobile
+4.check for duplicate code and arrange everything
 */
 "use strict";
 jQuery.noConflict();
@@ -15,6 +16,7 @@ const app = {
 
 function main() {
     homePage();
+    addModalElement();
     jQuery("#home").click(homePage);
     jQuery("#liveReports").click(liveReportsPage);
     jQuery("#about").click(aboutPage);
@@ -22,31 +24,6 @@ function main() {
 
 function homePage() { //creating the home page
     jQuery('#currentPage').empty().append('<div id="row"></div>');
-    jQuery('#ModalElement').append(`<div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-sm">
-    <div class="modal-dialog modal-dialog-centered"> 
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">please choose which coin to remove</h4>
-        </div>
-        <div class="modal-body">
-            <button id="btnRemoveCoin0" class="btnRemoveCoin"></button> <br>
-            <button id="btnRemoveCoin1" class="btnRemoveCoin"></button> <br>
-            <button id="btnRemoveCoin2" class="btnRemoveCoin"></button> <br>
-            <button id="btnRemoveCoin3" class="btnRemoveCoin"></button> <br>
-            <button id="btnRemoveCoin4" class="btnRemoveCoin"></button>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="closeBtn btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>`);
-    for (let i = 0; i < 5; i++) {
-        jQuery('#btnRemoveCoin' + i).click(removeCoin);
-    }
-
     getAllCoins();
 }
 
@@ -78,22 +55,18 @@ function getCoinCards(resultArray) {
         jQuery('#cardGrid').append('<div id="card" class = "cardDesign card"></div>');//card
         jQuery('#card').append(`<div id="cardBody${i}" class="cardBody card-body border-primary mb-3"></div>`);//cardBody
         jQuery('#cardBody' + i).append(`
-        <label class="switch">
+        <label id="mySwitch${i}" class="switch">
             <input id="myToggle${i}" data-coin-name="${resultArray[i].symbol}" type="checkbox"> 
-            <div class="slider"></div> 
+            <div class="slider round"></div> 
         </label> 
         <h2 class="card-title${i}"></h2>`);
-        jQuery('#myToggle' + i).change(counterChoice);
+        jQuery('#myToggle' + i).click(addOrRemoveCoin);
         jQuery('.card-title' + i).text(`${resultArray[i].symbol}`);
         jQuery('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
         jQuery('.card-subtitle' + i).html(`${resultArray[i].name} <br><br>`);
         jQuery('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" > </button>`);
         jQuery(`#button${i}`).text('More Info').click(isButtonPushed);
         jQuery('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
-
-        /* 
-        
-        */
     }
 }
 
@@ -158,28 +131,87 @@ function getCoinInfoFromAjax(timePast, idx, isFirst) {
 
 main();
 
-function counterChoice() {
+function addOrRemoveCoin() {
     if (this.checked) {
-        //add the coin to app.selectedCoinsArray
-        app.selectedCoinsArray.push(jQuery(this).attr('data-coin-name'));
-        console.log(app.selectedCoinsArray);
-        app.countSelectedCoins++;
-        jQuery('#btnRemoveCoin' + (app.countSelectedCoins - 1)).text(jQuery(this).attr('data-coin-name'));
-        if (app.countSelectedCoins > 5) {
+        if (app.countSelectedCoins > 4) {
+            for (let i = 0; i < app.selectedCoinsArray.length; i++) {
+                jQuery('#btnRemoveCoin' + i).text(app.selectedCoinsArray[i]);
+            }
+            app.selectedCoinsArray.push(jQuery(this).attr('data-coin-name'));
+            console.log(app.selectedCoinsArray);
             jQuery("#myModal").modal('show');
+        } else {
+            //add the coin to app.selectedCoinsArray
+            app.selectedCoinsArray.push(jQuery(this).attr('data-coin-name'));
+            console.log(app.selectedCoinsArray);
+            app.countSelectedCoins++;
         }
     }
-    else {
+    else { //if unchecked
+        for (let i = 0; i < app.selectedCoinsArray.length; i++) {
+            if (app.selectedCoinsArray[i] == jQuery(this).attr('data-coin-name')) {
+                app.selectedCoinsArray.splice(i, 1);
+            }
+        }
+        console.log(app.selectedCoinsArray);
         app.countSelectedCoins--;
     }
 }
 
-function removeCoin() {
-    for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-        if (app.selectedCoinsArray[i] == (jQuery(this).text())) {
-            app.selectedCoinsArray.splice(i, 1);
-        }
+function addModalElement() {
+    jQuery('#ModalElement').append(`<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">please choose which coin to remove</h4>
+            </div>
+            <div id="coinAdded" class="modal-body">
+                <button id="btnRemoveCoin0" class="btnRemoveCoin"></button> <br>
+                <button id="btnRemoveCoin1" class="btnRemoveCoin"></button> <br>
+                <button id="btnRemoveCoin2" class="btnRemoveCoin"></button> <br>
+                <button id="btnRemoveCoin3" class="btnRemoveCoin"></button> <br>
+                <button id="btnRemoveCoin4" class="btnRemoveCoin"></button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="closeBtn btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>`);
+
+    for (let i = 0; i < 5; i++) {
+        //jQuery('#btnRemoveCoin' + i).on('click', removeCoin);
+        jQuery('#btnRemoveCoin' + i).on("click", replaceSelectedCoins);
     }
-    console.log(app.selectedCoinsArray);
+    jQuery('.closeBtn').click(function () { // when a user doesn't want to replace a coin with another and press close, remove last item in array
+        app.selectedCoinsArray.pop();
+        console.log(app.selectedCoinsArray);
+    });
 }
 
+function replaceSelectedCoins() {
+    for (let i = 0; i < app.selectedCoinsArray.length; i++) {
+        if (app.selectedCoinsArray[i] == jQuery(this).text()) {
+            app.selectedCoinsArray.splice(i, 1);
+            jQuery("#myModal").modal('toggle');
+            console.log(app.selectedCoinsArray);
+        }
+    }
+
+    //make the toggle switch in off status - not complete
+    console.log(jQuery(this).text());
+    for (let i = 0; i < 100; i++) {
+        if (jQuery(`#myToggle${i}`).attr('data-coin-name') == jQuery(this).text()) {
+            //jQuery(`#mySwitch${i} input:checked+.slider`).css({ 'background-color': '#ccc' });
+            jQuery(`input:checked+.slider:before`).css('transform','translateX(1px)');
+        }
+    }
+}
+
+
+/* 
+div {
+  transform: translate(50px, 100px);
+}
+*/
