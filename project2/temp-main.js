@@ -10,8 +10,9 @@ const app = {
     PURGE_IN_SECONDS: 120,
     newResultArray: [],
     numOfSecondsPast: 0,
-    countSelectedCoins: 0,
+    selectedCoinsCounter: 0,
     selectedCoinsArray: [],
+    liveReportsInterval: undefined,
 };
 
 function main() {
@@ -22,16 +23,65 @@ function main() {
     jQuery("#about").click(aboutPage);
 }
 
+function addModalElement() {
+    jQuery('#ModalElement').append(`<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">please choose which coin to remove</h4>
+            </div>
+            <div id="coinAdded" class="modal-body">
+                <button id="btnRemoveCoin0" class="btnRemoveCoin"></button> <br>
+                <button id="btnRemoveCoin1" class="btnRemoveCoin"></button> <br>
+                <button id="btnRemoveCoin2" class="btnRemoveCoin"></button> <br>
+                <button id="btnRemoveCoin3" class="btnRemoveCoin"></button> <br>
+                <button id="btnRemoveCoin4" class="btnRemoveCoin"></button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="closeBtn btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>`);
+
+    for (let i = 0; i < 5; i++) {
+        //jQuery('#btnRemoveCoin' + i).on('click', removeCoin);
+        jQuery('#btnRemoveCoin' + i).click(replaceSelectedCoins);
+    }
+    jQuery('.closeBtn').click(function () { // when a user doesn't want to replace a coin with another and press close, remove last item in array
+        app.selectedCoinsArray.pop();
+        console.log(app.selectedCoinsArray);
+    });
+}
+
 function homePage() { //creating the home page
     jQuery('#currentPage').empty().append('<div id="row"></div>');
+    clearInterval(app.liveReportsInterval);
     getAllCoins();
 }
 
 function liveReportsPage() { //creating the live reports page
     jQuery('#currentPage').empty();
+    loader(jQuery('#mainPage'));
+    //API example - "https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,BTC&tsyms=USD"
+
+    liveReportsOfSelectedCoins();
+}
+
+function liveReportsOfSelectedCoins() {
+    let UpperCaseSelectedCoinsArray = (app.selectedCoinsArray).map(a => a.toUpperCase());
+    /* doesn't return all the coins */
+    app.liveReportsInterval = setInterval(() => {
+        jQuery.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${UpperCaseSelectedCoinsArray.join(',')}&tsyms=USD`, function (results) {
+            jQuery('#loader').remove();
+            console.log(results);
+        });
+    }, 2000);
 }
 
 function aboutPage() { //creating the about page
+    clearInterval(app.liveReportsInterval);
     jQuery('#currentPage').empty().append(`<div> <p> <span> <u> About Myself </u> </span> <br>
     <img width = 152 height = 202 opacity=1 src = styles/images/mor.jpg> </img> <br> <br>
     <span> My name is Mor. <br> I'm 28 years old.<br> I came to lear fullstack so i could fine a 
@@ -45,27 +95,27 @@ function getAllCoins() {
         jQuery('#loader').remove();
         app.newResultArray = [...result];
         app.newResultArray.splice(100);
-        getCoinCards(app.newResultArray);
+        getCoinCards();
     });
 }
 
-function getCoinCards(resultArray) {
-    for (let i = 0; i < resultArray.length; i++) {
+function getCoinCards() {
+    for (let i = 0; i < app.newResultArray.length; i++) {
         jQuery('#row').append('<div id="cardGrid"></div>');//cardGrid
         jQuery('#cardGrid').append('<div id="card" class = "cardDesign card"></div>');//card
         jQuery('#card').append(`<div id="cardBody${i}" class="cardBody card-body border-primary mb-3"></div>`);//cardBody
         jQuery('#cardBody' + i).append(`
         <label id="mySwitch${i}" class="switch">
-            <input id="myToggle${i}" data-coin-name="${resultArray[i].symbol}" type="checkbox"> 
+            <input id="myToggle${i}" data-coin-name="${app.newResultArray[i].symbol}" type="checkbox"> 
             <div class="slider round"></div> 
         </label> 
         <h2 class="card-title${i}"></h2>`);
         jQuery('#myToggle' + i).click(addOrRemoveCoin);
-        jQuery('.card-title' + i).text(`${resultArray[i].symbol}`);
+        jQuery('.card-title' + i).text(`${app.newResultArray[i].symbol}`);
         jQuery('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
-        jQuery('.card-subtitle' + i).html(`${resultArray[i].name} <br><br>`);
+        jQuery('.card-subtitle' + i).html(`${app.newResultArray[i].name} <br><br>`);
         jQuery('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" > </button>`);
-        jQuery(`#button${i}`).text('More Info').click(isButtonPushed);
+        jQuery(`#button${i}`).text('More Info').click(isInfoButtonPushed);
         jQuery('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
     }
 }
@@ -75,7 +125,7 @@ function loader(parentElementId) {
     jQuery('#loader').append('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
 }
 
-function isButtonPushed() { // needs to make the interval starts only when info is collapsed (and after 2 minutes)
+function isInfoButtonPushed() { // needs to make the interval starts only when info is collapsed (and after 2 minutes)
     let idx = (this.id).slice(6);
     loader(jQuery('#info' + idx));
 
@@ -129,11 +179,9 @@ function getCoinInfoFromAjax(timePast, idx, isFirst) {
     });
 }
 
-main();
-
 function addOrRemoveCoin() {
     if (this.checked) {
-        if (app.countSelectedCoins > 4) {
+        if (app.selectedCoinsCounter > 4) {
             for (let i = 0; i < app.selectedCoinsArray.length; i++) {
                 jQuery('#btnRemoveCoin' + i).text(app.selectedCoinsArray[i]);
             }
@@ -144,7 +192,7 @@ function addOrRemoveCoin() {
             //add the coin to app.selectedCoinsArray
             app.selectedCoinsArray.push(jQuery(this).attr('data-coin-name'));
             console.log(app.selectedCoinsArray);
-            app.countSelectedCoins++;
+            app.selectedCoinsCounter++;
         }
     }
     else { //if unchecked
@@ -154,40 +202,8 @@ function addOrRemoveCoin() {
             }
         }
         console.log(app.selectedCoinsArray);
-        app.countSelectedCoins--;
+        app.selectedCoinsCounter--;
     }
-}
-
-function addModalElement() {
-    jQuery('#ModalElement').append(`<div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-sm">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">please choose which coin to remove</h4>
-            </div>
-            <div id="coinAdded" class="modal-body">
-                <button id="btnRemoveCoin0" class="btnRemoveCoin"></button> <br>
-                <button id="btnRemoveCoin1" class="btnRemoveCoin"></button> <br>
-                <button id="btnRemoveCoin2" class="btnRemoveCoin"></button> <br>
-                <button id="btnRemoveCoin3" class="btnRemoveCoin"></button> <br>
-                <button id="btnRemoveCoin4" class="btnRemoveCoin"></button>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="closeBtn btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>`);
-
-    for (let i = 0; i < 5; i++) {
-        //jQuery('#btnRemoveCoin' + i).on('click', removeCoin);
-        jQuery('#btnRemoveCoin' + i).on("click", replaceSelectedCoins);
-    }
-    jQuery('.closeBtn').click(function () { // when a user doesn't want to replace a coin with another and press close, remove last item in array
-        app.selectedCoinsArray.pop();
-        console.log(app.selectedCoinsArray);
-    });
 }
 
 function replaceSelectedCoins() {
@@ -204,14 +220,16 @@ function replaceSelectedCoins() {
     for (let i = 0; i < 100; i++) {
         if (jQuery(`#myToggle${i}`).attr('data-coin-name') == jQuery(this).text()) {
             //jQuery(`#mySwitch${i} input:checked+.slider`).css({ 'background-color': '#ccc' });
-            jQuery(`input:checked+.slider:before`).css('transform','translateX(1px)');
+            jQuery(`input:checked+.slider:before`).css('transform', 'translateX(1px)');
         }
     }
 }
 
 
-/* 
-div {
-  transform: translate(50px, 100px);
-}
-*/
+
+
+
+
+
+
+main();
