@@ -5,13 +5,13 @@
 4.check for duplicate code and arrange everything
 */
 "use strict";
-jQuery.noConflict();
+// jQuery.noConflict();
 const app = {
     PURGE_IN_SECONDS: 120,
     newResultArray: [],
     numOfSecondsPast: 0,
     selectedCoinsArray: [],
-    liveReportsInterval: undefined,
+    liveReportsInterval: undefined
 };
 
 function displayPage() {
@@ -74,7 +74,7 @@ function homePage() { //creating the home page
 }
 
 function liveReportsPage() { //creating the live reports page
-    jQuery('#currentPage').empty();
+    jQuery('#currentPage').empty().append('<div id="chartContainer" style="height: 370px; width: 100%;"></div>');
     loader(jQuery('#mainPage'));
     //API example - "https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,BTC&tsyms=USD"
 
@@ -82,11 +82,22 @@ function liveReportsPage() { //creating the live reports page
 }
 
 function liveReportsOfSelectedCoins() {
-    let UpperCaseSelectedCoinsArray = (app.selectedCoinsArray).map(a => a.toUpperCase());
+    let coinsInUppercase = (app.selectedCoinsArray).map(a => a.toUpperCase());
+    let chartElement = $("#chartContainer");
+    initChart(chartElement, coinsInUppercase);
     /* doesn't return all the coins */
     app.liveReportsInterval = setInterval(() => {
-        jQuery.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${UpperCaseSelectedCoinsArray.join(',')}&tsyms=USD`, function (results) {
+        jQuery.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coinsInUppercase.join(',')}&tsyms=USD`, function (results) {
             jQuery('#loader').remove();
+            let now = new Date();
+            for (let i = 0; i < coinsInUppercase.length; i++) {
+                let coin = coinsInUppercase[i];
+                if (results[coin]) {
+                  let coinCurrentValue = results[coin].USD;
+                  app.options.data[i].dataPoints.push({ x: now, y: coinCurrentValue});
+                }
+            }
+          $("#chartContainer").CanvasJSChart().render();
             console.log(results);
         });
     }, 2000);
@@ -231,11 +242,55 @@ function replaceSelectedCoins() {
     toggleSwitchOfCoin.trigger("click");
 }
 
+function initChart(chartElement, coins) {
+    app.options = {
+        exportEnabled: true,
+        animationEnabled: true,
+        title:{
+            text: "Coin Price In USD"
+        },
+        axisX: {
+            title: "States"
+        },
+        axisY: {
+            title: "Units Sold",
+            titleFontColor: "#4F81BC",
+            lineColor: "#4F81BC",
+            labelFontColor: "#4F81BC",
+            tickColor: "#4F81BC",
+            includeZero: false
+        },
+        axisY2: {
+            title: "Profit in USD",
+            titleFontColor: "#C0504E",
+            lineColor: "#C0504E",
+            labelFontColor: "#C0504E",
+            tickColor: "#C0504E",
+            includeZero: false
+        },
+        toolTip: {
+            shared: true
+        },
+        legend: {
+            cursor: "pointer",
+        },
+        data: []
+    };
 
+    coins.forEach(coin => {
+        app.options.data.push({
+            type: "spline",
+            name: coin,
+            axisYType: "secondary",
+            showInLegend: true,
+            xValueFormatString: "HH:mm:SS",
+            yValueFormatString: "$#,##0.#",
+            dataPoints: []
+        })
+    })
+  chartElement.CanvasJSChart(app.options);
 
-
-
-
+}
 
 
 main();
