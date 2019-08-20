@@ -5,7 +5,7 @@
 4.check for duplicate code and arrange everything
 */
 "use strict";
-// jQuery.noConflict();
+jQuery.noConflict();
 const app = {
     PURGE_IN_SECONDS: 120,
     newResultArray: [],
@@ -31,6 +31,11 @@ function main() {
     jQuery("#home").click(homePage);
     jQuery("#liveReports").click(liveReportsPage);
     jQuery("#about").click(aboutPage);
+}
+
+function setSwitchOfCoinState(coin, state) {
+    let switchInputToDisable = jQuery(`[data-coin-name=${coin}]`);
+    switchInputToDisable.prop("checked", state);
 }
 
 function addModalElement() {
@@ -61,8 +66,7 @@ function addModalElement() {
     }
     jQuery('.closeBtn').click(function () { // when a user doesn't want to replace a coin with another and press close, remove last item in array
         let coinToRemove = app.selectedCoinsArray.pop();
-        let toggleSwitchOfCoin = jQuery(`[data-coin-name=${coinToRemove}]`);
-        toggleSwitchOfCoin.trigger("click");
+        setSwitchOfCoinState(coinToRemove, false);
         console.log(app.selectedCoinsArray);
     });
 }
@@ -83,9 +87,10 @@ function liveReportsPage() { //creating the live reports page
 
 function liveReportsOfSelectedCoins() {
     let coinsInUppercase = (app.selectedCoinsArray).map(a => a.toUpperCase());
-    let chartElement = $("#chartContainer");
+    let chartElement = jQuery("#chartContainer");
     initChart(chartElement, coinsInUppercase);
     /* doesn't return all the coins */
+    clearInterval(app.liveReportsInterval);
     app.liveReportsInterval = setInterval(() => {
         jQuery.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coinsInUppercase.join(',')}&tsyms=USD`, function (results) {
             jQuery('#loader').remove();
@@ -97,7 +102,7 @@ function liveReportsOfSelectedCoins() {
                   app.options.data[i].dataPoints.push({ x: now, y: coinCurrentValue});
                 }
             }
-          $("#chartContainer").CanvasJSChart().render();
+          jQuery("#chartContainer").CanvasJSChart().render();
             console.log(results);
         });
     }, 2000);
@@ -119,6 +124,11 @@ function getAllCoins() {
         app.newResultArray = [...result];
         app.newResultArray.splice(100);
         getCoinCards();
+        if (app.selectedCoinsArray !== undefined && app.selectedCoinsArray !== null) {
+            app.selectedCoinsArray.forEach(coin => {
+                setSwitchOfCoinState(coin, true);
+            });
+        }
     });
 }
 
@@ -237,9 +247,7 @@ function replaceSelectedCoins() {
         }
     }
 
-    //make the toggle switch in off status - not complete
-    let toggleSwitchOfCoin = jQuery(`[data-coin-name=${coinToRemove}]`);
-    toggleSwitchOfCoin.trigger("click");
+    setSwitchOfCoinState(coinToRemove, false);
 }
 
 function initChart(chartElement, coins) {
