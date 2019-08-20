@@ -10,17 +10,29 @@ const app = {
     PURGE_IN_SECONDS: 120,
     newResultArray: [],
     numOfSecondsPast: 0,
-    selectedCoinsCounter: 0,
     selectedCoinsArray: [],
     liveReportsInterval: undefined,
 };
 
+function displayPage() {
+    let pageId = this.id;
+    let containers = ["homeContainer", "liveReportsContainer", "aboutContainer"];
+    // hide all page containers
+    containers.forEach(containerId => {
+        jQuery("#" + containerId).css({display: "none"});
+    });
+    // show selected page
+    jQuery("#" + pageId + "Container").css({display: "block"});
+}
+
 function main() {
     homePage();
+    liveReportsPage();
+    aboutPage();
     addModalElement();
-    jQuery("#home").click(homePage);
-    jQuery("#liveReports").click(liveReportsPage);
-    jQuery("#about").click(aboutPage);
+    jQuery("#home").click(displayPage);
+    jQuery("#liveReports").click(displayPage);
+    jQuery("#about").click(displayPage);
 }
 
 function addModalElement() {
@@ -50,20 +62,22 @@ function addModalElement() {
         jQuery('#btnRemoveCoin' + i).click(replaceSelectedCoins);
     }
     jQuery('.closeBtn').click(function () { // when a user doesn't want to replace a coin with another and press close, remove last item in array
-        app.selectedCoinsArray.pop();
+        let coinToRemove = app.selectedCoinsArray.pop();
+        let toggleSwitchOfCoin = jQuery(`[data-coin-name=${coinToRemove}]`);
+        toggleSwitchOfCoin.trigger("click");
         console.log(app.selectedCoinsArray);
     });
 }
 
 function homePage() { //creating the home page
-    jQuery('#currentPage').empty().append('<div id="row"></div>');
+    jQuery('#homeContainer').empty().append('<div id="row"></div>');
     clearInterval(app.liveReportsInterval);
     getAllCoins();
 }
 
 function liveReportsPage() { //creating the live reports page
-    jQuery('#currentPage').empty();
-    loader(jQuery('#mainPage'));
+    jQuery('#liveReportsContainer').empty();
+    loader(jQuery('#liveReportsContainer'));
     //API example - "https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,BTC&tsyms=USD"
 
     liveReportsOfSelectedCoins();
@@ -82,7 +96,7 @@ function liveReportsOfSelectedCoins() {
 
 function aboutPage() { //creating the about page
     clearInterval(app.liveReportsInterval);
-    jQuery('#currentPage').empty().append(`<div> <p> <span> <u> About Myself </u> </span> <br>
+    jQuery('#aboutContainer').empty().append(`<div> <p> <span> <u> About Myself </u> </span> <br>
     <img width = 152 height = 202 opacity=1 src = styles/images/mor.jpg> </img> <br> <br>
     <span> My name is Mor. <br> I'm 28 years old.<br> I came to lear fullstack so i could fine a 
     decent job but i don't know if it's going to happend. </span> <br> </p> <br>
@@ -90,7 +104,7 @@ function aboutPage() { //creating the about page
 }
 
 function getAllCoins() {
-    loader(jQuery('#mainPage'));
+    loader(jQuery('#homeContainer'));
     jQuery.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
         jQuery('#loader').remove();
         app.newResultArray = [...result];
@@ -181,7 +195,7 @@ function getCoinInfoFromAjax(timePast, idx, isFirst) {
 
 function addOrRemoveCoin() {
     if (this.checked) {
-        if (app.selectedCoinsCounter > 4) {
+        if (app.selectedCoinsArray.length > 4) {
             for (let i = 0; i < app.selectedCoinsArray.length; i++) {
                 jQuery('#btnRemoveCoin' + i).text(app.selectedCoinsArray[i]);
             }
@@ -192,23 +206,22 @@ function addOrRemoveCoin() {
             //add the coin to app.selectedCoinsArray
             app.selectedCoinsArray.push(jQuery(this).attr('data-coin-name'));
             console.log(app.selectedCoinsArray);
-            app.selectedCoinsCounter++;
         }
     }
     else { //if unchecked
         for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-            if (app.selectedCoinsArray[i] == jQuery(this).attr('data-coin-name')) {
+            if (app.selectedCoinsArray[i] === jQuery(this).attr('data-coin-name')) {
                 app.selectedCoinsArray.splice(i, 1);
             }
         }
         console.log(app.selectedCoinsArray);
-        app.selectedCoinsCounter--;
     }
 }
 
 function replaceSelectedCoins() {
+    let coinToRemove = jQuery(this).text();
     for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-        if (app.selectedCoinsArray[i] == jQuery(this).text()) {
+        if (app.selectedCoinsArray[i] === coinToRemove) {
             app.selectedCoinsArray.splice(i, 1);
             jQuery("#myModal").modal('toggle');
             console.log(app.selectedCoinsArray);
@@ -216,13 +229,8 @@ function replaceSelectedCoins() {
     }
 
     //make the toggle switch in off status - not complete
-    console.log(jQuery(this).text());
-    for (let i = 0; i < 100; i++) {
-        if (jQuery(`#myToggle${i}`).attr('data-coin-name') == jQuery(this).text()) {
-            //jQuery(`#mySwitch${i} input:checked+.slider`).css({ 'background-color': '#ccc' });
-            jQuery(`input:checked+.slider:before`).css('transform', 'translateX(1px)');
-        }
-    }
+    let toggleSwitchOfCoin = jQuery(`[data-coin-name=${coinToRemove}]`);
+    toggleSwitchOfCoin.trigger("click");
 }
 
 
