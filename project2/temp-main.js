@@ -27,12 +27,10 @@ function displayPage() {
 
 function main() {
     homePage();
-    liveReportsPage();
-    aboutPage();
     addModalElement();
-    jQuery("#home").click(displayPage);
-    jQuery("#liveReports").click(displayPage);
-    jQuery("#about").click(displayPage);
+    jQuery("#home").click(homePage);
+    jQuery("#liveReports").click(liveReportsPage);
+    jQuery("#about").click(aboutPage);
 }
 
 function addModalElement() {
@@ -70,14 +68,14 @@ function addModalElement() {
 }
 
 function homePage() { //creating the home page
-    jQuery('#homeContainer').empty().append('<div id="row"></div>');
+    jQuery('#currentPage').empty().append('<div id="row"></div>');
     clearInterval(app.liveReportsInterval);
     getAllCoins();
 }
 
 function liveReportsPage() { //creating the live reports page
-    jQuery('#liveReportsContainer').empty();
-    loader(jQuery('#liveReportsContainer'));
+    jQuery('#currentPage').empty();
+    loader(jQuery('#mainPage'));
     //API example - "https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,BTC&tsyms=USD"
 
     liveReportsOfSelectedCoins();
@@ -96,7 +94,7 @@ function liveReportsOfSelectedCoins() {
 
 function aboutPage() { //creating the about page
     clearInterval(app.liveReportsInterval);
-    jQuery('#aboutContainer').empty().append(`<div> <p> <span> <u> About Myself </u> </span> <br>
+    jQuery('#currentPage').empty().append(`<div> <p> <span> <u> About Myself </u> </span> <br>
     <img width = 152 height = 202 opacity=1 src = styles/images/mor.jpg> </img> <br> <br>
     <span> My name is Mor. <br> I'm 28 years old.<br> I came to lear fullstack so i could fine a 
     decent job but i don't know if it's going to happend. </span> <br> </p> <br>
@@ -104,7 +102,7 @@ function aboutPage() { //creating the about page
 }
 
 function getAllCoins() {
-    loader(jQuery('#homeContainer'));
+    loader(jQuery('#mainPage'));
     jQuery.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
         jQuery('#loader').remove();
         app.newResultArray = [...result];
