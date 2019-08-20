@@ -7,7 +7,7 @@
 "use strict";
 jQuery.noConflict();
 const app = {
-    PURGE_IN_SECONDS: 120,
+    PURGE_IN_SECONDS: 5,
     newResultArray: [],
     numOfSecondsPast: 0,
     selectedCoinsArray: [],
@@ -147,8 +147,8 @@ function getCoinCards() {
         jQuery('.card-title' + i).text(`${app.newResultArray[i].symbol}`);
         jQuery('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
         jQuery('.card-subtitle' + i).html(`${app.newResultArray[i].name} <br><br>`);
-        jQuery('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" > </button>`);
-        jQuery(`#button${i}`).text('More Info').click(isInfoButtonPushed);
+        jQuery('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" data-coin-for-info="${app.newResultArray[i].id}"> </button>`);
+        jQuery(`#button${i}`).text('More Info').click(onInfoButtonClick);
         jQuery('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
     }
 }
@@ -158,58 +158,30 @@ function loader(parentElementId) {
     jQuery('#loader').append('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
 }
 
-function isInfoButtonPushed() { // needs to make the interval starts only when info is collapsed (and after 2 minutes)
+function onInfoButtonClick() { // needs to make the interval starts only when info is collapsed (and after 2 minutes)
     let idx = (this.id).slice(6);
     loader(jQuery('#info' + idx));
-
-    let localStorageItem = JSON.parse(window.localStorage.getItem('localStorageObj' + idx));
-
-    if (localStorageItem == null) {
-        //let infoElement = document.getElementById('info' + idx);
-        //console.log(infoElement);
-        //if ((infoElement.classList.contains('show')) == false) {
-        let timePast = setInterval(() => {
-            app.numOfSecondsPast++;
-            console.log(app.numOfSecondsPast);
-        }, 1000);
-        //}
-        let isFirst = true;
-        getCoinInfoFromAjax(timePast, idx, isFirst);
-    } else { // if there's something in local storage - if (localStorageItem != null)
-        if (app.numOfSecondsPast < app.PURGE_IN_SECONDS) {
+    let coin = this.dataset.coinForInfo;
+    let coinInfo = getLocalCoinInfo(coin);
+    if (!coinInfo) {
+        jQuery.get("https://api.coingecko.com/api/v3/coins/" + coin, function (coinInfo) {
             jQuery('#loader').remove();
-            jQuery('#info' + idx).empty();
-            jQuery('#info' + idx).append('<img id= "img' + idx + '" src="' + localStorageItem.img + '"></img><div>' + localStorageItem.info + '</div>');
-        } else {
-            app.numOfSecondsPast = 0;
-            let timePast = setInterval(() => {
-                app.numOfSecondsPast++;
-                //console.log(app.numOfSecondsPast);
-            }, 1000);
-            let isFirst = false;
-            jQuery('#info' + idx).empty();
-            getCoinInfoFromAjax(timePast, idx, isFirst);
-        }
-    }
-
-}
-
-function getCoinInfoFromAjax(timePast, idx, isFirst) {
-    if (!isFirst) { // check if it works
-        clearInterval(timePast);
-    }
-    jQuery.get("https://api.coingecko.com/api/v3/coins/" + app.newResultArray[idx].id, function (coinInfo) {
-        jQuery('#loader').remove();
-        let coinValue = `<b>USD:</b> ${coinInfo.market_data.total_volume.usd} &#36<br>
+            let coinValue = `<b>USD:</b> ${coinInfo.market_data.total_volume.usd} &#36<br>
                         <b>EUR:</b> ${coinInfo.market_data.total_volume.eur} \u20AC<br>
                         <b>ILS:</b> ${coinInfo.market_data.total_volume.ils} &#8362`;
-        jQuery('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.image.small + '"></img><div>' + coinValue + '</div>');
-        let localStorageObj = {
-            img: jQuery('#img' + idx).attr('src'),
-            info: coinValue,
-        };
-        window.localStorage.setItem('localStorageObj' + idx, JSON.stringify(localStorageObj));
-    });
+            jQuery('#info' + idx).empty();
+            jQuery('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.image.small + '"></img><div>' + coinValue + '</div>');
+            let localCoinInfo = {
+                img: jQuery('#img' + idx).attr('src'),
+                info: coinValue,
+            };
+            setLocalCoinInfo(coin, localCoinInfo);
+        });
+    } else {
+        jQuery('#loader').remove();
+        jQuery('#info' + idx).empty();
+        jQuery('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.img + '"></img><div>' + coinInfo.info + '</div>');
+    }
 }
 
 function addOrRemoveCoin() {
@@ -300,5 +272,20 @@ function initChart(chartElement, coins) {
 
 }
 
+function getLocalCoinInfo(coin) {
+    let coinInfo = null;
+    let coinInfoStr = localStorage.getItem("coinInfo-" + coin);
+    if (coinInfoStr) {
+        coinInfo = JSON.parse(coinInfoStr);
+        if (new Date().getTime() - coinInfo.timeSaved > app.PURGE_IN_SECONDS * 1000) {
+            coinInfo = null;
+        }
+    }
+    return coinInfo;
+}
 
+function setLocalCoinInfo(coin, info) {
+    info.timeSaved = new Date().getTime();
+    localStorage.setItem("coinInfo-" + coin, JSON.stringify(info));
+}
 main();
