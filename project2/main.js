@@ -1,19 +1,20 @@
-/* ----- updated - 21.08.19 15:22 -----
-1. needs to adjust for mobile
+/* ----- updated - 26.08.19 01:48 -----
+1. needs to adjust for all devices (laptop, tablet, mobile);
 2.check for duplicate code and arrange everything
 */
 "use strict";
-//$.noConflict();
+
 const app = {
-    PURGE_IN_SECONDS: 10,
+    PURGE_IN_SECONDS: 120,
     newResultArray: [],
     numOfSecondsPast: 0,
     selectedCoinsArray: [],
     liveReportsInterval: undefined,
-    api3Array: []
+    coinId: 0,
 };
 
 function main() {
+    mainPage();
     homePage();
     addModalElement();
     $("#home").click(homePage);
@@ -34,8 +35,12 @@ function homePage() { //creating the home page
     </div>
     <div id="row"></div>`);
     clearInterval(app.liveReportsInterval);
-    $(".chosenCoinsBtn").click(showChosenCoins);
-    $(".search-button").click(search);
+    $(".chosenCoinsBtn").click(function () {
+        showChosenCoinsOrSearch('show');
+    });
+    $(".search-button").click(function () {
+        showChosenCoinsOrSearch('search');
+    });
     getAllCoins();
 }
 
@@ -44,39 +49,41 @@ function getAllCoins() {
     $.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
         $('#loader').remove();
         app.newResultArray = [...result].slice(499, 599);
+        app.coinId = 0;
+        for (let i = 0; i < app.newResultArray.length; i++) {
+            app.newResultArray[i].coinId = app.coinId;
+            app.coinId++;
+            getCoinCards(i);
+        }
 
         /* app.newResultArray = [...result];
         app.newResultArray.splice(100); */
 
-        console.log(app.newResultArray);
-        getCoinCards();
         if (app.selectedCoinsArray !== undefined && app.selectedCoinsArray !== null) {
             app.selectedCoinsArray.forEach(coin => {
-                setSwitchOfCoinState(coin, true);
+                setSwitchOfCoinState(coin.coinNum, true);
             });
         }
     });
 }
 
-function getCoinCards() {
-    for (let i = 0; i < app.newResultArray.length; i++) {
-        $('#row').append('<div id="cardGrid"></div>');//cardGrid
-        $('#cardGrid').append('<div id="card" class = "cardDesign card"></div>');//card
-        $('#card').append(`<div id="cardBody${i}" class="cardBody card-body border-primary mb-3"></div>`);//cardBody
-        $('#cardBody' + i).append(`
+function getCoinCards(i) {
+    $('#row').append('<div id="cardGrid"></div>');//cardGrid
+    $('#cardGrid').append('<div id="card" class = "cardDesign card"></div>');//card
+    $('#card').append(`<div id="cardBody${i}" class="cardBody card-body border-primary mb-3" card-num = "${app.coinId}"></div>`);//cardBody
+    $('#cardBody' + i).append(`
         <label id="mySwitch${i}" class="switch">
-            <input id="myToggle${i}" data-coin-name="${(app.newResultArray[i].symbol)}" type="checkbox"> 
+            <input id="myToggle${app.newResultArray[i].coinId}" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
             <div class="slider round"></div> 
         </label> 
         <h2 class="card-title${i}"></h2>`);
-        $('#myToggle' + i).click(addOrRemoveCoin);
-        $('.card-title' + i).text(`${app.newResultArray[i].symbol}`);
-        $('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
-        $('.card-subtitle' + i).html(`${app.newResultArray[i].name} <br><br>`);
-        $('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" data-coin-for-info="${app.newResultArray[i].id}"> </button>`);
-        $(`#button${i}`).text('More Info').click(onInfoButtonClick);
-        $('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
-    }
+    $(`#myToggle${app.newResultArray[i].coinId}`).click(addOrRemoveCoin);
+    $('.card-title' + i).text(`${app.newResultArray[i].symbol.toUpperCase()}`);
+    $('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
+    $('.card-subtitle' + i).html(`${app.newResultArray[i].name} <br><br>`);
+    $('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" data-coin-for-info="${app.newResultArray[i].id}"> </button>`);
+    $(`#button${i}`).text('More Info').click(onInfoButtonClick);
+    $('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
 }
 
 function getLocalCoinInfo(coin) {
@@ -98,26 +105,25 @@ function setLocalCoinInfo(coin, info) {
 
 function addOrRemoveCoin() {
     if (this.checked) {
+        let selectedCoinObj = new selectedCoin($(this).attr('data-coin-id-for-toggle'), $(this).attr('data-coin-name'));
         if (app.selectedCoinsArray.length > 4) {
             for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-                $('#btnRemoveCoin' + i).text(app.selectedCoinsArray[i]);
+                $('#btnRemoveCoin' + i).text(app.selectedCoinsArray[i].symbol.toUpperCase());
+                $('#btnRemoveCoin' + i).attr('data-coin-id', app.selectedCoinsArray[i].coinNum);
             }
-            app.selectedCoinsArray.push($(this).attr('data-coin-name'));
-            console.log(app.selectedCoinsArray);
+            app.selectedCoinsArray.push(selectedCoinObj);
             $("#myModal").modal('show');
         } else {
             //add the coin to app.selectedCoinsArray
-            app.selectedCoinsArray.push($(this).attr('data-coin-name'));
-            console.log(app.selectedCoinsArray);
+            app.selectedCoinsArray.push(selectedCoinObj);
         }
     }
     else { //if unchecked
         for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-            if (app.selectedCoinsArray[i] === $(this).attr('data-coin-name')) {
+            if (app.selectedCoinsArray[i].coinNum == ($(this).attr('data-coin-id-for-toggle'))) {
                 app.selectedCoinsArray.splice(i, 1);
             }
         }
-        console.log(app.selectedCoinsArray);
     }
 }
 
@@ -170,23 +176,21 @@ function addModalElement() {
 </div>`);
 
     for (let i = 0; i < 5; i++) {
-        //$('#btnRemoveCoin' + i).on('click', removeCoin);
         $('#btnRemoveCoin' + i).click(replaceSelectedCoins);
     }
     $('.closeBtn').click(function () { // when a user doesn't want to replace a coin with another and press close, remove last item in array
-        let coinToRemove = app.selectedCoinsArray.pop();
+        let coinToRemove = app.selectedCoinsArray[app.selectedCoinsArray.length - 1].coinNum;
         setSwitchOfCoinState(coinToRemove, false);
-        console.log(app.selectedCoinsArray);
+        app.selectedCoinsArray.pop();
     });
 }
 
 function replaceSelectedCoins() {
-    let coinToRemove = $(this).text();
+    let coinToRemove = $(this).attr('data-coin-id');
     for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-        if (app.selectedCoinsArray[i] === coinToRemove) {
+        if (app.selectedCoinsArray[i].coinNum == coinToRemove) {
             app.selectedCoinsArray.splice(i, 1);
             $("#myModal").modal('toggle');
-            console.log(app.selectedCoinsArray);
         }
     }
 
@@ -194,8 +198,7 @@ function replaceSelectedCoins() {
 }
 
 function setSwitchOfCoinState(coin, state) {
-    let switchInputToDisable = $(`[data-coin-name=${coin}]`);
-    switchInputToDisable.prop("checked", state);
+    $(`#myToggle${coin}`).prop("checked", state);
 }
 
 function liveReportsPage() { //creating the live reports page
@@ -207,7 +210,7 @@ function liveReportsPage() { //creating the live reports page
 }
 
 function liveReportsOfSelectedCoins() {
-    let coinsInUppercase = (app.selectedCoinsArray).map(a => a.toUpperCase());
+    let coinsInUppercase = (app.selectedCoinsArray).map(a => a.symbol.toUpperCase());
     let chartElement = $("#chartContainer");
     initChart(chartElement, coinsInUppercase);
     chartElement.css({ display: 'none' });
@@ -227,7 +230,6 @@ function liveReportsOfSelectedCoins() {
                 }
             }
             $("#chartContainer").CanvasJSChart().render();
-            console.log(results);
         });
     }, 2000);
 }
@@ -279,7 +281,6 @@ function initChart(chartElement, coins) {
             dataPoints: []
         })
     })
-    console.log(app.options);
 
     function toggleDataSeries(e) {
         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
@@ -305,51 +306,52 @@ function aboutPage() { //creating the about page
     <p> <span> <u> The Project </u> <br> this project is making me insane. </span> </p> </div>`);
 }
 
-function showChosenCoins() {
-/*     $(`.cardBody`).css({ 'display': 'none' });
-    for (let i = 0; i < app.newResultArray.length; i++) {
-        if ($(`#myToggle${i}`).prop('checked')) {
-            $(`#cardBody${i}`).css({ 'display': 'block' });
-        }
-    } */
-
+function showChosenCoinsOrSearch(showOrSearch) {
     $(`.cardBody`).css({ 'display': 'none' });
-    let CheckedCoinsArray = [];
+    let showOrSearchArray = [];
     for (let i = 0; i < app.newResultArray.length; i++) {
-        if ($(`#myToggle${i}`).prop('checked')) {
-            CheckedCoinsArray.push($(`#cardBody${i}`));
+        if (showOrSearch == 'show') {
+            if ($(`#myToggle${i}`).prop('checked')) { //only line that is different from the search func
+                showOrSearchArray.push($(`#cardBody${i}`));
+            }
+        } else if (showOrSearch = 'search') {
+            if ($(`#myToggle${i}`).attr('data-coin-name') == $('#search').val()) { //only line that is different from the showChosenCoins func
+                showOrSearchArray.push($(`#cardBody${i}`));
+            }
         }
     }
-    console.log(CheckedCoinsArray);
-     if (CheckedCoinsArray.length !== 0) {
-        for (let index = 0; index < CheckedCoinsArray.length; index++) {
-            console.log('#' + ((CheckedCoinsArray[index])[0].id));
-            $('#' + ((CheckedCoinsArray[index])[0].id)).css({ 'display': 'block' });
+    if (showOrSearchArray.length !== 0) {
+        for (let index = 0; index < showOrSearchArray.length; index++) {
+            $('#' + ((showOrSearchArray[index])[0].id)).css({ 'display': 'block' });
         }
     } else {
-        alert('no coin found');
+        alert('no coins found');
         $(`.cardBody`).css({ 'display': 'block' });
     }
 }
 
-function search() {
-    $(`.cardBody`).css({ 'display': 'none' });
-    let searchResultArray = [];
-    for (let i = 0; i < app.newResultArray.length; i++) {
-        if ($(`#myToggle${i}`).attr('data-coin-name') == $('#search').val()) {
-            searchResultArray.push($(`#cardBody${i}`));
-        }
-    }
-    console.log(searchResultArray);
-    if (searchResultArray.length !== 0) {
-        for (let index = 0; index < searchResultArray.length; index++) {
-            console.log('#' + ((searchResultArray[index])[0].id));
-            $('#' + ((searchResultArray[index])[0].id)).css({ 'display': 'block' });
-        }
-    } else {
-        alert('no coin found');
-        $(`.cardBody`).css({ 'display': 'block' });
-    }
+function selectedCoin(coinNum, symbol) {
+    this.coinNum = coinNum++;
+    this.symbol = symbol;
+}
+
+function mainPage() {
+    $('body').append(`    
+    <div id="ModalElement"></div>
+    <div id="mainPage" class="container mainPage">
+        <header class="row">
+            <h1 class="header">Cryptonite</h1>
+        </header>
+    <div class="sticky-top">
+        <nav class="navbar w-50">
+            <button id="home">Home(coins)</button>
+            <button id="liveReports">Live Reports</button>
+            <button id="about">About</button>
+        </nav>
+        <div id="loader"></div>
+    </div>
+    <div id="currentPage" class="container"></div>
+</div>`);
 }
 main();
 
