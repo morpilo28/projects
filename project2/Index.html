@@ -16,19 +16,15 @@
         <header class="row">
             <h1 class="header">Cryptonite</h1>
         </header>
-        <nav class="navbar w-50">
-            <button id="home">Home(coins)</button>
-            <button id="liveReports">Live Reports</button>
-            <button id="about">About</button>
-            <br>
-            
-            <br>
-            <input id="search" type="text">
-            <button class="search-button">Search</button>
-        </nav>
-        <div id="loader"></div>
-        <div id="currentPage"></div>
-
+        <div class="sticky-top">
+            <nav class="navbar w-50">
+                <button id="home">Home(coins)</button>
+                <button id="liveReports">Live Reports</button>
+                <button id="about">About</button>
+            </nav>
+            <div id="loader"></div>
+        </div>
+        <div id="currentPage" class="container"></div>
     </div>
 
     <script src="node_modules/jquery/dist/jquery.min.js"></script>

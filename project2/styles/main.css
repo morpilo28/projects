@@ -24,6 +24,7 @@ html {
   font-size: 70px;
   color: honeydew;
   padding-top: 21px;
+  margin-left: 10px;
 }
 
 button {
@@ -31,8 +32,17 @@ button {
   color: black;
 }
 
+.chosenCoinsBtn, .search-button{
+  background-color: chartreuse;
+}
+
+.chosenCoinsBtn{
+  width: 167px;
+}
+
 .navbar {
   margin-top: 114px;
+  margin-bottom: -37px;
   display: block;
   padding-bottom: 36px;
 }
@@ -133,4 +143,8 @@ input:checked+.slider:before {
 
 .btnRemoveCoin {
   margin-bottom: 8px;
+}
+
+#currentPage{
+  margin-top: 32px;
 }
