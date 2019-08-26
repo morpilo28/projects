@@ -1,4 +1,4 @@
-/* ----- updated - 26.08.19 01:48 -----
+/* ----- updated - 26.08.19 03:09 -----
 1. needs to adjust for all devices (laptop, tablet, mobile);
 2.check for duplicate code and arrange everything
 */
