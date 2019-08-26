@@ -28,12 +28,17 @@ function loader(parentElementId) {
 }
 
 function homePage() { //creating the home page
-
     $('#currentPage').empty().append(`<input id="search" type="text">
     <button class="search-button">Search</button>
     <button class="chosenCoinsBtn">Show Chosen Coins</button>
     </div>
-    <div id="row"></div>`);
+    <div id="row text-center">
+        <div id="cardGrid">
+            <div id="card" class ="cardDesign card">
+                <div class="columns"></div>
+            </div>
+        </div>
+    </div>`);
     clearInterval(app.liveReportsInterval);
     $(".chosenCoinsBtn").click(function () {
         showChosenCoinsOrSearch('show');
@@ -50,6 +55,7 @@ function getAllCoins() {
         $('#loader').remove();
         app.newResultArray = [...result].slice(499, 599);
         app.coinId = 0;
+        console.log(app.newResultArray.length);
         for (let i = 0; i < app.newResultArray.length; i++) {
             app.newResultArray[i].coinId = app.coinId;
             app.coinId++;
@@ -68,9 +74,7 @@ function getAllCoins() {
 }
 
 function getCoinCards(i) {
-    $('#row').append('<div id="cardGrid"></div>');//cardGrid
-    $('#cardGrid').append('<div id="card" class = "cardDesign card"></div>');//card
-    $('#card').append(`<div id="cardBody${i}" class="cardBody card-body border-primary mb-3" card-num = "${app.coinId}"></div>`);//cardBody
+    $('.columns').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 float-left"></div>`);//cardBody
     $('#cardBody' + i).append(`
         <label id="mySwitch${i}" class="switch">
             <input id="myToggle${app.newResultArray[i].coinId}" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
@@ -338,7 +342,7 @@ function selectedCoin(coinNum, symbol) {
 function mainPage() {
     $('body').append(`    
     <div id="ModalElement"></div>
-    <div id="mainPage" class="container mainPage">
+    <div id="mainPage" class="container-fluid mainPage">
         <header class="row">
             <h1 class="header">Cryptonite</h1>
         </header>
@@ -350,7 +354,7 @@ function mainPage() {
         </nav>
         <div id="loader"></div>
     </div>
-    <div id="currentPage" class="container"></div>
+    <div id="currentPage" class="container-fluid"></div>
 </div>`);
 }
 main();
