@@ -77,7 +77,7 @@ function getCoinCards(i) {
     $('.columns').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 float-left"></div>`);//cardBody
     $('#cardBody' + i).append(`
         <label id="mySwitch${i}" class="switch">
-            <input id="myToggle${app.newResultArray[i].coinId}" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
+            <input id="myToggle${app.newResultArray[i].coinId}" class="toggleClass" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
             <div class="slider round"></div> 
         </label> 
         <h2 class="card-title${i}"></h2>`);
@@ -315,18 +315,18 @@ function showChosenCoinsOrSearch(showOrSearch) {
     let showOrSearchArray = [];
     for (let i = 0; i < app.newResultArray.length; i++) {
         if (showOrSearch == 'show') {
-            if ($(`#myToggle${i}`).prop('checked')) { //only line that is different from the search func
+            if ($(`#myToggle${i}`).prop('checked')) {
                 showOrSearchArray.push($(`#cardBody${i}`));
             }
         } else if (showOrSearch = 'search') {
-            if ($(`#myToggle${i}`).attr('data-coin-name') == $('#search').val()) { //only line that is different from the showChosenCoins func
+            if ($(`#myToggle${i}`).attr('data-coin-name') == $('#search').val()) {
                 showOrSearchArray.push($(`#cardBody${i}`));
             }
         }
     }
     if (showOrSearchArray.length !== 0) {
-        for (let index = 0; index < showOrSearchArray.length; index++) {
-            $('#' + ((showOrSearchArray[index])[0].id)).css({ 'display': 'block' });
+        for (let i = 0; i < showOrSearchArray.length; i++) {
+            $('#' + ((showOrSearchArray[i])[0].id)).css({ 'display': 'block' });
         }
     } else {
         alert('no coins found');
