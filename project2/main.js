@@ -1,7 +1,8 @@
-/* ----- updated - 26.08.19 03:09 -----
+/* ----- updated - 26.08.19 18:53 -----
 1. needs to adjust for all devices (laptop, tablet, mobile);
 2.check for duplicate code and arrange everything
 */
+
 "use strict";
 
 const app = {
@@ -22,6 +23,25 @@ function main() {
     $("#about").click(aboutPage);
 }
 
+function mainPage() {
+    $('body').append(`    
+    <div id="ModalElement"></div>
+    <div id="mainPage" class="container-fluid mainPage">
+        <header>
+            <h1 class="header">Cryptonite</h1>
+        </header>
+    <div class="sticky-top">
+        <nav class="navbar w-50">
+            <button id="home">Home(coins)</button>
+            <button id="liveReports">Live Reports</button>
+            <button id="about">About</button>
+        </nav>
+        <div id="loader"></div>
+    </div>
+    <div id="currentPage" class="container-fluid"></div>
+</div>`);
+}
+
 function loader(parentElementId) {
     parentElementId.append('<div id="loader"></div>');
     $('#loader').append('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
@@ -31,13 +51,7 @@ function homePage() { //creating the home page
     $('#currentPage').empty().append(`<input id="search" type="text">
     <button class="search-button">Search</button>
     <button class="chosenCoinsBtn">Show Chosen Coins</button>
-    </div>
-    <div id="row text-center">
-        <div id="cardGrid">
-            <div id="card" class ="cardDesign card">
-                <div class="columns"></div>
-            </div>
-        </div>
+    <div id="row">
     </div>`);
     clearInterval(app.liveReportsInterval);
     $(".chosenCoinsBtn").click(function () {
@@ -55,7 +69,6 @@ function getAllCoins() {
         $('#loader').remove();
         app.newResultArray = [...result].slice(499, 599);
         app.coinId = 0;
-        console.log(app.newResultArray.length);
         for (let i = 0; i < app.newResultArray.length; i++) {
             app.newResultArray[i].coinId = app.coinId;
             app.coinId++;
@@ -74,7 +87,7 @@ function getAllCoins() {
 }
 
 function getCoinCards(i) {
-    $('.columns').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 float-left"></div>`);//cardBody
+    $('#row').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3 float-left"></div>`);//cardBody
     $('#cardBody' + i).append(`
         <label id="mySwitch${i}" class="switch">
             <input id="myToggle${app.newResultArray[i].coinId}" class="toggleClass" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
@@ -107,6 +120,33 @@ function setLocalCoinInfo(coin, info) {
     localStorage.setItem("coinInfo-" + coin, JSON.stringify(info));
 }
 
+function onInfoButtonClick() {
+    let idx = (this.id).slice(6);
+    loader($('#info' + idx));
+    let coin = this.dataset.coinForInfo;
+    let coinInfo = getLocalCoinInfo(coin);
+    if (!coinInfo) {
+        $.get("https://api.coingecko.com/api/v3/coins/" + coin, function (coinInfo) {
+            $('#loader').remove();
+            console.log(coinInfo);
+            let coinValue = `<b>USD:</b> ${coinInfo.market_data.current_price.usd.toFixed(2)} &#36<br>
+                        <b>EUR:</b> ${coinInfo.market_data.current_price.eur.toFixed(2)} \u20AC<br>
+                        <b>ILS:</b> ${coinInfo.market_data.current_price.ils.toFixed(2)} &#8362`;
+            $('#info' + idx).empty();
+            $('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.image.small + '"></img><div>' + coinValue + '</div>');
+            let localCoinInfo = {
+                img: $('#img' + idx).attr('src'),
+                info: coinValue,
+            };
+            setLocalCoinInfo(coin, localCoinInfo);
+        });
+    } else {
+        $('#loader').remove();
+        $('#info' + idx).empty();
+        $('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.img + '"></img><div>' + coinInfo.info + '</div>');
+    }
+}
+
 function addOrRemoveCoin() {
     if (this.checked) {
         let selectedCoinObj = new selectedCoin($(this).attr('data-coin-id-for-toggle'), $(this).attr('data-coin-name'));
@@ -121,8 +161,7 @@ function addOrRemoveCoin() {
             //add the coin to app.selectedCoinsArray
             app.selectedCoinsArray.push(selectedCoinObj);
         }
-    }
-    else { //if unchecked
+    } else { //if unchecked
         for (let i = 0; i < app.selectedCoinsArray.length; i++) {
             if (app.selectedCoinsArray[i].coinNum == ($(this).attr('data-coin-id-for-toggle'))) {
                 app.selectedCoinsArray.splice(i, 1);
@@ -131,30 +170,9 @@ function addOrRemoveCoin() {
     }
 }
 
-function onInfoButtonClick() {
-    let idx = (this.id).slice(6);
-    loader($('#info' + idx));
-    let coin = this.dataset.coinForInfo;
-    let coinInfo = getLocalCoinInfo(coin);
-    if (!coinInfo) {
-        $.get("https://api.coingecko.com/api/v3/coins/" + coin, function (coinInfo) {
-            $('#loader').remove();
-            let coinValue = `<b>USD:</b> ${coinInfo.market_data.total_volume.usd} &#36<br>
-                        <b>EUR:</b> ${coinInfo.market_data.total_volume.eur} \u20AC<br>
-                        <b>ILS:</b> ${coinInfo.market_data.total_volume.ils} &#8362`;
-            $('#info' + idx).empty();
-            $('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.image.small + '"></img><div>' + coinValue + '</div>');
-            let localCoinInfo = {
-                img: $('#img' + idx).attr('src'),
-                info: coinValue,
-            };
-            setLocalCoinInfo(coin, localCoinInfo);
-        });
-    } else {
-        $('#loader').remove();
-        $('#info' + idx).empty();
-        $('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.img + '"></img><div>' + coinInfo.info + '</div>');
-    }
+function selectedCoin(coinNum, symbol) {
+    this.coinNum = coinNum++;
+    this.symbol = symbol;
 }
 
 function addModalElement() {
@@ -300,16 +318,6 @@ function initChart(chartElement, coins) {
 
 }
 
-function aboutPage() { //creating the about page
-    //$('#searchAndFFilter').remove();
-    clearInterval(app.liveReportsInterval);
-    $('#currentPage').empty().append(`<div id="aboutContainer"> <p> <span> <u> About Myself </u> </span> <br>
-    <img width = 152 height = 202 opacity=1 src = styles/images/mor.jpg> </img> <br> <br>
-    <span> My name is Mor. <br> I'm 28 years old.<br> I came to lear fullstack so i could fine a 
-    decent job but i don't know if it's going to happend. </span> <br> </p> <br>
-    <p> <span> <u> The Project </u> <br> this project is making me insane. </span> </p> </div>`);
-}
-
 function showChosenCoinsOrSearch(showOrSearch) {
     $(`.cardBody`).css({ 'display': 'none' });
     let showOrSearchArray = [];
@@ -324,38 +332,34 @@ function showChosenCoinsOrSearch(showOrSearch) {
             }
         }
     }
+    console.log(showOrSearchArray);
     if (showOrSearchArray.length !== 0) {
         for (let i = 0; i < showOrSearchArray.length; i++) {
+            $('#search').val("");
             $('#' + ((showOrSearchArray[i])[0].id)).css({ 'display': 'block' });
         }
     } else {
+        $('#search').val("");
         alert('no coins found');
         $(`.cardBody`).css({ 'display': 'block' });
     }
 }
 
-function selectedCoin(coinNum, symbol) {
-    this.coinNum = coinNum++;
-    this.symbol = symbol;
+function aboutPage() { //creating the about page
+    //$('#searchAndFFilter').remove();
+    clearInterval(app.liveReportsInterval);
+    $('#currentPage').empty().append(`<div id="aboutContainer"> <p> <span> <b><u> About Myself </u></b> <br> </span> <br>
+    <img width = 152 height = 202 opacity=1 src = styles/images/mor.jpg> </img> <br> <br>
+    <span> My name is Mor. <br> I'm 28 years old. </span> <br> </p> <br>
+    <p> <span> <b><u> The Project </u></b> <br> 
+    In this project I developed a single page that provides information about 100 virtual coins.<br>
+    By clicking on the "more info" button you can see the coin's price in EURO/USD/ILS.<br>
+    After selecting 5 coins, you can see their current price value in USD by going to the 'live reports'
+    section<br> (you can also filter which coin you wouldn't like to see by clicking on the coin's name 
+    at the bottom of the page to disable it's line in the chart).
+    
+    </span> </p> </div>`);
 }
 
-function mainPage() {
-    $('body').append(`    
-    <div id="ModalElement"></div>
-    <div id="mainPage" class="container-fluid mainPage">
-        <header class="row">
-            <h1 class="header">Cryptonite</h1>
-        </header>
-    <div class="sticky-top">
-        <nav class="navbar w-50">
-            <button id="home">Home(coins)</button>
-            <button id="liveReports">Live Reports</button>
-            <button id="about">About</button>
-        </nav>
-        <div id="loader"></div>
-    </div>
-    <div id="currentPage" class="container-fluid"></div>
-</div>`);
-}
 main();
 

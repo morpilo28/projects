@@ -22,21 +22,23 @@ html {
   height: 1px;
   font-family: cursive;
   font-size: 70px;
-  color: honeydew;
+  color: rgb(240, 255, 240);
   padding-top: 21px;
   margin-left: 10px;
 }
 
 button {
-  background-color: aqua;
-  color: black;
+  background-color: rgb(0, 255, 255);
+  ;
+  color: rgb(0,0,0);
 }
 
-.chosenCoinsBtn, .search-button{
-  background-color: chartreuse;
+.chosenCoinsBtn,
+.search-button {
+  background-color: rgb(223, 255, 0);
 }
 
-.chosenCoinsBtn{
+.chosenCoinsBtn {
   width: 167px;
 }
 
@@ -47,24 +49,18 @@ button {
   padding-bottom: 36px;
 }
 
-.cardDesign {
-  margin-top: 10px;
-  background: none;
-  width: 97%;
-}
-
 .cardBody {
-  background-color: antiquewhite;
+  background-color: rgb(250, 235, 215);
   opacity: 0.9;
 }
 
 .info-button {
-  background-color: bisque;
-  color: black;
+  background-color: rgb(255, 228, 196);
+  color: rgb(0, 0, 0);
 }
 
 span {
-  background-color: aliceblue;
+  background-color: rgb(240, 248, 255);
   opacity: 0.9;
 }
 
@@ -92,7 +88,7 @@ span {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: rgb(204,	204,	204);
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -104,22 +100,18 @@ span {
   width: 26px;
   left: 4px;
   bottom: 4px;
-  background-color: white;
-  /*   //-webkit-transition: .4s; */
+  background-color: rgb(255,255,255);
   transition: .4s;
 }
 
 input:checked+.slider {
-  background-color: #2196F3;
+  background-color: rgb(33, 150, 243);
 }
 
 input:checked+.slider:before {
-  /*   -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px); */
   transform: translateX(26px);
 }
 
-/* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }
@@ -129,7 +121,6 @@ input:checked+.slider:before {
 }
 
 .modal-open {
-  /* min-height: calc(100vh - 60px); */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -145,6 +136,10 @@ input:checked+.slider:before {
   margin-bottom: 8px;
 }
 
-#currentPage{
+#currentPage {
   margin-top: 32px;
+}
+
+#aboutContainer{
+  font-size: 20px;
 }
