@@ -1,6 +1,4 @@
-/* ----- updated - 26.08.19 18:53 -----
-1. needs to adjust for all devices (laptop, tablet, mobile);
-2.check for duplicate code and arrange everything
+/* ----- updated - 28.08.19 16:00 -----
 */
 
 "use strict";
@@ -33,7 +31,7 @@ function mainPage() {
                     <h1 class="header">Cryptonite</h1>
                 </header>
                     <nav class="navbar w-50">
-                        <button id="home" class="btnNav">Home(coins)</button>
+                        <button id="home" class="btnNav">Home (all coins)</button>
                         <button id="liveReports" class="btnNav">Live Reports</button>
                         <button id="about" class="btnNav">About</button>
                     </nav>
@@ -50,11 +48,16 @@ function loader(parentElementId) {
 }
 
 function homePage() { //creating the home page
-    $('#currentPage').empty().append(`<input id="search" type="text">
-    <button class="search-button">Search</button>
-    <button class="chosenCoinsBtn">Show Chosen Coins</button>
+    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
+    $('#currentPage').empty().append(`
+    <div id="filter">
+        <input id="search" type="text">
+        <button class="search-button">Search</button>
+        <button class="chosenCoinsBtn">Show Chosen Coins</button>
+    </div>
     <div id="row" class="row">
     </div>`);
+    $('.showAllCoins').css('display', 'none');
     clearInterval(app.liveReportsInterval);
     $(".chosenCoinsBtn").click(function () {
         showChosenCoinsOrSearch('show');
@@ -66,43 +69,52 @@ function homePage() { //creating the home page
 }
 
 function getAllCoins() {
-    loader($('.mainPage'));
-    $.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
-        $('#loader').remove();
-        app.newResultArray = [...result].slice(499, 599);
-        app.coinId = 0;
-        for (let i = 0; i < app.newResultArray.length; i++) {
-            app.newResultArray[i].coinId = app.coinId;
-            app.coinId++;
-            getCoinCards(i);
-        }
-
-        /* app.newResultArray = [...result];
-        app.newResultArray.splice(100); */
-
-        if (app.selectedCoinsArray !== undefined && app.selectedCoinsArray !== null) {
-            app.selectedCoinsArray.forEach(coin => {
-                setSwitchOfCoinState(coin.coinNum, true);
-            });
-        }
-    });
+    app.newResultArray = JSON.parse(window.sessionStorage.getItem('allCoins'));
+    if (app.newResultArray !== undefined && app.newResultArray !== null) {
+        getCoinCards();
+        checkSelectedCoins();
+    } else {
+        loader($('.mainPage'));
+        $.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
+            $('#loader').remove();
+            app.newResultArray = [...result].slice(499, 599);
+            app.coinId = 0;
+            for (let i = 0; i < app.newResultArray.length; i++) {
+                app.newResultArray[i].coinId = app.coinId;
+                app.coinId++;
+            }
+            window.sessionStorage.setItem('allCoins', JSON.stringify(app.newResultArray));
+            getCoinCards();
+            checkSelectedCoins();
+        });
+    }
 }
 
-function getCoinCards(i) {
-    $('#row').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3"></div>`);//cardBody
-    $('#cardBody' + i).append(`
+function checkSelectedCoins() {
+    if (app.selectedCoinsArray !== undefined && app.selectedCoinsArray !== null) {
+        app.selectedCoinsArray.forEach(coin => {
+            setSwitchOfCoinState(coin.coinNum, true);
+        });
+    }
+}
+
+function getCoinCards() {
+    for (let i = 0; i < app.newResultArray.length; i++) {
+        $('#row').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3"></div>`);//cardBody
+        $('#cardBody' + i).append(`
         <label id="mySwitch${i}" class="switch">
             <input id="myToggle${app.newResultArray[i].coinId}" class="toggleClass" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
             <div class="slider round"></div> 
         </label> 
         <h2 class="card-title${i}"></h2>`);
-    $(`#myToggle${app.newResultArray[i].coinId}`).click(addOrRemoveCoin);
-    $('.card-title' + i).text(`${app.newResultArray[i].symbol.toUpperCase()}`);
-    $('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
-    $('.card-subtitle' + i).html(`${app.newResultArray[i].name} <br><br>`);
-    $('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" data-coin-for-info="${app.newResultArray[i].id}"> </button>`);
-    $(`#button${i}`).text('More Info').click(onInfoButtonClick);
-    $('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
+        $(`#myToggle${app.newResultArray[i].coinId}`).click(addOrRemoveCoin);
+        $('.card-title' + i).text(`${app.newResultArray[i].symbol.toUpperCase()}`);
+        $('#cardBody' + i).append(`<h7 class="card-subtitle${i}"></h7>`);
+        $('.card-subtitle' + i).html(`${app.newResultArray[i].name} <br><br>`);
+        $('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" data-coin-for-info="${app.newResultArray[i].id}"> </button>`);
+        $(`#button${i}`).text('More Info').click(onInfoButtonClick);
+        $('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
+    }
 }
 
 function getLocalCoinInfo(coin) {
@@ -124,6 +136,7 @@ function setLocalCoinInfo(coin, info) {
 
 function onInfoButtonClick() {
     let idx = (this.id).slice(6);
+    //$('#loader').remove(); //preventing double loaders - prevents double but delete first one if second is activated
     loader($('#info' + idx));
     let coin = this.dataset.coinForInfo;
     let coinInfo = getLocalCoinInfo(coin);
@@ -229,6 +242,7 @@ function setSwitchOfCoinState(coin, state) {
 }
 
 function liveReportsPage() { //creating the live reports page
+    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
     $('#currentPage').empty().append('<div id="chartContainer" style="height: 370px; width: 100%;"></div>');
 
     liveReportsOfSelectedCoins();
@@ -350,8 +364,7 @@ function showChosenCoinsOrSearch(showOrSearch) {
 }
 
 function aboutPage() { //creating the about page
-    //$('#searchAndFFilter').remove();
-    clearInterval(app.liveReportsInterval);
+    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
     $('#currentPage').empty().append(`<div id="aboutContainer"> <p> <span> <b><u> About Myself </u></b> <br> </span> <br>
     <img width = 152 height = 202 opacity=1 src = styles/images/mor.jpg> </img> <br> <br>
     <span> My name is Mor. <br> I'm 28 years old. </span> <br> </p> <br>

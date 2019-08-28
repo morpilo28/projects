@@ -32,6 +32,10 @@ html {
   font-size: 20px;
 }
 
+.btnNav {
+  margin-right: 8px;
+}
+
 .btnRemoveCoin {
   font-size: 15px;
 }
@@ -39,7 +43,7 @@ html {
 .chosenCoinsBtn,
 .search-button {
   background-color: rgb(223, 255, 0);
-  font-size: 15x
+  font-size: 15x;
 }
 
 .chosenCoinsBtn {
@@ -129,4 +133,8 @@ input:checked+.slider:before {
 
 #aboutContainer {
   font-size: 20px;
+}
+
+#filter {
+  margin-top: 50px;
 }
