@@ -10,7 +10,8 @@ const app = {
     selectedCoinsArray: [],
     liveReportsInterval: undefined,
     coinId: 0,
-};
+/*     IS_HOME_PAGE: true,
+ */};
 
 function main() {
     mainPage();
@@ -48,7 +49,8 @@ function loader(parentElementId) {
 }
 
 function homePage() { //creating the home page
-    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
+/*     app.IS_HOME_PAGE == true;
+ */    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
     $('#currentPage').empty().append(`
     <div id="filter">
         <input id="search" type="text">
@@ -182,7 +184,10 @@ function addOrRemoveCoin() {
     } else { //if unchecked
         for (let i = 0; i < app.selectedCoinsArray.length; i++) {
             if (app.selectedCoinsArray[i].coinNum == ($(this).attr('data-coin-id-for-toggle'))) {
-                app.selectedCoinsArray.splice(i, 1);
+                app.selectedCoinsArray.splice(i, 1); //remove coin from arr
+                /* if(app.IS_HOME_PAGE == false){
+                    console.log(($(this).attr('data-coin-id-for-toggle')));
+                } */
             }
         }
     }
@@ -351,7 +356,8 @@ function showChosenCoinsOrSearch(showOrSearch) {
         }
     }
     console.log(showOrSearchArray);
-    if (showOrSearchArray.length !== 0) {
+/*     app.IS_HOME_PAGE == false;
+ */    if (showOrSearchArray.length !== 0) {
         for (let i = 0; i < showOrSearchArray.length; i++) {
             $('#search').val("");
             $('#' + ((showOrSearchArray[i])[0].id)).css({ 'display': 'block' });
