@@ -1,4 +1,8 @@
-/* ----- updated - 28.08.19 16:00 -----
+/* ----- updated - 29.08.19 02:47 -----
+1. need to check the code (search for double code and id/class/variables that are not in use) and check if there
+   are any problems.
+2. install firebase and check if it works (need to check which files of jquery and bootstrap i need to put in the 
+   public folder)
 */
 
 "use strict";
