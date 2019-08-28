@@ -26,20 +26,22 @@ function main() {
 function mainPage() {
     $('body').append(`    
     <div id="ModalElement"></div>
-    <div id="mainPage" class="container-fluid mainPage">
-        <header>
-            <h1 class="header">Cryptonite</h1>
-        </header>
-    <div class="sticky-top">
-        <nav class="navbar w-50">
-            <button id="home">Home(coins)</button>
-            <button id="liveReports">Live Reports</button>
-            <button id="about">About</button>
-        </nav>
-        <div id="loader"></div>
+    <div id="parallax-image" class="container-fluid mainPage">
+        <div class="row h-100">
+            <div class="col-md-12 align-self-center">
+                <header>
+                    <h1 class="header">Cryptonite</h1>
+                </header>
+                    <nav class="navbar w-50">
+                        <button id="home" class="btnNav">Home(coins)</button>
+                        <button id="liveReports" class="btnNav">Live Reports</button>
+                        <button id="about" class="btnNav">About</button>
+                    </nav>
+                <div id="loader"></div>    
+            </div>
+        </div>
     </div>
-    <div id="currentPage" class="container-fluid"></div>
-</div>`);
+    <div id="currentPage" class="container-fluid"></div>`);
 }
 
 function loader(parentElementId) {
@@ -51,7 +53,7 @@ function homePage() { //creating the home page
     $('#currentPage').empty().append(`<input id="search" type="text">
     <button class="search-button">Search</button>
     <button class="chosenCoinsBtn">Show Chosen Coins</button>
-    <div id="row">
+    <div id="row" class="row">
     </div>`);
     clearInterval(app.liveReportsInterval);
     $(".chosenCoinsBtn").click(function () {
@@ -64,7 +66,7 @@ function homePage() { //creating the home page
 }
 
 function getAllCoins() {
-    loader($('#mainPage'));
+    loader($('.mainPage'));
     $.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
         $('#loader').remove();
         app.newResultArray = [...result].slice(499, 599);
@@ -87,7 +89,7 @@ function getAllCoins() {
 }
 
 function getCoinCards(i) {
-    $('#row').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3 float-left"></div>`);//cardBody
+    $('#row').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3"></div>`);//cardBody
     $('#cardBody' + i).append(`
         <label id="mySwitch${i}" class="switch">
             <input id="myToggle${app.newResultArray[i].coinId}" class="toggleClass" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
@@ -156,7 +158,10 @@ function addOrRemoveCoin() {
                 $('#btnRemoveCoin' + i).attr('data-coin-id', app.selectedCoinsArray[i].coinNum);
             }
             app.selectedCoinsArray.push(selectedCoinObj);
-            $("#myModal").modal('show');
+            $('#myModal').modal({
+                backdrop: 'static',
+                keyboard: false
+            })
         } else {
             //add the coin to app.selectedCoinsArray
             app.selectedCoinsArray.push(selectedCoinObj);
@@ -224,14 +229,13 @@ function setSwitchOfCoinState(coin, state) {
 }
 
 function liveReportsPage() { //creating the live reports page
-    //$('#searchAndFFilter').remove();
     $('#currentPage').empty().append('<div id="chartContainer" style="height: 370px; width: 100%;"></div>');
-    loader($('#mainPage'));
 
     liveReportsOfSelectedCoins();
 }
 
 function liveReportsOfSelectedCoins() {
+    loader($('.mainPage'));
     let coinsInUppercase = (app.selectedCoinsArray).map(a => a.symbol.toUpperCase());
     let chartElement = $("#chartContainer");
     initChart(chartElement, coinsInUppercase);
