@@ -10,8 +10,8 @@ const app = {
     selectedCoinsArray: [],
     liveReportsInterval: undefined,
     coinId: 0,
-/*     IS_HOME_PAGE: true,
- */};
+    isHomePage: true,
+};
 
 function main() {
     mainPage();
@@ -49,8 +49,8 @@ function loader(parentElementId) {
 }
 
 function homePage() { //creating the home page
-/*     app.IS_HOME_PAGE == true;
- */    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
+    app.isHomePage = true;
+    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
     $('#currentPage').empty().append(`
     <div id="filter">
         <input id="search" type="text">
@@ -139,13 +139,15 @@ function setLocalCoinInfo(coin, info) {
 function onInfoButtonClick() {
     let idx = (this.id).slice(6);
     //$('#loader').remove(); //preventing double loaders - prevents double but delete first one if second is activated (in class it didn't provent the double loaders)
-    loader($('#info' + idx));
+   
     let coin = this.dataset.coinForInfo;
     let coinInfo = getLocalCoinInfo(coin);
+    
+    /* $('#loader').remove() */
     if (!coinInfo) {
+        loader($('#info' + idx));
         $.get("https://api.coingecko.com/api/v3/coins/" + coin, function (coinInfo) {
             $('#loader').remove();
-            console.log(coinInfo);
             let coinValue = `<b>USD:</b> ${coinInfo.market_data.current_price.usd.toFixed(2)} &#36<br>
                         <b>EUR:</b> ${coinInfo.market_data.current_price.eur.toFixed(2)} \u20AC<br>
                         <b>ILS:</b> ${coinInfo.market_data.current_price.ils.toFixed(2)} &#8362`;
@@ -158,7 +160,6 @@ function onInfoButtonClick() {
             setLocalCoinInfo(coin, localCoinInfo);
         });
     } else {
-        $('#loader').remove();
         $('#info' + idx).empty();
         $('#info' + idx).append('<img id= "img' + idx + '" src="' + coinInfo.img + '"></img><div>' + coinInfo.info + '</div>');
     }
@@ -185,9 +186,13 @@ function addOrRemoveCoin() {
         for (let i = 0; i < app.selectedCoinsArray.length; i++) {
             if (app.selectedCoinsArray[i].coinNum == ($(this).attr('data-coin-id-for-toggle'))) {
                 app.selectedCoinsArray.splice(i, 1); //remove coin from arr
-                /* if(app.IS_HOME_PAGE == false){
-                    console.log(($(this).attr('data-coin-id-for-toggle')));
-                } */
+            }
+        }
+        if (app.isHomePage == false) {
+            $(`#cardBody${$(this).attr('data-coin-id-for-toggle')}`).css('display', 'none');
+            if(app.selectedCoinsArray.length == 0){
+                $(`.cardBody`).css({ 'display': 'block' });
+                app.isHomePage = true;
             }
         }
     }
@@ -342,6 +347,7 @@ function initChart(chartElement, coins) {
 }
 
 function showChosenCoinsOrSearch(showOrSearch) {
+    app.isHomePage = false;
     $(`.cardBody`).css({ 'display': 'none' });
     let showOrSearchArray = [];
     for (let i = 0; i < app.newResultArray.length; i++) {
@@ -350,14 +356,13 @@ function showChosenCoinsOrSearch(showOrSearch) {
                 showOrSearchArray.push($(`#cardBody${i}`));
             }
         } else if (showOrSearch = 'search') {
+            app.isHomePage = true;
             if ($(`#myToggle${i}`).attr('data-coin-name') == $('#search').val()) {
                 showOrSearchArray.push($(`#cardBody${i}`));
             }
         }
     }
-    console.log(showOrSearchArray);
-/*     app.IS_HOME_PAGE == false;
- */    if (showOrSearchArray.length !== 0) {
+    if (showOrSearchArray.length !== 0) {
         for (let i = 0; i < showOrSearchArray.length; i++) {
             $('#search').val("");
             $('#' + ((showOrSearchArray[i])[0].id)).css({ 'display': 'block' });
@@ -366,6 +371,7 @@ function showChosenCoinsOrSearch(showOrSearch) {
         $('#search').val("");
         alert('no coins found');
         $(`.cardBody`).css({ 'display': 'block' });
+        app.isHomePage = true;
     }
 }
 
@@ -385,4 +391,3 @@ function aboutPage() { //creating the about page
 }
 
 main();
-
