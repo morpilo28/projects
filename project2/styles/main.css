@@ -14,7 +14,7 @@ html {
   opacity: 0.90;
 }
 
-.header {
+.heading {
   font-family: cursive, Arial, Helvetica, sans-serif;
   font-size: 70px;
   color: rgb(245, 245, 245);
@@ -35,9 +35,13 @@ html {
 .btnNav {
   margin-right: 8px;
 }
+#home{
+  width: 159px;
+}
 
 .btnRemoveCoin {
   font-size: 15px;
+  margin-bottom: 8px;
 }
 
 .chosenCoinsBtn,
@@ -60,11 +64,20 @@ html {
   color: rgb(0, 0, 0);
 }
 
-#loader {
-  height: 37px;
+#mainLoader,
+.infoLoader {
   margin-top: 10px;
+}
+
+#mainLoader {
+  height: 37px;
   margin-left: 20px;
   width: 12%;
+  color: red;
+}
+
+.infoLoader {
+  margin-left: 22px;
 }
 
 .switch {
@@ -123,18 +136,10 @@ input:checked+.slider:before {
   overflow: auto;
 }
 
-.btnRemoveCoin {
-  margin-bottom: 8px;
-}
-
 #currentPage {
   margin-top: 32px;
 }
 
 #aboutContainer {
   font-size: 20px;
-}
-
-#filter {
-  margin-top: 50px;
 }

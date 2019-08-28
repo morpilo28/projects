@@ -6,7 +6,6 @@
 const app = {
     PURGE_IN_SECONDS: 120,
     newResultArray: [],
-    numOfSecondsPast: 0,
     selectedCoinsArray: [],
     liveReportsInterval: undefined,
     coinId: 0,
@@ -29,30 +28,33 @@ function mainPage() {
         <div class="row h-100">
             <div class="col-md-12 align-self-center">
                 <header>
-                    <h1 class="header">Cryptonite</h1>
+                    <h1 class="heading">Cryptonite</h1>
                 </header>
                     <nav class="navbar w-50">
                         <button id="home" class="btnNav">Home (all coins)</button>
                         <button id="liveReports" class="btnNav">Live Reports</button>
                         <button id="about" class="btnNav">About</button>
                     </nav>
-                <div id="loader"></div>    
+                <div id="mainLoader"></div>    
             </div>
         </div>
     </div>
     <div id="currentPage" class="container-fluid"></div>`);
 }
 
-function loader(parentElementId) {
-    parentElementId.append('<div id="loader"></div>');
-    $('#loader').append('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+function mainPageLoader() {
+    $('#mainLoader').append('<div class="mainLoader spinner-border" role="status"></div>');
+}
+
+function infoLoaders(i) {
+    $(`#loader${i}`).append(`<div class="infoLoader loader${i} spinner-border" role="status"></div>`);
 }
 
 function homePage() { //creating the home page
     app.isHomePage = true;
-    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
+    $('.mainLoader').remove(); 
     $('#currentPage').empty().append(`
-    <div id="filter">
+    <div>
         <input id="search" type="text">
         <button class="search-button">Search</button>
         <button class="chosenCoinsBtn">Show Chosen Coins</button>
@@ -76,9 +78,9 @@ function getAllCoins() {
         getCoinCards();
         checkSelectedCoins();
     } else {
-        loader($('.mainPage'));
+        mainPageLoader();
         $.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
-            $('#loader').remove();
+            $('.mainLoader').remove();
             app.newResultArray = [...result].slice(499, 599);
             app.coinId = 0;
             for (let i = 0; i < app.newResultArray.length; i++) {
@@ -102,7 +104,7 @@ function checkSelectedCoins() {
 
 function getCoinCards() {
     for (let i = 0; i < app.newResultArray.length; i++) {
-        $('#row').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3"></div>`);//cardBody
+        $('#row').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3"></div>`);
         $('#cardBody' + i).append(`
         <label id="mySwitch${i}" class="switch">
             <input id="myToggle${app.newResultArray[i].coinId}" class="toggleClass" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
@@ -115,7 +117,7 @@ function getCoinCards() {
         $('.card-subtitle' + i).html(`${app.newResultArray[i].name} <br><br>`);
         $('#cardBody' + i).append(`<button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" data-coin-for-info="${app.newResultArray[i].id}"> </button>`);
         $(`#button${i}`).text('More Info').click(onInfoButtonClick);
-        $('#cardBody' + i).append(`<div id="info${i}" class="collapse"></div>`);
+        $('#cardBody' + i).append(`<div id="info${i}" class="collapse"><div id="loader${i}"></div></div>`);
     }
 }
 
@@ -138,16 +140,14 @@ function setLocalCoinInfo(coin, info) {
 
 function onInfoButtonClick() {
     let idx = (this.id).slice(6);
-    //$('#loader').remove(); //preventing double loaders - prevents double but delete first one if second is activated (in class it didn't provent the double loaders)
-   
     let coin = this.dataset.coinForInfo;
     let coinInfo = getLocalCoinInfo(coin);
-    
-    /* $('#loader').remove() */
+
+    $(`.loader${idx}`).remove()
     if (!coinInfo) {
-        loader($('#info' + idx));
+        infoLoaders(idx);
         $.get("https://api.coingecko.com/api/v3/coins/" + coin, function (coinInfo) {
-            $('#loader').remove();
+            $(`.loader${idx}`).remove();
             let coinValue = `<b>USD:</b> ${coinInfo.market_data.current_price.usd.toFixed(2)} &#36<br>
                         <b>EUR:</b> ${coinInfo.market_data.current_price.eur.toFixed(2)} \u20AC<br>
                         <b>ILS:</b> ${coinInfo.market_data.current_price.ils.toFixed(2)} &#8362`;
@@ -179,18 +179,17 @@ function addOrRemoveCoin() {
                 keyboard: false
             })
         } else {
-            //add the coin to app.selectedCoinsArray
             app.selectedCoinsArray.push(selectedCoinObj);
         }
-    } else { //if unchecked
+    } else { 
         for (let i = 0; i < app.selectedCoinsArray.length; i++) {
             if (app.selectedCoinsArray[i].coinNum == ($(this).attr('data-coin-id-for-toggle'))) {
-                app.selectedCoinsArray.splice(i, 1); //remove coin from arr
+                app.selectedCoinsArray.splice(i, 1); 
             }
         }
         if (app.isHomePage == false) {
             $(`#cardBody${$(this).attr('data-coin-id-for-toggle')}`).css('display', 'none');
-            if(app.selectedCoinsArray.length == 0){
+            if (app.selectedCoinsArray.length == 0) {
                 $(`.cardBody`).css({ 'display': 'block' });
                 app.isHomePage = true;
             }
@@ -228,7 +227,7 @@ function addModalElement() {
     for (let i = 0; i < 5; i++) {
         $('#btnRemoveCoin' + i).click(replaceSelectedCoins);
     }
-    $('.closeBtn').click(function () { // when a user doesn't want to replace a coin with another and press close, remove last item in array
+    $('.closeBtn').click(function () { 
         let coinToRemove = app.selectedCoinsArray[app.selectedCoinsArray.length - 1].coinNum;
         setSwitchOfCoinState(coinToRemove, false);
         app.selectedCoinsArray.pop();
@@ -252,24 +251,22 @@ function setSwitchOfCoinState(coin, state) {
 }
 
 function liveReportsPage() { //creating the live reports page
-    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
+    $('.mainLoader').remove(); 
     $('#currentPage').empty().append('<div id="chartContainer" style="height: 370px; width: 100%;"></div>');
 
     liveReportsOfSelectedCoins();
 }
 
 function liveReportsOfSelectedCoins() {
-    loader($('.mainPage'));
+    mainPageLoader();
     let coinsInUppercase = (app.selectedCoinsArray).map(a => a.symbol.toUpperCase());
     let chartElement = $("#chartContainer");
     initChart(chartElement, coinsInUppercase);
     chartElement.css({ display: 'none' });
-    /* doesn't return all the coins */
     clearInterval(app.liveReportsInterval);
     app.liveReportsInterval = setInterval(() => {
-        //API example - "https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,BTC&tsyms=USD"
         $.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coinsInUppercase.join(',')}&tsyms=USD`, function (results) {
-            $('#loader').remove();
+            $('.mainLoader').remove();
             chartElement.css({ display: 'block' });
             let now = new Date();
             for (let i = 0; i < coinsInUppercase.length; i++) {
@@ -376,7 +373,7 @@ function showChosenCoinsOrSearch(showOrSearch) {
 }
 
 function aboutPage() { //creating the about page
-    $('#loader').remove(); //incase there was an api request that still hasn't return with a response when switching to another page
+    $('.mainLoader').remove(); 
     $('#currentPage').empty().append(`<div id="aboutContainer"> <p> <span> <b><u> About Myself </u></b> <br> </span> <br>
     <img width = 152 height = 202 opacity=1 src = styles/images/mor.jpg> </img> <br> <br>
     <span> My name is Mor. <br> I'm 28 years old. </span> <br> </p> <br>
