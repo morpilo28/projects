@@ -136,7 +136,7 @@ function setLocalCoinInfo(coin, info) {
 
 function onInfoButtonClick() {
     let idx = (this.id).slice(6);
-    //$('#loader').remove(); //preventing double loaders - prevents double but delete first one if second is activated
+    //$('#loader').remove(); //preventing double loaders - prevents double but delete first one if second is activated (in class it didn't provent the double loaders)
     loader($('#info' + idx));
     let coin = this.dataset.coinForInfo;
     let coinInfo = getLocalCoinInfo(coin);
