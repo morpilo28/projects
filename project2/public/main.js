@@ -1,8 +1,5 @@
 /* ----- updated - 29.08.19 02:47 -----
-1. add documentation.
-2. install firebase and check if it works (need to check which files of jquery and bootstrap i need to put in the 
-   public folder)
-*/
+1. add documentation. */
 
 "use strict";
 
