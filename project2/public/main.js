@@ -1,4 +1,4 @@
-/* ----- updated - 29.08.19 02:47 -----
+/* ----- updated - 02.09.19 15:00 -----
 1. add documentation. */
 
 "use strict";
@@ -160,33 +160,43 @@ function setLocalCoinInfo(coin, info) {
 }
 
 function addOrRemoveCoin() {
-    if (this.checked) {
-        let selectedCoinObj = new selectedCoin($(this).attr('data-coin-id-for-toggle'), $(this).attr('data-coin-name'));
-        if (app.selectedCoinsArray.length > 4) {
-            app.selectedCoinsArray.forEach((element, index) => {
-                $('#btnRemoveCoin' + index).text(element.symbol.toUpperCase());
-                $('#btnRemoveCoin' + index).attr('data-coin-id', element.coinNum);
-            });
-            app.selectedCoinsArray.push(selectedCoinObj);
-            $('#myModal').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
-        } else {
-            app.selectedCoinsArray.push(selectedCoinObj);
-        }
+    let toggleElement = this;
+    if (toggleElement.checked) {
+        addCoin(toggleElement);
     } else {
-        app.selectedCoinsArray.map((element, index) => {
-            if (element.coinNum == ($(this).attr('data-coin-id-for-toggle'))) {
-                app.selectedCoinsArray.splice(index, 1);
-            }
+        removeCoin(toggleElement);
+    }
+}
+
+function addCoin(thisElement) {
+    let selectedCoinObj = new selectedCoin($(thisElement).attr('data-coin-id-for-toggle'), $(thisElement).attr('data-coin-name'));
+    if (app.selectedCoinsArray.length > 4) {
+        app.selectedCoinsArray.forEach((element, index) => {
+            $('#btnRemoveCoin' + index).text(element.symbol.toUpperCase());
+            $('#btnRemoveCoin' + index).attr('data-coin-id', element.coinNum);
         });
-        if (app.isShowSelectedCoinsPage) {
-            $(`#cardBody${$(this).attr('data-coin-id-for-toggle')}`).css('display', 'none');
-            if (app.selectedCoinsArray.length == 0) {
-                $(`.cardBody`).css({ 'display': 'block' });
-                app.isShowSelectedCoinsPage = false;
-            }
+        app.selectedCoinsArray.push(selectedCoinObj);
+        $('#myModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
+    else {
+        app.selectedCoinsArray.push(selectedCoinObj);
+    }
+}
+
+function removeCoin(thisElement) {
+    app.selectedCoinsArray.map((element, index) => {
+        if (element.coinNum == ($(thisElement).attr('data-coin-id-for-toggle'))) {
+            app.selectedCoinsArray.splice(index, 1);
+        }
+    });
+    if (app.isShowSelectedCoinsPage) {
+        $(`#cardBody${$(thisElement).attr('data-coin-id-for-toggle')}`).css('display', 'none');
+        if (app.selectedCoinsArray.length == 0) {
+            $(`.cardBody`).css({ 'display': 'block' });
+            app.isShowSelectedCoinsPage = false;
         }
     }
 }
