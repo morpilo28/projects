@@ -15,7 +15,7 @@ const app = {
 function main() {
     mainPage();
     homePage();
-    addModalElement();
+    modalElement();
     $("#home").click(homePage);
     $("#liveReports").click(liveReportsPage);
     $("#about").click(aboutPage);
@@ -60,7 +60,6 @@ function homePage() {
         <button class="chosenCoinsBtn">Show Chosen Coins</button>
     </div>
     <div id="row" class="row"></div>`);
-    $('.showAllCoins').css('display', 'none');
     clearInterval(app.liveReportsInterval);
     $(".chosenCoinsBtn").click(onShowSelectedCoins);
     $(".search-button").click(onSearch);
@@ -97,8 +96,8 @@ function drawCoinsCards() {
             <input id="myToggle${element.coinId}" class="toggleClass" data-coin-name="${element.symbol}" data-coin-id-for-toggle = "${element.coinId}" type="checkbox"> 
             <div class="slider round"></div> 
         </label> 
-        <h2 class="card-title${idx}"> ${element.symbol.toUpperCase()} </h2>
-        <h7 class="card-subtitle${idx}"> ${element.name} <br> <br> </h7>
+        <h2> ${element.symbol.toUpperCase()} </h2>
+        <h7> ${element.name} <br> <br> </h7>
         <button id="button${idx}" class="info-button" data-toggle = "collapse" data-target= "#info${idx}" data-coin-for-info="${element.id}">More Info</button>
         <div id="info${idx}" class="collapse">
             <div id="loader${idx}"></div>
@@ -206,7 +205,7 @@ function selectedCoin(coinNum, symbol) {
     this.symbol = symbol;
 }
 
-function addModalElement() {
+function modalElement() {
     $('#ModalElement').append(`<div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog modal-sm">
     <div class="modal-dialog modal-dialog-centered">
