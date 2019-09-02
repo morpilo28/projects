@@ -4,7 +4,7 @@
 "use strict";
 
 const app = {
-    PURGE_IN_SECONDS: 120,
+    MAX_SECONDS: 120,
     newResultArray: [],
     selectedCoinsArray: [],
     liveReportsInterval: undefined,
@@ -62,12 +62,8 @@ function homePage() {
     <div id="row" class="row"></div>`);
     $('.showAllCoins').css('display', 'none');
     clearInterval(app.liveReportsInterval);
-    $(".chosenCoinsBtn").click(function () {
-        onShowSelectedCoins();
-    });
-    $(".search-button").click(function () {
-        onSearch();
-    });
+    $(".chosenCoinsBtn").click(onShowSelectedCoins);
+    $(".search-button").click(onSearch);
     getAllCoins();
 }
 
@@ -78,14 +74,14 @@ function getAllCoins() {
         checkSelectedCoins();
     } else {
         mainPageLoader();
-        $.get("https://api.coingecko.com/api/v3/coins/list", function (result) {
+        $.get("https://api.coingecko.com/api/v3/coins/list", (result) => {
             $('.mainLoader').remove();
             app.newResultArray = [...result].slice(499, 599);
             app.coinId = 0;
-            for (let i = 0; i < app.newResultArray.length; i++) {
-                app.newResultArray[i].coinId = app.coinId;
+            app.newResultArray.map((element) => {
+                element.coinId = app.coinId;
                 app.coinId++;
-            }
+            });
             window.sessionStorage.setItem('allCoins', JSON.stringify(app.newResultArray));
             drawCoinsCards();
             checkSelectedCoins();
@@ -94,22 +90,22 @@ function getAllCoins() {
 }
 
 function drawCoinsCards() {
-    for (let i = 0; i < app.newResultArray.length; i++) {
-        $('#row').append(`<div id="cardBody${i}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3"></div>`);
-        $('#cardBody' + i).append(`
+    app.newResultArray.forEach((element, idx) => {
+        $('#row').append(`<div id="cardBody${idx}" class="cardBody card-body border-primary col-md-2 mr-3 mt-3"></div>`);
+        $('#cardBody' + idx).append(`
         <label class="switch">
-            <input id="myToggle${app.newResultArray[i].coinId}" class="toggleClass" data-coin-name="${app.newResultArray[i].symbol}" data-coin-id-for-toggle = "${app.newResultArray[i].coinId}" type="checkbox"> 
+            <input id="myToggle${element.coinId}" class="toggleClass" data-coin-name="${element.symbol}" data-coin-id-for-toggle = "${element.coinId}" type="checkbox"> 
             <div class="slider round"></div> 
         </label> 
-        <h2 class="card-title${i}"> ${app.newResultArray[i].symbol.toUpperCase()} </h2>
-        <h7 class="card-subtitle${i}"> ${app.newResultArray[i].name} <br> <br> </h7>
-        <button id="button${i}" class="info-button" data-toggle = "collapse" data-target= "#info${i}" data-coin-for-info="${app.newResultArray[i].id}">More Info</button>
-        <div id="info${i}" class="collapse">
-            <div id="loader${i}"></div>
+        <h2 class="card-title${idx}"> ${element.symbol.toUpperCase()} </h2>
+        <h7 class="card-subtitle${idx}"> ${element.name} <br> <br> </h7>
+        <button id="button${idx}" class="info-button" data-toggle = "collapse" data-target= "#info${idx}" data-coin-for-info="${element.id}">More Info</button>
+        <div id="info${idx}" class="collapse">
+            <div id="loader${idx}"></div>
         </div>`);
-        $(`#myToggle${app.newResultArray[i].coinId}`).click(addOrRemoveCoin);
-        $(`#button${i}`).click(onInfoButton);
-    }
+        $(`#myToggle${element.coinId}`).click(addOrRemoveCoin);
+        $(`#button${idx}`).click(onInfoButton);
+    });
 }
 
 function checkSelectedCoins() {
@@ -127,11 +123,11 @@ function onInfoButton() {
     $(`.loader${idx}`).remove()
     if (!coinInfo) {
         coinInfoLoaders(idx);
-        $.get("https://api.coingecko.com/api/v3/coins/" + coin, function (coinInfo) {
+        $.get("https://api.coingecko.com/api/v3/coins/" + coin, (coinInfo) => {
             $(`.loader${idx}`).remove();
             let coinValue = `<b>USD:</b> ${coinInfo.market_data.current_price.usd.toFixed(2)} &#36<br>
-                        <b>EUR:</b> ${coinInfo.market_data.current_price.eur.toFixed(2)} \u20AC<br>
-                        <b>ILS:</b> ${coinInfo.market_data.current_price.ils.toFixed(2)} &#8362`;
+                             <b>EUR:</b> ${coinInfo.market_data.current_price.eur.toFixed(2)} \u20AC<br>
+                             <b>ILS:</b> ${coinInfo.market_data.current_price.ils.toFixed(2)} &#8362`;
             $('#info' + idx).empty();
             $('#info' + idx).append(`<img id= "img${idx}" src="${coinInfo.image.small}"></img><div>${coinValue}</div>`);
             let localCoinInfo = {
@@ -151,7 +147,7 @@ function getLocalCoinInfo(coin) {
     let coinInfoStr = localStorage.getItem("coinInfo-" + coin);
     if (coinInfoStr) {
         coinInfo = JSON.parse(coinInfoStr);
-        if (new Date().getTime() - coinInfo.timeSaved > app.PURGE_IN_SECONDS * 1000) {
+        if (new Date().getTime() - coinInfo.timeSaved > app.MAX_SECONDS * 1000) {
             coinInfo = null;
         }
     }
@@ -167,24 +163,24 @@ function addOrRemoveCoin() {
     if (this.checked) {
         let selectedCoinObj = new selectedCoin($(this).attr('data-coin-id-for-toggle'), $(this).attr('data-coin-name'));
         if (app.selectedCoinsArray.length > 4) {
-            for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-                $('#btnRemoveCoin' + i).text(app.selectedCoinsArray[i].symbol.toUpperCase());
-                $('#btnRemoveCoin' + i).attr('data-coin-id', app.selectedCoinsArray[i].coinNum);
-            }
+            app.selectedCoinsArray.forEach((element, index) => {
+                $('#btnRemoveCoin' + index).text(element.symbol.toUpperCase());
+                $('#btnRemoveCoin' + index).attr('data-coin-id', element.coinNum);
+            });
             app.selectedCoinsArray.push(selectedCoinObj);
             $('#myModal').modal({
                 backdrop: 'static',
                 keyboard: false
-            })
+            });
         } else {
             app.selectedCoinsArray.push(selectedCoinObj);
         }
     } else {
-        for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-            if (app.selectedCoinsArray[i].coinNum == ($(this).attr('data-coin-id-for-toggle'))) {
-                app.selectedCoinsArray.splice(i, 1);
+        app.selectedCoinsArray.map((element, index) => {
+            if (element.coinNum == ($(this).attr('data-coin-id-for-toggle'))) {
+                app.selectedCoinsArray.splice(index, 1);
             }
-        }
+        });
         if (app.isShowSelectedCoinsPage) {
             $(`#cardBody${$(this).attr('data-coin-id-for-toggle')}`).css('display', 'none');
             if (app.selectedCoinsArray.length == 0) {
@@ -225,7 +221,7 @@ function addModalElement() {
     for (let i = 0; i < 5; i++) {
         $('#btnRemoveCoin' + i).click(replaceSelectedCoins);
     }
-    $('.closeBtn').click(function () {
+    $('.closeBtn').click(() => {
         let coinToRemove = app.selectedCoinsArray[app.selectedCoinsArray.length - 1].coinNum;
         setSwitchOfCoinState(coinToRemove, false);
         app.selectedCoinsArray.pop();
@@ -234,13 +230,12 @@ function addModalElement() {
 
 function replaceSelectedCoins() {
     let coinToRemove = $(this).attr('data-coin-id');
-    for (let i = 0; i < app.selectedCoinsArray.length; i++) {
-        if (app.selectedCoinsArray[i].coinNum == coinToRemove) {
-            app.selectedCoinsArray.splice(i, 1);
+    app.selectedCoinsArray.map((element, index) => {
+        if (element.coinNum == coinToRemove) {
+            app.selectedCoinsArray.splice(index, 1);
             $("#myModal").modal('toggle');
         }
-    }
-
+    });
     setSwitchOfCoinState(coinToRemove, false);
 }
 
@@ -251,29 +246,27 @@ function setSwitchOfCoinState(coin, state) {
 function liveReportsPage() {
     $('.mainLoader').remove();
     $('#currentPage').empty().append('<div id="chartContainer" style="height: 370px; width: 100%;"></div>');
-
     liveReportsOfSelectedCoins();
 }
 
 function liveReportsOfSelectedCoins() {
     mainPageLoader();
-    let coinsInUppercase = (app.selectedCoinsArray).map(a => a.symbol.toUpperCase());
+    let coinsInUppercase = app.selectedCoinsArray.map(element => element.symbol.toUpperCase());
     const chartElement = $("#chartContainer");
     initChart(chartElement, coinsInUppercase);
     chartElement.css({ display: 'none' });
     clearInterval(app.liveReportsInterval);
     app.liveReportsInterval = setInterval(() => {
-        $.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coinsInUppercase.join(',')}&tsyms=USD`, function (results) {
+        $.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coinsInUppercase.join(',')}&tsyms=USD`, (results) => {
             $('.mainLoader').remove();
             chartElement.css({ display: 'block' });
             let now = new Date();
-            for (let i = 0; i < coinsInUppercase.length; i++) {
-                let coin = coinsInUppercase[i];
-                if (results[coin]) {
-                    let coinCurrentValue = results[coin].USD;
-                    app.options.data[i].dataPoints.push({ x: now, y: coinCurrentValue });
+            coinsInUppercase.map((element, index) => {
+                if (results[element]) {
+                    let coinCurrentValue = results[element].USD;
+                    app.options.data[index].dataPoints.push({ x: now, y: coinCurrentValue });
                 }
-            }
+            });
             $("#chartContainer").CanvasJSChart().render();
         });
     }, 2000);
@@ -337,40 +330,37 @@ function initChart(chartElement, coins) {
     }
 
     chartElement.CanvasJSChart(app.options);
-
-
 }
 
 function onSearch() {
     app.isShowSelectedCoinsPage = false;
-    $(`.cardBody`).css({ 'display': 'none' });
     let searchArray = [];
-    for (let i = 0; i < app.newResultArray.length; i++) {
-        if ($(`#myToggle${i}`).attr('data-coin-name') == ($('#search').val()).toLocaleLowerCase()) {
-            searchArray.push($(`#cardBody${i}`)[0].id);
+    app.newResultArray.forEach((element, index) => {
+        if ($(`#myToggle${index}`).attr('data-coin-name') == ($('#search').val()).toLocaleLowerCase()) {
+            searchArray.push($(`#cardBody${index}`)[0].id);
         }
-    }
+    });
+
     $('#search').val("");
     displayCoinCards(searchArray);
 }
 
 function onShowSelectedCoins() {
     app.isShowSelectedCoinsPage = true;
-    $(`.cardBody`).css({ 'display': 'none' });
     let showSelectedCoinsArray = [];
-    for (let i = 0; i < app.newResultArray.length; i++) {
-        if ($(`#myToggle${i}`).prop('checked')) {
-            showSelectedCoinsArray.push($(`#cardBody${i}`)[0].id);
+    app.newResultArray.forEach((element, index) => {
+        if ($(`#myToggle${index}`).prop('checked')) {
+            showSelectedCoinsArray.push($(`#cardBody${index}`)[0].id);
         }
-    }
+    });
+
     displayCoinCards(showSelectedCoinsArray);
 }
 
 function displayCoinCards(coinsArrayToDisplay) {
+    $(`.cardBody`).css({ 'display': 'none' });
     if (coinsArrayToDisplay.length !== 0) {
-        for (let i = 0; i < coinsArrayToDisplay.length; i++) {
-            $(`#${coinsArrayToDisplay[i]}`).css({ 'display': 'block' });
-        }
+        coinsArrayToDisplay.forEach((element, index) => $(`#${coinsArrayToDisplay[index]}`).css({ 'display': 'block' }));
     } else {
         alert('no coins found');
         $(`.cardBody`).css({ 'display': 'block' });
