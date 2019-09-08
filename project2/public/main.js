@@ -100,7 +100,7 @@ function drawCoinsCards() {
     });
 }
 
-function checkSelectedCoins() { //make selected coins checked even after moving to another page
+function checkSelectedCoins() { //make selected coins checked even after returning to home page from another page
     if (app.selectedCoinsArray) {
         app.selectedCoinsArray.forEach(coin => {
             setSwitchOfCoinState(coin.coinId, true);
