@@ -1,6 +1,3 @@
-/* ----- updated - 02.09.19 15:00 -----
-1. add documentation. */
-
 "use strict";
 
 const app = {
@@ -9,7 +6,7 @@ const app = {
     selectedCoinsArray: [],
     liveReportsInterval: undefined,
     coinIdSequence: 0,
-    isShowSelectedCoinsPage: false,
+    isShowSelectedCoinsPage: false, //when true, chosen coin card won't be on display
 };
 
 function init() {
@@ -68,10 +65,10 @@ function getAllCoins() {
         $.get("https://api.coingecko.com/api/v3/coins/list", (result) => {
             $('#mainLoader').remove();
             app.newResultArray = [...result].slice(499, 599);
-            app.coinId = 0;
+            app.coinIdSequence = 0;
             app.newResultArray.forEach((element) => {
-                element.coinId = app.coinId;
-                app.coinId++;
+                element.coinId = app.coinIdSequence;
+                app.coinIdSequence++;
             });
             window.sessionStorage.setItem('allCoins', JSON.stringify(app.newResultArray));
             drawCoinsCards();
@@ -103,7 +100,7 @@ function drawCoinsCards() {
     });
 }
 
-function checkSelectedCoins() {
+function checkSelectedCoins() { //make selected coins checked even after moving to another page
     if (app.selectedCoinsArray) {
         app.selectedCoinsArray.forEach(coin => {
             setSwitchOfCoinState(coin.coinId, true);
@@ -115,6 +112,7 @@ function onInfoButton() {
     let idx = (this.id).slice(6);
     let coin = this.dataset.coinForInfo;
     let coinInfo = getLocalCoinInfo(coin);
+    let currentInfoElement = $('#info' + idx)
     $(`#loader${idx}`).remove()
     if (!coinInfo) {
         coinInfoLoaders(idx);
@@ -124,8 +122,8 @@ function onInfoButton() {
             let coinValue = `<b>USD:</b> ${currentPrice.usd.toFixed(2)} &#36<br>
                              <b>EUR:</b> ${currentPrice.eur.toFixed(2)} \u20AC<br>
                              <b>ILS:</b> ${currentPrice.ils.toFixed(2)} &#8362`;
-            $('#info' + idx).empty();
-            $('#info' + idx).append(`<img id= "img${idx}" src="${coinInfo.image.small}"/><div>${coinValue}</div>`);
+            currentInfoElement.empty();
+            currentInfoElement.append(`<img id="img${idx}" src="${coinInfo.image.small}"/><div>${coinValue}</div>`);
             let localCoinInfo = {
                 img: $('#img' + idx).attr('src'),
                 info: coinValue,
@@ -133,8 +131,8 @@ function onInfoButton() {
             setLocalCoinInfo(coin, localCoinInfo);
         });
     } else {
-        $('#info' + idx).empty();
-        $('#info' + idx).append(`<img id="img${idx}" src="${coinInfo.img}"/><div>${coinInfo.info}</div>`);
+        currentInfoElement.empty();
+        currentInfoElement.append(`<img id="img${idx}" src="${coinInfo.img}"/><div>${coinInfo.info}</div>`);
     }
 }
 
@@ -253,7 +251,7 @@ function replaceSelectedCoins() {
             break;
         }
     }
-    
+
     setSwitchOfCoinState(coinToRemove, false);
 }
 
@@ -298,15 +296,7 @@ function initChart(chartElement, coins) {
             text: "Coin Price In USD"
         },
         axisX: {
-            title: "Time\n(chart updates every 2 seconds)"
-        },
-        axisY: {
-            title: "Units Sold",
-            titleFontColor: "#4F81BC",
-            lineColor: "#4F81BC",
-            labelFontColor: "#4F81BC",
-            tickColor: "#4F81BC",
-            includeZero: false
+            title: "Time (chart updates every 2 seconds)"
         },
         axisY2: {
             title: "Coin Price in USD",
@@ -346,7 +336,7 @@ function initChart(chartElement, coins) {
         }
         e.chart.render();
     }
-   
+
     chartElement.CanvasJSChart(app.options);
 }
 
