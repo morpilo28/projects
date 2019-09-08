@@ -35,16 +35,24 @@ function paintMainPage() {
                         <button id="liveReports" class="btnNav">Live Reports</button>
                         <button id="about" class="btnNav">About</button>
                     </nav>
-                <div id="mainLoaderElement"></div>    
+                <div id="mainLoader"></div>    
             </div>
        </div>
     </div>
     <div id="currentPage" class="container-fluid"></div>`);
 }
 
+function mainPageLoader() {
+    $('#mainLoader').append('<div class="mainLoader spinner-border" role="status"></div>');
+}
+
+function coinInfoLoaders(idx) {
+    $(`#loader${idx}`).append(`<div class="infoLoader loader${idx} spinner-border" role="status"></div>`);
+}
+
 function paintHomePage() {
     app.isShowSelectedCoinsPage = false;
-    $('#mainLoader').remove();
+    $('.mainLoader').remove();
     $('#currentPage').empty().append(`
     <div>
         <input id="search" type="text">
@@ -59,6 +67,7 @@ function paintHomePage() {
 }
 
 function getAllCoins() {
+  // MOR - might throw an error is nothing in the local storage. Check in incognito
     app.newResultArray = JSON.parse(window.sessionStorage.getItem('allCoins'));
     if (app.newResultArray) {
         drawCoinsCards();
@@ -66,22 +75,20 @@ function getAllCoins() {
     } else {
         mainPageLoader();
         $.get("https://api.coingecko.com/api/v3/coins/list", (result) => {
-            $('#mainLoader').remove();
+            $('.mainLoader').remove();
+            // MOR - why 499 to 599?
             app.newResultArray = [...result].slice(499, 599);
-            app.coinId = 0;
+            app.coinIdSequence = 0;
+            // MOR - use map to take an array and return a new one, forEach for iterations
             app.newResultArray.forEach((element) => {
-                element.coinId = app.coinId;
-                app.coinId++;
+                element.coinId = app.coinIdSequence;
+                app.coinIdSequence++;
             });
             window.sessionStorage.setItem('allCoins', JSON.stringify(app.newResultArray));
             drawCoinsCards();
             checkSelectedCoins();
         });
     }
-}
-
-function mainPageLoader() {
-    $('#mainLoaderElement').append('<div id="mainLoader" class="spinner-border" role="status"></div>');
 }
 
 function drawCoinsCards() {
@@ -96,7 +103,7 @@ function drawCoinsCards() {
         <h7> ${element.name} <br> <br> </h7>
         <button id="button${idx}" class="info-button" data-toggle = "collapse" data-target= "#info${idx}" data-coin-for-info="${element.id}">More Info</button>
         <div id="info${idx}" class="collapse">
-            <div id="loaderElement${idx}"></div>
+            <div id="loader${idx}"></div>
         </div>`);
         $(`#myToggle${element.coinId}`).click(toggleCoinSelection);
         $(`#button${idx}`).click(onInfoButton);
@@ -106,7 +113,8 @@ function drawCoinsCards() {
 function checkSelectedCoins() {
     if (app.selectedCoinsArray) {
         app.selectedCoinsArray.forEach(coin => {
-            setSwitchOfCoinState(coin.coinId, true);
+          // MOR - rename all coinNum to coinId to be consistent
+            setSwitchOfCoinState(coin.coinNum, true);
         });
     }
 }
@@ -115,13 +123,14 @@ function onInfoButton() {
     let idx = (this.id).slice(6);
     let coin = this.dataset.coinForInfo;
     let coinInfo = getLocalCoinInfo(coin);
-    $(`#loader${idx}`).remove()
+    // MOR - .loader${idx} should be an id not a class
+    $(`.loader${idx}`).remove();
     if (!coinInfo) {
         coinInfoLoaders(idx);
         $.get("https://api.coingecko.com/api/v3/coins/" + coin, (coinInfo) => {
-            $(`#loader${idx}`).remove();
-            let currentPrice = coinInfo.market_data.current_price;
-            let coinValue = `<b>USD:</b> ${currentPrice.usd.toFixed(2)} &#36<br>
+            $(`.loader${idx}`).remove();
+          let currentPrice = coinInfo.market_data.current_price;
+          let coinValue = `<b>USD:</b> ${currentPrice.usd.toFixed(2)} &#36<br>
                              <b>EUR:</b> ${currentPrice.eur.toFixed(2)} \u20AC<br>
                              <b>ILS:</b> ${currentPrice.ils.toFixed(2)} &#8362`;
             $('#info' + idx).empty();
@@ -136,10 +145,6 @@ function onInfoButton() {
         $('#info' + idx).empty();
         $('#info' + idx).append(`<img id="img${idx}" src="${coinInfo.img}"/><div>${coinInfo.info}</div>`);
     }
-}
-
-function coinInfoLoaders(idx) {
-    $(`#loaderElement${idx}`).append(`<div id="loader${idx}" class="infoLoader spinner-border" role="status"></div>`);
 }
 
 function getLocalCoinInfo(coin) {
@@ -159,6 +164,7 @@ function setLocalCoinInfo(coin, info) {
     localStorage.setItem("coinInfo-" + coin, JSON.stringify(info));
 }
 
+// MOR - add or remove to where?
 function toggleCoinSelection() {
     let toggleElement = this;
     if (toggleElement.checked) {
@@ -169,31 +175,28 @@ function toggleCoinSelection() {
 }
 
 function onCoinSelected(thisElement) {
+    // MOR - notice that jquery selectors can be expensive. If you use the same ones in the same function, extract to a variable
     let selectedCoinObj = new selectedCoin($(thisElement).attr('data-coin-id-for-toggle'), $(thisElement).attr('data-coin-name'));
     if (app.selectedCoinsArray.length > 4) {
         app.selectedCoinsArray.forEach((element, index) => {
-            let modalCoinButton = $('#btnRemoveCoin' + index);
-            modalCoinButton.text(element.symbol.toUpperCase());
-            modalCoinButton.attr('data-coin-id', element.coinId);
+            $('#btnRemoveCoin' + index).text(element.symbol.toUpperCase());
+            $('#btnRemoveCoin' + index).attr('data-coin-id', element.coinNum);
         });
         app.selectedCoinsArray.push(selectedCoinObj);
-        displayMaxCoinsSelectedModal();
+        // I would extract this to a function called displayMaxCoinsSelectedModal, or explain what is this modal
+        $('#myModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
     }
     else {
         app.selectedCoinsArray.push(selectedCoinObj);
     }
 }
 
-function displayMaxCoinsSelectedModal() {
-    $('#myModal').modal({
-        backdrop: 'static',
-        keyboard: false
-    });
-}
-
 function onCoinUnselected(thisElement) {
     app.selectedCoinsArray.map((element, index) => {
-        if (element.coinId == ($(thisElement).attr('data-coin-id-for-toggle'))) {
+        if (element.coinNum === ($(thisElement).attr('data-coin-id-for-toggle'))) {
             app.selectedCoinsArray.splice(index, 1);
         }
     });
@@ -206,8 +209,8 @@ function onCoinUnselected(thisElement) {
     }
 }
 
-function selectedCoin(coinId, symbol) {
-    this.coinId = coinId++;
+function selectedCoin(coinNum, symbol) {
+    this.coinId = coinNum++; // With ++? It will not effect the value outside the function! more suitable with be + 1
     this.symbol = symbol;
 }
 
@@ -237,7 +240,7 @@ function paintModalElement() {
         $('#btnRemoveCoin' + i).click(replaceSelectedCoins);
     }
     $('.closeBtn').click(() => {
-        let coinToRemove = app.selectedCoinsArray[app.selectedCoinsArray.length - 1].coinId;
+        let coinToRemove = app.selectedCoinsArray[app.selectedCoinsArray.length - 1].coinNum;
         setSwitchOfCoinState(coinToRemove, false);
         app.selectedCoinsArray.pop();
     });
@@ -245,15 +248,15 @@ function paintModalElement() {
 
 function replaceSelectedCoins() {
     let coinToRemove = $(this).attr('data-coin-id');
-    for (let index = 0; index < app.selectedCoinsArray.length; index++) {
-        const element = app.selectedCoinsArray[index];
-        if (element.coinId == coinToRemove) {
-            app.selectedCoinsArray.splice(index, 1);
+    for (let i = 0; i < app.selectedCoinsArray.length; i++) {
+        let element = app.selectedCoinsArray[i];
+        if (element.coinNum === coinToRemove) {
+            // MOR - you are changing the array while iterating it. Can be buggy... This is why i replaced to a for i, and added a break
+            app.selectedCoinsArray.splice(i, 1);
             $("#myModal").modal('toggle');
             break;
         }
     }
-    
     setSwitchOfCoinState(coinToRemove, false);
 }
 
@@ -262,7 +265,7 @@ function setSwitchOfCoinState(coin, state) {
 }
 
 function paintLiveReportsPage() {
-    $('#mainLoader').remove();
+    $('.mainLoader').remove();
     $('#currentPage').empty().append('<div id="chartContainer" style="height: 370px; width: 100%;"></div>');
     liveReportsOfSelectedCoins();
 }
@@ -276,7 +279,7 @@ function liveReportsOfSelectedCoins() {
     clearInterval(app.liveReportsInterval);
     app.liveReportsInterval = setInterval(() => {
         $.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coinsInUppercase.join(',')}&tsyms=USD`, (results) => {
-            $('#mainLoader').remove();
+            $('.mainLoader').remove();
             chartElement.css({ display: 'block' });
             let now = new Date();
             coinsInUppercase.map((element, index) => {
@@ -339,14 +342,10 @@ function initChart(chartElement, coins) {
     })
 
     function toggleDataSeries(e) {
-        if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-            e.dataSeries.visible = false;
-        } else {
-            e.dataSeries.visible = true;
-        }
+        e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
         e.chart.render();
     }
-   
+
     chartElement.CanvasJSChart(app.options);
 }
 
@@ -354,7 +353,7 @@ function onSearch() {
     app.isShowSelectedCoinsPage = false;
     let resultCoinIds = [];
     app.newResultArray.forEach((element, index) => {
-        if ($(`#myToggle${index}`).attr('data-coin-name') == ($('#search').val()).toLocaleLowerCase()) {
+        if ($(`#myToggle${index}`).attr('data-coin-name') === ($('#search').val()).toLocaleLowerCase()) {
             resultCoinIds.push($(`#cardBody${index}`)[0].id);
         }
     });
@@ -387,8 +386,7 @@ function displayCoinCards(coinsArrayToDisplay) {
 }
 
 function paintAboutPage() {
-    $('#mainLoader').remove();
-    clearInterval(app.liveReportsInterval);
+    $('.mainLoader').remove();
     $('#currentPage').empty().append(`
     <div id="aboutContainer"> 
         <p> 

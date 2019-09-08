@@ -64,12 +64,12 @@ html {
   color: rgb(0, 0, 0);
 }
 
-#mainLoader,
+#mainLoaderElement,
 .infoLoader {
   margin-top: 10px;
 }
 
-#mainLoader {
+#mainLoaderElement {
   height: 37px;
   margin-left: 20px;
   width: 12%;
