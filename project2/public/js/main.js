@@ -261,7 +261,8 @@ function setSwitchOfCoinState(coin, state) {
 
 function paintLiveReportsPage() {
     $('#mainLoader').remove();
-    $('#currentPage').empty().append('<div id="chartContainer" style="height: 370px; width: 100%;"></div>');
+    $('#currentPage').empty().append(`<div class="note"> <b> * If no data exist about a coin, the coin will not appear on the chart </b> </div>  <br>
+    <div id="chartContainer" style="height: 370px; width: 100%;"></div>`);
     liveReportsOfSelectedCoins();
 }
 
