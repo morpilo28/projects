@@ -267,26 +267,32 @@ function paintLiveReportsPage() {
 }
 
 function liveReportsOfSelectedCoins() {
+    if (app.selectedCoinsArray.length === 0) {
+        alert('No coins selected');
+        paintHomePage();
+    } else {
     mainPageLoader();
     let coinsInUppercase = app.selectedCoinsArray.map(element => element.symbol.toUpperCase());
     const chartElement = $("#chartContainer");
     initChart(chartElement, coinsInUppercase);
     chartElement.css({ display: 'none' });
     clearInterval(app.liveReportsInterval);
-    app.liveReportsInterval = setInterval(() => {
-        $.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coinsInUppercase.join(',')}&tsyms=USD`, (results) => {
-            $('#mainLoader').remove();
-            chartElement.css({ display: 'block' });
-            let now = new Date();
-            coinsInUppercase.map((element, index) => {
-                if (results[element]) {
-                    let coinCurrentValue = results[element].USD;
-                    app.options.data[index].dataPoints.push({ x: now, y: coinCurrentValue });
-                }
+    
+        app.liveReportsInterval = setInterval(() => {
+            $.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coinsInUppercase.join(',')}&tsyms=USD`, (results) => {
+                $('#mainLoader').remove();
+                chartElement.css({ display: 'block' });
+                let now = new Date();
+                coinsInUppercase.map((element, index) => {
+                    if (results[element]) {
+                        let coinCurrentValue = results[element].USD;
+                        app.options.data[index].dataPoints.push({ x: now, y: coinCurrentValue });
+                    }
+                });
+                $("#chartContainer").CanvasJSChart().render();
             });
-            $("#chartContainer").CanvasJSChart().render();
-        });
-    }, 2000);
+        }, 2000);
+    }
 }
 
 function initChart(chartElement, coins) {
