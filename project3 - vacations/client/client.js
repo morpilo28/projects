@@ -412,6 +412,7 @@ function onMoreDetails(res) {
 }
 
 function registerView(note) {
+    //TODO: make id and isAdmin inputs not accessible to user.
     note = note ? note : '';
     const html = `
     <h2>Register</h2>
