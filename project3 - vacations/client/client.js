@@ -432,7 +432,7 @@ function registerView(note) {
 
 function register() {
     const params = {
-        id: document.getElementById('useId').value,
+        id: document.getElementById('userId').value,
         firstName: document.getElementById('firstName').value,
         lastName: document.getElementById('lastName').value,
         userName: document.getElementById('userName').value,
@@ -441,10 +441,11 @@ function register() {
     };
 
     httpRequests(app.END_POINTS.register, app.METHODS.POST, params).then(res => {
-        document.getElementById('user').value = '';
-        document.getElementById('pass').value = '';
+        const idArray = ['userId', 'firstName', 'lastName', 'userName', 'password', 'isAdmin']
+        for (let i = 0; i < idArray.length; i++) {
+            emptyInputs(idArray[i]);
+        }
         registerView('registration succeeded');
-
     }).catch(status => {
         console.log(status);
         if (status === 400) {
@@ -488,4 +489,8 @@ function loginValidation() {
             console.log(status);
         }
     })
+}
+
+function emptyInputs(id) {
+    document.getElementById(id).value = '';
 }

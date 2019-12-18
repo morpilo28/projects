@@ -153,7 +153,7 @@ app.post('/login', function (req, res) {
 });
 
 app.post('/register', function (req, res) {
-    const userToAdd = new userModel.User(req.body.id, req.body.firsName, req.body.lastName, req.body.userName, req.body.password, req.body.isAdmin);
+    const userToAdd = new userModel.User(req.body.id, req.body.firstName, req.body.lastName, req.body.userName, req.body.password, req.body.isAdmin);
     usersBl.isUserNameAlreadyExist(userToAdd, (e) => {
         if (e) {
             res.status(400).send('user name taken. please select a different name');
