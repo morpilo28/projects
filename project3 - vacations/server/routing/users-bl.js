@@ -44,7 +44,7 @@ function validateUser(userToValidate, callback) {
             } else if (singleObj.length > 1) {
                 console.log('there is more than one user under the same name');
             } else {
-                callback(null, singleObj[0].userName);
+                callback(null, singleObj[0]);
             }
         }
     })

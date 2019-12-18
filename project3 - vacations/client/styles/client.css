@@ -1,0 +1,31 @@
+.myTable {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.addRow {
+    display: none;
+}
+
+input {
+    text-align: center;
+    width: 100px;
+}
+
+thead,
+td {
+    text-align: center;
+}
+
+a.disable {
+    pointer-events: none;
+    cursor: default;
+}
+
+td {
+    padding: 5px 0 5px 0;
+}
+
+#add {
+    margin-bottom: 30px;
+}

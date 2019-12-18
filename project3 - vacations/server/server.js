@@ -77,18 +77,15 @@ app.get('/vacations/:id', (req, res) => {
 
 app.post('/vacations', (req, res) => {
     const vacationToAddObj = req.body;
-    vacationToAddObj.id = Number(vacationToAddObj.id);
-    vacationBl.createVacation(vacationToAdd, (e) => {
+    vacationBl.createVacation(vacationToAddObj, (e, allVacations) => {
         if (e) {
-            return res.status(500).send();
+            if (e === 400) {
+                return res.status(400).send();
+            } else {
+                return res.status(500).send(e);
+            }
         } else {
-            vacationBl.getVacations((e, allVacations) => {
-                if (e) {
-                    return res.status(500).send();
-                } else {
-                    return res.send(allVacations);
-                }
-            })
+            return res.send(allVacations);
         }
     })
 })
@@ -147,7 +144,12 @@ app.post('/login', function (req, res) {
                 {
                     expiresIn: '365d'
                 });
-            return res.send(token);
+            const responseObj = {
+                token: token,
+                userName: user.userName,
+                isAdmin: user.isAdmin
+            }
+            return res.send(responseObj);
         }
     })
 });
