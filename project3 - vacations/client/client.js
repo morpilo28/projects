@@ -463,8 +463,8 @@ function loginView(note) {
     <div>
     <h2>Login</h2>
     <p>${note}</p>
-        <label>user: <input id='user'></label>
-        <label>password: <input id='pass' type='password'></label>
+        <label>User Name: <input id='userName'></label>
+        <label>Password: <input id='password' type='password'></label>
         <button id='login'>Login</button>
     </div>
     `
@@ -474,14 +474,14 @@ function loginView(note) {
 
 function loginValidation() {
     const params = {
-        user: document.getElementById('user').value,
-        pass: document.getElementById('pass').value
+        userName: document.getElementById('userName').value,
+        password: document.getElementById('password').value
     };
     httpRequests(app.END_POINTS.login, app.METHODS.POST, params).then(token => {
-        document.getElementById('user').value = '';
-        document.getElementById('pass').value = '';
+        emptyInputs('userName');
+        emptyInputs('password');
         localStorage.setItem(app.TOKEN_LOCAL_STORAGE_KEY, token);
-        navigate('cars');
+        navigate('vacations');
     }).catch(status => {
         console.log(status);
         if (status === 400) {
