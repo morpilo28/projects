@@ -8,7 +8,6 @@
 */
 
 var app = {
-    rowCounter: 0,
     endPointStart: `http://localhost:3201/`,
     END_POINTS: {
         vacations: 'vacations',
@@ -22,7 +21,8 @@ var app = {
         PUT: 'PUT'
     },
     TOKEN_LOCAL_STORAGE_KEY: 'token',
-    isAdmin: false
+    userNameForTitle: window.localStorage.getItem('userNameForTitle') ? window.localStorage.getItem('userNameForTitle') : 'Guest',
+    isAdmin: window.localStorage.getItem('isAdmin') ? localStorage.getItem('isAdmin') : false,
 };
 
 loginView();
@@ -48,7 +48,8 @@ function navigate(url) {
             showVacationTable();
             break;
         case 'logout':
-            localStorage.removeItem(app.TOKEN_LOCAL_STORAGE_KEY);
+            window.localStorage.clear();
+            document.getElementById('userNameForTitle').innerHTML = `Hello ${app.userNameForTitle},`;
             navigate('login');
             break;
     }
@@ -103,6 +104,7 @@ function httpRequests(endPoint, httpVerb, reqBody) {
 }
 
 function tableView(vacationsArray, allVacations) {
+    document.getElementById('userNameForTitle').innerHTML = `Hello ${app.userNameForTitle},`;
     app.isAdmin ? adminView(allVacations, vacationsArray) : clientView(vacationsArray);
 }
 
@@ -127,62 +129,20 @@ function addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLeng
         jQuery('.addRow').attr('style', 'display: none');
     });
 
-    jQuery('#prev').click((e) => {
-        e.preventDefault();
-        if (app.rowCounter >= 10) {
-            app.rowCounter -= 10;
-            httpRequests(app.END_POINTS.vacations + '/' + app.END_POINTS.prev + app.rowCounter, app.METHODS.GET).then((res) => {
-                tableView(res.filteredCarData, res.allCarsList);
-            }).catch(status => {
-                console.log(status)
-                if (status === 400) {
-                    console.log(status);
-                    alert('No previous cars!');
-                } else {
-                    console.log(status);
-                }
-            })
-        } else {
-            alert('No more cars to show!')
-        }
-    })
-
-    jQuery('#next').click((e) => {
-        e.preventDefault();
-        app.rowCounter += 10;
-        if (app.rowCounter < vacationsListLength) {
-            httpRequests(app.END_POINTS.vacations + '/' + app.END_POINTS.next + app.rowCounter, app.METHODS.GET).then((res) => {
-                tableView(res.filteredCarData, res.allCarsList);
-            }).catch(status => {
-                console.log(status);
-                if (status === 400) {
-                    console.log(status);
-                    alert('No more cars to show!');
-                } else {
-                    console.log(status);
-                }
-            })
-        } else {
-            alert('No more cars to show!');
-            app.rowCounter -= 10;
-        }
-    })
-
     for (let i = 0; i < vacationsArray.length; i++) {
         const id = vacationsArray[i].id;
-        const singleCarEndPoint = `cars/${id}`;
+        const singleVacationEndPoint = `vacations/${id}`;
 
         $(document).on('click', `#edit${id}`, (e) => {
             e.preventDefault();
             const idx = event.target.id.slice(4);
-            onEditCar(idx, singleCarEndPoint);
+            onEditCar(idx, singleVacationEndPoint);
         });
 
         $(document).on('click', `#delete${id}`, (e) => {
             e.preventDefault();
             const idx = { id: event.target.id.slice(6) };
-            httpRequests(singleCarEndPoint, app.METHODS.DELETE, idx).then(res => {
-                app.rowCounter = 0;
+            httpRequests(singleVacationEndPoint, app.METHODS.DELETE, idx).then(res => {
                 tableView(res);
             }).catch(status => {
                 if (status === 500) {
@@ -195,7 +155,7 @@ function addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLeng
 
         $(document).on('click', `#details${id}`, (e) => {
             e.preventDefault();
-            httpRequests(singleCarEndPoint, app.METHODS.GET, null).then(res => onMoreDetails(res)).catch(status => {
+            httpRequests(singleVacationEndPoint, app.METHODS.GET, null).then(res => onMoreDetails(res)).catch(status => {
                 if (status === 500) {
                     printToHtml('main', 'Internal Server Error')
                 } else {
@@ -229,21 +189,20 @@ function onSaveAddedVacation(addedVacationId) {
         jQuery('.addRow').attr('style', 'display: table-row');
     } else {
         httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(res => {
-            debugger
             tableView(res);
         }).catch(status => {
             if (status === 500) {
                 printToHtml('main', 'Internal Server Error')
-            } else if(status === 400){
-                printToHtml('main', 'The added vacation already exist')
-            }else {
+            } else if (status === 400) {
+                printToHtml('main', 'The added vacation already exist.')
+            } else {
                 console.log(status);
             }
         });
     }
 }
 
-function onEditCar(idx, singleCarEndPoint) {
+function onEditCar(idx, singleVacationEndPoint) {
     jQuery(`.editable${idx}`).attr('contenteditable', "true");
     jQuery(`#buttonCell${idx}`).empty().append(`
             <button id='saveChanges${idx}'>Save</button> <button id='cancelChanges${idx}'>Cancel</button>`);
@@ -251,30 +210,28 @@ function onEditCar(idx, singleCarEndPoint) {
     $(document).on('click', `#saveChanges${idx}`, (e) => {
         e.preventDefault();
         let editedObj = {
-            name: jQuery(`#name${idx}`).html(),
+            destination: jQuery(`#destination${idx}`).html(),
+            description: jQuery(`#description${idx}`).html(),
+            image: jQuery(`#image${idx}`).attr('alt'),
+            fromDate: jQuery(`#fromDate${idx}`).html(),
+            toDate: jQuery(`#toDate${idx}`).html(),
             price: Number(jQuery(`#price${idx}`).html()),
-            monthly: Number(jQuery(`#monthly${idx}`).html()),
-            currency: jQuery(`#currency${idx}`).html(),
-            doors: Number(jQuery(`#doors${idx}`).html()),
-            seats: Number(jQuery(`#seats${idx}`).html()),
-            image: jQuery(`#image${idx}`).attr('alt')
         };
 
         let isDataTypeGood = true;
         for (let key in editedObj) {
-            if (key === 'price' || key === 'monthly' || key === 'doors' || key === 'seats') {
+            if (key === 'price') {
                 if (isNaN(editedObj[key]) || editedObj[key] === 0) {
                     isDataTypeGood = false;
                 }
             }
         }
         if (isDataTypeGood === false) {
-            printToHtml('tableNote', "The fields 'price', 'monthly', 'doors' and 'seats' must be field with numbers and larger than 0.")
+            printToHtml('tableNote', "The field 'price' must be field with numbers and larger than 0.");
         } else {
-            httpRequests(singleCarEndPoint, app.METHODS.PUT, editedObj).then(res => {
-                app.rowCounter = 0;
-                changeBackToOriginalBtn(res.newUpdatedCarId);
-                tableView(res.allCars);
+            httpRequests(singleVacationEndPoint, app.METHODS.PUT, editedObj).then(res => {
+                changeBackToOriginalBtn(res.newUpdatedVacationId);
+                tableView(res.allVacations);
             }).catch(status => {
                 if (status === 500) {
 
@@ -288,7 +245,6 @@ function onEditCar(idx, singleCarEndPoint) {
     $(document).on('click', `#cancelChanges${idx}`, (e) => {
         e.preventDefault();
         changeBackToOriginalBtn(idx);
-        app.rowCounter = 0;
         showVacationTable();
     });
 }
@@ -304,19 +260,17 @@ function changeBackToOriginalBtn(idx) {
 function onMoreDetails(res) {
     let html = `
             <div>
-            <img width='200' src="./styles/images/${res.singleCarData.image}" alt="${res.singleCarData.image}"/>
+            <img width='200' src="./styles/images/${res.singleVacationData.image}" alt="${res.singleVacationData.image}"/>
             <br><br>
-            name: ${res.singleCarData.name}
+            description: ${res.singleVacationData.description}
             <br><br>
-            price: ${res.singleCarData.price}
+            destination: ${res.singleVacationData.destination}
             <br><br>
-            monthly: ${res.singleCarData.monthly}
+            from: ${res.singleVacationData.fromDate}
             <br><br>
-            currency: ${res.singleCarData.currency}
+            To: ${res.singleVacationData.toDate}
             <br><br>
-            doors: ${res.singleCarData.doors}
-            <br><br>
-            seats: ${res.singleCarData.seats}
+            price: ${res.singleVacationData.price}
             <br><br>
             <button id='returnToFullList'>Return To Full List</button>
             </div>
@@ -325,8 +279,7 @@ function onMoreDetails(res) {
 
     document.getElementById('returnToFullList').addEventListener('click', (e) => {
         e.preventDefault();
-        app.rowCounter = 0;
-        tableView(res.allCars);
+        tableView(res.allVacations);
     })
 }
 
@@ -378,6 +331,7 @@ function register() {
 }
 
 function loginView(note) {
+    document.getElementById('userNameForTitle').innerHTML = `Hello ${app.userNameForTitle},`
     note = note ? note : '';
     const html = `
     <div>
@@ -405,9 +359,10 @@ function loginValidation() {
     httpRequests(app.END_POINTS.login, app.METHODS.POST, params).then(res => {
         emptyInputs('userName');
         emptyInputs('password');
-        localStorage.setItem(app.TOKEN_LOCAL_STORAGE_KEY, res.token);
-        localStorage.setItem('userName', res.userName);
         app.isAdmin = res.isAdmin !== 'true' ? false : true;
+        window.localStorage.setItem(app.TOKEN_LOCAL_STORAGE_KEY, res.token);
+        window.localStorage.setItem('userNameForTitle', res.userName);
+        window.localStorage.setItem('isAdmin', res.isAdmin);
         navigate('vacations');
     }).catch(status => {
         console.log(status);
@@ -468,7 +423,6 @@ function clientView(vacationsArray) {
 }
 
 function adminView(allVacations, vacationsArray) {
-    const userName = localStorage.getItem('userName');
     let vacationsListLength = allVacations ? allVacations.length : vacationsArray.length;
     let addedVacationId;
     if (allVacations) {
@@ -483,7 +437,6 @@ function adminView(allVacations, vacationsArray) {
     }
     //TODO: consider using form
     let html = `
-    <div>Hello ${userName},</div>
     <h3 id='tableNote'> </h3>
         <button id='add'>Add Vacation</button>
         <table class='myTable'>
@@ -520,7 +473,7 @@ function adminView(allVacations, vacationsArray) {
                 </tr>`;
     if (vacationsArray.length === 0) {
         printToHtml('main', html);
-        printToHtml('tableNote', 'no cars has been found');
+        printToHtml('tableNote', 'no vacations has been found');
         addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLength);
     }
     else {
