@@ -1,6 +1,6 @@
 /* TODO:
     - design
-    - make adding an image (when adding a car) possible
+    - make adding an image (when adding a vacation) possible
     - needs to check for duplicate code
     - add C.R.U.D to token-bl   
     - add client (same as in leasing project but with mysql)
@@ -21,8 +21,6 @@ var app = {
         PUT: 'PUT'
     },
     TOKEN_LOCAL_STORAGE_KEY: 'token',
-    userNameForTitle: window.localStorage.getItem('userNameForTitle') ? window.localStorage.getItem('userNameForTitle') : 'Guest',
-    isAdmin: window.localStorage.getItem('isAdmin') ? localStorage.getItem('isAdmin') : false,
 };
 
 loginView();
@@ -49,7 +47,6 @@ function navigate(url) {
             break;
         case 'logout':
             window.localStorage.clear();
-            document.getElementById('userNameForTitle').innerHTML = `Hello ${app.userNameForTitle},`;
             navigate('login');
             break;
     }
@@ -105,7 +102,11 @@ function httpRequests(endPoint, httpVerb, reqBody) {
 
 function tableView(vacationsArray, allVacations) {
     document.getElementById('userNameForTitle').innerHTML = `Hello ${app.userNameForTitle},`;
-    app.isAdmin ? adminView(allVacations, vacationsArray) : clientView(vacationsArray);
+    if (window.localStorage.getItem('isAdmin') === 'true') {
+        adminView(allVacations, vacationsArray)
+    } else {
+        clientView(vacationsArray);
+    }
 }
 
 function printToHtml(id, html) {
@@ -136,7 +137,7 @@ function addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLeng
         $(document).on('click', `#edit${id}`, (e) => {
             e.preventDefault();
             const idx = event.target.id.slice(4);
-            onEditCar(idx, singleVacationEndPoint);
+            onEditVacation(idx, singleVacationEndPoint);
         });
 
         $(document).on('click', `#delete${id}`, (e) => {
@@ -202,7 +203,7 @@ function onSaveAddedVacation(addedVacationId) {
     }
 }
 
-function onEditCar(idx, singleVacationEndPoint) {
+function onEditVacation(idx, singleVacationEndPoint) {
     jQuery(`.editable${idx}`).attr('contenteditable', "true");
     jQuery(`#buttonCell${idx}`).empty().append(`
             <button id='saveChanges${idx}'>Save</button> <button id='cancelChanges${idx}'>Cancel</button>`);
@@ -216,6 +217,7 @@ function onEditCar(idx, singleVacationEndPoint) {
             fromDate: jQuery(`#fromDate${idx}`).html(),
             toDate: jQuery(`#toDate${idx}`).html(),
             price: Number(jQuery(`#price${idx}`).html()),
+            followers: 0 //TODO: get num of followers from client/ other mysql table
         };
 
         let isDataTypeGood = true;
@@ -331,7 +333,7 @@ function register() {
 }
 
 function loginView(note) {
-    document.getElementById('userNameForTitle').innerHTML = `Hello ${app.userNameForTitle},`
+    showUserName();
     note = note ? note : '';
     const html = `
     <div>
@@ -351,6 +353,15 @@ function loginView(note) {
     document.getElementById('login').addEventListener('click', loginValidation);
 }
 
+function showUserName() {
+    if (!window.localStorage.getItem('userNameForTitle')) {
+        document.getElementById('userNameForTitle').innerHTML = `Hello Guest,`;
+    }
+    else {
+        document.getElementById('userNameForTitle').innerHTML = `Hello ${window.localStorage.getItem('userNameForTitle')},`;
+    }
+}
+
 function loginValidation() {
     const params = {
         userName: document.getElementById('userName').value,
@@ -359,7 +370,6 @@ function loginValidation() {
     httpRequests(app.END_POINTS.login, app.METHODS.POST, params).then(res => {
         emptyInputs('userName');
         emptyInputs('password');
-        app.isAdmin = res.isAdmin !== 'true' ? false : true;
         window.localStorage.setItem(app.TOKEN_LOCAL_STORAGE_KEY, res.token);
         window.localStorage.setItem('userNameForTitle', res.userName);
         window.localStorage.setItem('isAdmin', res.isAdmin);
@@ -379,12 +389,11 @@ function emptyInputs(id) {
 }
 
 function clientView(vacationsArray) {
-    const userName = localStorage.getItem('userName');
+    showUserName();
     if (vacationsArray.length === 0) {
         document.getElementById('main').innerHTML = 'No vacations have been found!';
     } else {
         let html = `
-        <div>Hello ${userName}, </div>
         <h3>Vacation List</h3>
         <table class='myTable'>
             <thead>
@@ -423,6 +432,7 @@ function clientView(vacationsArray) {
 }
 
 function adminView(allVacations, vacationsArray) {
+    showUserName();
     let vacationsListLength = allVacations ? allVacations.length : vacationsArray.length;
     let addedVacationId;
     if (allVacations) {

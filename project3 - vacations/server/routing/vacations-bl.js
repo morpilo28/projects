@@ -67,12 +67,12 @@ function createVacation(vacationToADD, callback) {
 }
 
 function updateVacation(editedVacationData, callback) {
+    editedVacationData.fromDate = setDate(new Date(editedVacationData.fromDate), true);
+    editedVacationData.toDate = setDate(new Date(editedVacationData.toDate), true);
     editedVacationData = new vacationModel.Vacation(editedVacationData.id, editedVacationData.description, editedVacationData.destination, editedVacationData.image, editedVacationData.fromDate, editedVacationData.toDate, editedVacationData.price, editedVacationData.followers);
     const { id, description, destination, image, fromDate, toDate, price, followers } = editedVacationData
     dal.updateOne(`update ${table} set id=${id},description='${description}',destination='${destination}',image='${image}',fromDate='${fromDate}',toDate='${toDate}',price=${price},followers=${followers} WHERE id = ${id};`, `SELECT * from ${table} where id=${id};`, (err, newUpdatedVacation) => {
-        newUpdatedVacation = newUpdatedVacation.map(element => {
-            return new vacationModel.Vacation(element.id, element.description, element.destination, element.image, element.fromDate, element.toDate, element.price, element.followers);
-        });
+        newUpdatedVacation =  adjustVacationFormat(newUpdatedVacation);
         if (err) {
             callback(err);
         } else {
@@ -91,8 +91,14 @@ function deleteVacation(id, callback) {
     })
 }
 
-function setDate(date) {
-    const dateFormated = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
+function setDate(date, isFromUpdate) {
+    let dateFormated;
+    if (isFromUpdate) {
+        dateFormated = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+        console.log(dateFormated);
+    } else {
+        dateFormated = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
+    }
     return dateFormated;
 }
 
