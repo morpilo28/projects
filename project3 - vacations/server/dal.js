@@ -3,6 +3,7 @@
 //2. find a way to open and close connection to mysql only when needed
 
 
+
 const mysql = require('mysql');
 const connection = mysql.createConnection({
     host: "localhost",

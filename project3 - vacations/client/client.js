@@ -2,6 +2,7 @@
     - design
     - make adding an image (when adding a vacation) possible
     - needs to check for duplicate code
+    - change lower case to upper case or vice versa if needed (for example in: registration/login, adding/updating a vacation, etc.)
 */
 
 var app = {
@@ -20,7 +21,12 @@ var app = {
     TOKEN_LOCAL_STORAGE_KEY: 'token',
 };
 
-loginView();
+if (!window.localStorage.getItem('userNameForTitle')) {
+    loginView();
+} else {
+    showVacationTable();
+}
+
 navbarEventListeners();
 
 function navbarEventListeners(e) {
@@ -98,7 +104,7 @@ function httpRequests(endPoint, httpVerb, reqBody) {
 }
 
 function tableView(vacationsArray, allVacations) {
-    document.getElementById('userNameForTitle').innerHTML = `Hello ${app.userNameForTitle},`;
+    showUserName();
     if (window.localStorage.getItem('isAdmin') === 'true') {
         adminView(allVacations, vacationsArray)
     } else {
@@ -259,19 +265,19 @@ function changeBackToOriginalBtn(idx) {
 function onMoreDetails(res) {
     let html = `
             <div>
-            <img width='200' src="./styles/images/${res.singleVacationData.image}" alt="${res.singleVacationData.image}"/>
-            <br><br>
-            description: ${res.singleVacationData.description}
-            <br><br>
-            destination: ${res.singleVacationData.destination}
-            <br><br>
-            from: ${res.singleVacationData.fromDate}
-            <br><br>
-            To: ${res.singleVacationData.toDate}
-            <br><br>
-            price: ${res.singleVacationData.price}
-            <br><br>
-            <button id='returnToFullList'>Return To Full List</button>
+                <img width='200' src="./styles/images/${res.singleVacationData.image}" alt="${res.singleVacationData.image}"/>
+                <br><br>
+                description: ${res.singleVacationData.description}
+                <br><br>
+                destination: ${res.singleVacationData.destination}
+                <br><br>
+                from: ${res.singleVacationData.fromDate}
+                <br><br>
+                To: ${res.singleVacationData.toDate}
+                <br><br>
+                price: ${res.singleVacationData.price}
+                <br><br>
+                <button id='returnToFullList'>Return To Full List</button>
             </div>
             `
     printToHtml('main', html);
@@ -351,11 +357,12 @@ function loginView(note) {
 }
 
 function showUserName() {
-    if (!window.localStorage.getItem('userNameForTitle')) {
+    const savedUserName = window.localStorage.getItem('userNameForTitle');
+    if (!savedUserName) {
         document.getElementById('userNameForTitle').innerHTML = `Hello Guest,`;
     }
     else {
-        document.getElementById('userNameForTitle').innerHTML = `Hello ${window.localStorage.getItem('userNameForTitle')},`;
+        document.getElementById('userNameForTitle').innerHTML = `Hello ${(savedUserName).charAt(0).toUpperCase() + savedUserName.slice(1)},`;
     }
 }
 
@@ -387,7 +394,6 @@ function emptyInputs(id) {
 
 function clientView(vacationsArray) {
     //TODO: instead of table show each vacation on different card (div)
-    showUserName();
     if (vacationsArray.length === 0) {
         document.getElementById('main').innerHTML = 'No vacations have been found!';
     } else {
@@ -431,8 +437,7 @@ function clientView(vacationsArray) {
 
 function adminView(allVacations, vacationsArray) {
     //TODO: instead of table show each vacation on different card (div)
-    showUserName();
-    let vacationsListLength = allVacations ? allVacations.length : vacationsArray.length;
+   let vacationsListLength = allVacations ? allVacations.length : vacationsArray.length;
     let addedVacationId;
     if (allVacations) {
         addedVacationId = allVacations[allVacations.length - 1].id + 1;

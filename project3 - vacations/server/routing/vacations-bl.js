@@ -1,3 +1,5 @@
+//TODO: make all strings to lower case;
+
 const dal = require('../dal');
 const vacationModel = require('../models/vacation-model')
 const table = 'vacation';
