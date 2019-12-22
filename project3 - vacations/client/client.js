@@ -2,9 +2,6 @@
     - design
     - make adding an image (when adding a vacation) possible
     - needs to check for duplicate code
-    - add C.R.U.D to token-bl   
-    - add client (same as in leasing project but with mysql)
-    - decide on when to make an input null if no input inside
 */
 
 var app = {
@@ -113,7 +110,7 @@ function printToHtml(id, html) {
     document.getElementById(id).innerHTML = html;
 }
 
-function addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLength) {
+function addBtnEventListeners(vacationsArray, addedVacationId) {
     document.getElementById('add').addEventListener('click', (e) => {
         e.preventDefault();
         jQuery('.addRow').attr('style', 'display: table-row');
@@ -217,7 +214,7 @@ function onEditVacation(idx, singleVacationEndPoint) {
             fromDate: jQuery(`#fromDate${idx}`).html(),
             toDate: jQuery(`#toDate${idx}`).html(),
             price: Number(jQuery(`#price${idx}`).html()),
-            followers: 0 //TODO: get num of followers from client/ other mysql table
+            followers: 0 //TODO: num of followers at adding must be 0?!
         };
 
         let isDataTypeGood = true;
@@ -286,18 +283,18 @@ function onMoreDetails(res) {
 }
 
 function registerView(note) {
-    //TODO: make id and isAdmin inputs not accessible to user.
+    //TODO: insert values to id and isAdmin and make their inputs not accessible to user.
     note = note ? note : '';
     const html = `
     <h2>Register</h2>
     <p>${note}</p>
     <div>
-            <label>Id: <input id='userId'></label>
             <label>First Name: <input id='firstName'></label>
             <label>Last Name: <input id='lastName'></label>
             <label>User Name: <input id='userName'></label>
             <label>Password: <input id='password' type='password'></label>
-            <label>Is Admin: <input id='isAdmin'></label>
+            <input hidden id='userId' value=''>
+            <input hidden id='isAdmin' value=''>
         <div>  
             <button id='register'>Register</button>
         </div>
@@ -389,6 +386,7 @@ function emptyInputs(id) {
 }
 
 function clientView(vacationsArray) {
+    //TODO: instead of table show each vacation on different card (div)
     showUserName();
     if (vacationsArray.length === 0) {
         document.getElementById('main').innerHTML = 'No vacations have been found!';
@@ -432,6 +430,7 @@ function clientView(vacationsArray) {
 }
 
 function adminView(allVacations, vacationsArray) {
+    //TODO: instead of table show each vacation on different card (div)
     showUserName();
     let vacationsListLength = allVacations ? allVacations.length : vacationsArray.length;
     let addedVacationId;
