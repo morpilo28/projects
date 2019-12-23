@@ -5,6 +5,7 @@ const vacationModel = require('../models/vacation-model')
 const table = 'vacation';
 
 function getVacations(callback) {
+    //get vacations and order it by vacations followed first
     dal.readAll(`select * from ${table} order by id`, (err, allVacations) => {
         allVacations = adjustVacationFormat(allVacations);
         if (err) {

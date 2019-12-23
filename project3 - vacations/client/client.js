@@ -3,6 +3,7 @@
     - make adding an image (when adding a vacation) possible
     - needs to check for duplicate code
     - change lower case to upper case or vice versa if needed (for example in: registration/login, adding/updating a vacation, etc.)
+    - add the charts section
 */
 
 var app = {
@@ -20,6 +21,7 @@ var app = {
         PUT: 'PUT'
     },
     TOKEN_LOCAL_STORAGE_KEY: 'token',
+    clickOnFollow: 0
 };
 
 if (!window.localStorage.getItem('userNameForTitle')) {
@@ -420,25 +422,33 @@ function clientView(vacationsArray) {
             document.getElementById(`followBtn${vacationsArray[i].id}`).addEventListener('click', (e) => {
                 e.preventDefault();
                 const vacationId = e.target.id.slice(9);
+                //TODO: add a condition to differentiate between a pressed btn to follow to pressed one to unfollow
+                //if pressed to follow then
                 updateFollowersCount(vacationsArray, vacationId);
-                const followObjToAdd = {
-                    userId: window.localStorage.getItem('userId'),
-                    vacationId: vacationId
-                }
-                debugger;
-                httpRequests(app.END_POINTS.follow, app.METHODS.POST, followObjToAdd).then(res => {
-                    console.log(res);
-                    debugger
-                }).catch(status => {
-                    if (status === 400) {
-                        alert('vacation already been followed');
-                    } else {
-                        console.log(status);
-                    }
-                });
+                addToFollowDb(vacationId);
+                //else if pressed to unfollow then
             })
         }
     }
+}
+
+function addToFollowDb(vacationId) {
+    const followObjToAdd = {
+        userId: window.localStorage.getItem('userId'),
+        vacationId: vacationId
+    };
+    app.clickOnFollow += 1;
+    //make btn background color yellow
+    httpRequests(app.END_POINTS.follow, app.METHODS.POST, followObjToAdd).then(res => {
+        console.log(res);
+    }).catch(status => {
+        if (status === 400) {
+            alert('vacation already been followed');
+        }
+        else {
+            console.log(status);
+        }
+    });
 }
 
 function updateFollowersCount(vacationsArray, vacationId) {
