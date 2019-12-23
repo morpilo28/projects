@@ -69,6 +69,7 @@ function createVacation(vacationToADD, callback) {
 }
 
 function updateVacation(editedVacationData, callback) {
+    //TODO: check why sometime invalid dates when updating followers
     editedVacationData.fromDate = setDate(new Date(editedVacationData.fromDate), true);
     editedVacationData.toDate = setDate(new Date(editedVacationData.toDate), true);
     editedVacationData = new vacationModel.Vacation(editedVacationData.id, editedVacationData.description, editedVacationData.destination, editedVacationData.image, editedVacationData.fromDate, editedVacationData.toDate, editedVacationData.price, editedVacationData.followers);

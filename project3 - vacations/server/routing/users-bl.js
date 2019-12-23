@@ -6,6 +6,7 @@ const userModel = require('../models/user-model');
 
 function isUserNameAlreadyExist(registeredUser, callback) {
     //checking if a userName already exist in the db
+    registeredUser = new userModel.User(null, registeredUser.firstName, registeredUser.lastName, registeredUser.userName, registeredUser.password, registeredUser.isAdmin);
     dal.readAll(`select * from ${table} `, (e, allUsers) => {
         allUsers = createUserTypeObj(allUsers);
         if (e) {
@@ -22,9 +23,9 @@ function isUserNameAlreadyExist(registeredUser, callback) {
 }
 
 function registerUser(userToAdd, callback) {
-    userToAdd = new userModel.User(userToAdd.id, userToAdd.firstName, userToAdd.lastName, userToAdd.userName, userToAdd.password, userToAdd.isAdmin);
+    userToAdd = new userModel.User(null, userToAdd.firstName, userToAdd.lastName, userToAdd.userName, userToAdd.password, userToAdd.isAdmin);
     const { id, firstName, lastName, userName, password, isAdmin } = userToAdd;
-    dal.createOne(`insert into ${table} (id, first_name, last_name, user_name, password, is_admin) values (${id},'${firstName}','${lastName}','${userName}', '${password}', '${isAdmin}');`, (e) => {
+    dal.createOne(`insert into ${table} (first_name, last_name, user_name, password, is_admin) values ('${firstName}','${lastName}','${userName}', '${password}', '${isAdmin}');`, (e) => {
         if (e) {
             callback(e);
         } else {

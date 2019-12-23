@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const vacationBl = require('./routing/vacations-bl');
 const usersBl = require('./routing/users-bl');
-const userModel = require('./models/user-model');
+const followBl = require('./routing/follow-bl');
 const PORT = 3201;
 const cors = require('cors');
 const SECRET_KEY_FOR_JWT = '687d6f87sd6f87sd6f78sd6f87sd';
@@ -147,6 +147,7 @@ app.post('/login', function (req, res) {
             const responseObj = {
                 token: token,
                 userName: user.userName,
+                userId: user.id,
                 isAdmin: user.isAdmin
             }
             return res.send(responseObj);
@@ -155,7 +156,7 @@ app.post('/login', function (req, res) {
 });
 
 app.post('/register', function (req, res) {
-    const userToAdd = new userModel.User(req.body.id, req.body.firstName, req.body.lastName, req.body.userName, req.body.password, req.body.isAdmin);
+    const userToAdd = req.body;
     usersBl.isUserNameAlreadyExist(userToAdd, (e) => {
         if (e) {
             res.status(400).send('user name taken. please select a different name');
@@ -167,6 +168,17 @@ app.post('/register', function (req, res) {
                     return res.send();
                 }
             })
+        }
+    })
+});
+
+app.post('/follow', function (req, res) {
+    const followObjToAdd = req.body;
+    followBl.addFollow(followObjToAdd, (e) => {
+        if (e) {
+            res.status(400).send('vacation already been followed');
+        } else {
+            return res.send();
         }
     })
 });

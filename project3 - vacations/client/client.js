@@ -11,6 +11,7 @@ var app = {
         vacations: 'vacations',
         login: 'login',
         register: 'register',
+        follow: 'follow'
     },
     METHODS: {
         GET: 'GET',
@@ -295,15 +296,14 @@ function registerView(note) {
     <h2>Register</h2>
     <p>${note}</p>
     <div>
-            <label>First Name: <input id='firstName'></label>
-            <label>Last Name: <input id='lastName'></label>
-            <label>User Name: <input id='userName'></label>
-            <label>Password: <input id='password' type='password'></label>
-            <input hidden id='userId' value=''>
-            <input hidden id='isAdmin' value=''>
+        <label>First Name: <input id='firstName'></label>
+        <label>Last Name: <input id='lastName'></label>
+        <label>User Name: <input id='userName'></label>
+        <label>Password: <input id='password' type='password'></label>
         <div>  
             <button id='register'>Register</button>
         </div>
+    </div>
     `
     printToHtml('main', html);
     document.getElementById('register').addEventListener('click', register);
@@ -311,16 +311,15 @@ function registerView(note) {
 
 function register() {
     const params = {
-        id: document.getElementById('userId').value,
         firstName: document.getElementById('firstName').value,
         lastName: document.getElementById('lastName').value,
         userName: document.getElementById('userName').value,
         password: document.getElementById('password').value,
-        isAdmin: document.getElementById('isAdmin').value,
+        isAdmin: 'false',
     };
 
     httpRequests(app.END_POINTS.register, app.METHODS.POST, params).then(res => {
-        const idArray = ['userId', 'firstName', 'lastName', 'userName', 'password', 'isAdmin']
+        const idArray = ['firstName', 'lastName', 'userName', 'password']
         for (let i = 0; i < idArray.length; i++) {
             emptyInputs(idArray[i]);
         }
@@ -376,6 +375,7 @@ function loginValidation() {
         emptyInputs('password');
         window.localStorage.setItem(app.TOKEN_LOCAL_STORAGE_KEY, res.token);
         window.localStorage.setItem('userNameForTitle', res.userName);
+        window.localStorage.setItem('userId', res.userId);
         window.localStorage.setItem('isAdmin', res.isAdmin);
         navigate('vacations');
     }).catch(status => {
@@ -397,47 +397,64 @@ function clientView(vacationsArray) {
     if (vacationsArray.length === 0) {
         document.getElementById('main').innerHTML = 'No vacations have been found!';
     } else {
-        let html = `
-        <h3>Vacation List</h3>
-        <table class='myTable'>
-            <thead>
-                <tr>
-                    <th>row</th>
-                    <th>destination</th>
-                    <th>description</th>
-                    <th>image</th>
-                    <th>from</th>
-                    <th>to</th>
-                    <th>price</th>
-                    <th>follow</th>
-                </tr>
-            </thead>
-            <tbody>`;
+        let html;
         for (let i = 0; i < vacationsArray.length; i++) {
             html += `
-                <tr>
-                    <td><b>${i + 1}</b>
-                    <td>${vacationsArray[i].destination}</td>
-                    <td>${vacationsArray[i].description}</td>
-                    <td><img width='80' src="./styles/images/${vacationsArray[i].image}" alt="${vacationsArray[i].image}"/></td>
-                    <td>${vacationsArray[i].fromDate}</td>
-                    <td>${vacationsArray[i].toDate}</td>
-                    <td>${vacationsArray[i].price}</td>
-                    <td><button>Follow</button></td>
-                </tr>`;
+                <div class='card'>
+                    <div><b>${vacationsArray[i].destination}</b></div>
+                    <div>${vacationsArray[i].description}</div>
+                    <div>${vacationsArray[i].price}$</div>
+                    <div>
+                        <img width='80' src="./styles/images/${vacationsArray[i].image}" alt="${vacationsArray[i].image}"/>
+                    </div>
+                    <div>
+                        <p>From: ${vacationsArray[i].fromDate}</p>
+                        <p>To: ${vacationsArray[i].toDate}</p>
+                    </div>
+                    <button id='followBtn${vacationsArray[i].id}' class="btn btn-success btn-circle btn-circle-sm m-1">f</button>
+                </div>`;
         }
-        html += `
-                    </tbody>
-                </table>`;
 
         document.getElementById('main').innerHTML = html;
-        /* addBtnEventListeners(vacationsArray); */
+        for (let i = 0; i < vacationsArray.length; i++) {
+            document.getElementById(`followBtn${vacationsArray[i].id}`).addEventListener('click', (e) => {
+                e.preventDefault();
+                const vacationId = e.target.id.slice(9);
+                updateFollowersCount(vacationsArray, vacationId);
+                const followObjToAdd = {
+                    userId: window.localStorage.getItem('userId'),
+                    vacationId: vacationId
+                }
+                debugger;
+                httpRequests(app.END_POINTS.follow, app.METHODS.POST, followObjToAdd).then(res => {
+                    console.log(res);
+                    debugger
+                }).catch(status => {
+                    if (status === 400) {
+                        alert('vacation already been followed');
+                    } else {
+                        console.log(status);
+                    }
+                });
+            })
+        }
     }
+}
+
+function updateFollowersCount(vacationsArray, vacationId) {
+    let index = vacationsArray.findIndex(vacation => vacation.id == vacationId);
+    vacationsArray[index].followers += 1;
+    const vacationToUpdateFollowers = vacationsArray[index];
+    httpRequests(app.END_POINTS.vacations + '/' + vacationId, app.METHODS.PUT, vacationToUpdateFollowers).then(res => {
+        console.log(res);
+    }).catch(status => {
+        console.log(status);
+    });
 }
 
 function adminView(allVacations, vacationsArray) {
     //TODO: instead of table show each vacation on different card (div)
-   let vacationsListLength = allVacations ? allVacations.length : vacationsArray.length;
+    let vacationsListLength = allVacations ? allVacations.length : vacationsArray.length;
     let addedVacationId;
     if (allVacations) {
         addedVacationId = allVacations[allVacations.length - 1].id + 1;
