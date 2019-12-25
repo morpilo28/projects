@@ -35,12 +35,18 @@ function readOne(query, callback) {
     });
 }
 
-function createOne(query, callback) {
-    connection.query(query, (err) => {
+function createOne(query1,query2, callback) {
+    connection.query(query1, (err) => {
         if (err) {
             callback(err);
         } else {
-            callback(null);
+            connection.query(query2, (err, result) => {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null, result);
+                }
+            });
         }
     });
 }

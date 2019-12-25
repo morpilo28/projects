@@ -9,7 +9,7 @@ function addFollow(followObjToAdd, callback) {
     followObjToAdd.vacationId = Number(followObjToAdd.vacationId);
     followObjToAdd = new followModel.Follow(followObjToAdd.userId, followObjToAdd.vacationId);
     const { userId, vacationId } = followObjToAdd;
-    dal.createOne(`insert into ${table} (user_id, vacation_id) values (${userId}, ${vacationId});`,(e) => {
+    dal.createOne(`insert into ${table} (user_id, vacation_id) values (${userId}, ${vacationId});`,`select * from ${table};`,(e, allFollowedVacation) => {
         if (e) {
             callback('vacation already been followed');
         } else {

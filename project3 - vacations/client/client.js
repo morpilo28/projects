@@ -119,36 +119,39 @@ function printToHtml(id, html) {
     document.getElementById(id).innerHTML = html;
 }
 
-function addBtnEventListeners(vacationsArray, addedVacationId) {
+function addBtnEventListeners(vacationsArray) {
     document.getElementById('add').addEventListener('click', (e) => {
         e.preventDefault();
-        jQuery('.addRow').attr('style', 'display: table-row');
+        paintModalElement('saveAddedVacation');
+        displayAddVacationModal();
     });
 
-    document.getElementById('saveAddedVacation').addEventListener('click', (e) => {
+    $(document).on('click', `#saveAddedVacation`, (e) => {
         e.preventDefault();
-        jQuery('.addRow').attr('style', 'display: none');
-        onSaveAddedVacation(addedVacationId);
+        onSaveAddedVacation();
     });
 
-    document.getElementById('hideAddField').addEventListener('click', (e) => {
+    $(document).on('click', `#close`, (e) => {
         e.preventDefault();
-        jQuery('.addRow').attr('style', 'display: none');
+        printToHtml('modalHeader', "Please fill out all the fields")
     });
 
     for (let i = 0; i < vacationsArray.length; i++) {
         const id = vacationsArray[i].id;
         const singleVacationEndPoint = `vacations/${id}`;
 
-        $(document).on('click', `#edit${id}`, (e) => {
+        $(document).on('click', `#editIcon${id}`, (e) => {
             e.preventDefault();
-            const idx = event.target.id.slice(4);
-            onEditVacation(idx, singleVacationEndPoint);
+            const idx = event.target.id.slice(8);
+            paintModalElement('saveEditedVacation');
+            displayAddVacationModal();
+            /* onEditVacation(idx, singleVacationEndPoint); */
         });
 
-        $(document).on('click', `#delete${id}`, (e) => {
+        $(document).on('click', `#deleteIcon${id}`, (e) => {
             e.preventDefault();
-            const idx = { id: event.target.id.slice(6) };
+            debugger
+            const idx = { id: event.target.id.slice(10) };
             httpRequests(singleVacationEndPoint, app.METHODS.DELETE, idx).then(res => {
                 tableView(res);
             }).catch(status => {
@@ -173,15 +176,14 @@ function addBtnEventListeners(vacationsArray, addedVacationId) {
     }
 }
 
-function onSaveAddedVacation(addedVacationId) {
+function onSaveAddedVacation() {
     const vacationToAdd = {
-        id: document.getElementById(`addedId${addedVacationId}`).value,
-        destination: document.getElementById(`destination${addedVacationId}`).value,
-        description: document.getElementById(`description${addedVacationId}`).value,
-        image: document.getElementById(`image${addedVacationId}`).value,
-        fromDate: document.getElementById(`fromDate${addedVacationId}`).value,
-        toDate: document.getElementById(`toDate${addedVacationId}`).value,
-        price: document.getElementById(`price${addedVacationId}`).value,
+        destination: document.getElementById(`addedDestination`).value,
+        description: document.getElementById(`addedDescription`).value,
+        image: document.getElementById(`addedImage`).value,
+        fromDate: document.getElementById(`addedFromDate`).value,
+        toDate: document.getElementById(`addedToDate`).value,
+        price: document.getElementById(`addedPrice`).value,
         followers: 0
     };
     let isEmpty = false;
@@ -192,9 +194,9 @@ function onSaveAddedVacation(addedVacationId) {
     });
 
     if (isEmpty === true) {
-        printToHtml('tableNote', 'Please fill out all the fields!')
-        jQuery('.addRow').attr('style', 'display: table-row');
+        printToHtml('modalHeader', "Can't save before filling out all the fields!")
     } else {
+        jQuery('#saveAddedVacation').attr('data-dismiss', 'modal');
         httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(res => {
             tableView(res);
         }).catch(status => {
@@ -235,7 +237,7 @@ function onEditVacation(idx, singleVacationEndPoint) {
             }
         }
         if (isDataTypeGood === false) {
-            printToHtml('tableNote', "The field 'price' must be field with numbers and larger than 0.");
+            printToHtml('vacationListNote', "The field 'price' must be field with numbers and larger than 0.");
         } else {
             httpRequests(singleVacationEndPoint, app.METHODS.PUT, editedObj).then(res => {
                 changeBackToOriginalBtn(res.newUpdatedVacationId);
@@ -395,11 +397,10 @@ function emptyInputs(id) {
 }
 
 function clientView(vacationsArray) {
-    //TODO: instead of table show each vacation on different card (div)
     if (vacationsArray.length === 0) {
         document.getElementById('main').innerHTML = 'No vacations have been found!';
     } else {
-        let html;
+        let html = `<div>`;
         for (let i = 0; i < vacationsArray.length; i++) {
             html += `
                 <div class='card'>
@@ -416,7 +417,7 @@ function clientView(vacationsArray) {
                     <button id='followBtn${vacationsArray[i].id}' class="btn btn-success btn-circle btn-circle-sm m-1">f</button>
                 </div>`;
         }
-
+        html += `</div>`;
         document.getElementById('main').innerHTML = html;
         for (let i = 0; i < vacationsArray.length; i++) {
             document.getElementById(`followBtn${vacationsArray[i].id}`).addEventListener('click', (e) => {
@@ -476,73 +477,74 @@ function adminView(allVacations, vacationsArray) {
             addedVacationId = vacationsArray[vacationsArray.length - 1].id + 1;
         }
     }
-    //TODO: consider using form
+
     let html = `
-    <h3 id='tableNote'> </h3>
-        <button id='add'>Add Vacation</button>
-        <table class='myTable'>
-            <thead>
-                <tr>
-                    <th>row</th>
-                    <th>id</th>
-                    <th>destination</th>
-                    <th>description</th>
-                    <th>image</th>
-                    <th>from</th>
-                    <th>to</th>
-                    <th>price</th>
-                    <th class='options'>options</th>
-                </tr>
-            </thead>
-            <tbody id='vacationsTableBody'>
-                <tr id='addRow' class="addRow">
-                    <td class='addCells'><input disabled readonly/></td> 
-                    <td class='addCells'>
-                        <input id='addedId${addedVacationId}' value='${addedVacationId}' disabled readonly/>
-                        <input id='addedId${addedVacationId}' type='hidden' value='${addedVacationId}'/>
-                    </td>
-                    <td class='addCells'><input required type='text' id='destination${addedVacationId}' placeholder = 'destination'></td>
-                    <td class='addCells'><input required type='text' id='description${addedVacationId}' placeholder = 'description'></td>
-                    <td class='addCells'><input required type='text' id='image${addedVacationId}' placeholder = 'image'></td>
-                    <td class='addCells'><input required type='date' id='fromDate${addedVacationId}' placeholder = 'from'></td>
-                    <td class='addCells'><input required type='date' id='toDate${addedVacationId}' placeholder = 'to'></td>
-                    <td class='addCells'><input required type='number' min='0' id='price${addedVacationId}' placeholder = 'price'></td>
-                    <td class='addCells options'>
-                        <button id='saveAddedVacation' class='addBtns'>Save</button>
-                        <button id='hideAddField' class='addBtns'>Hide</button>
-                    </td>
-                </tr>`;
+    <h3 id='vacationListNote'> </h3>
+    <button id='add'>Add Vacation</button>
+    <div id="ModalElement"></div>
+    <div id='vacationList'>`
+
     if (vacationsArray.length === 0) {
         printToHtml('main', html);
-        printToHtml('tableNote', 'no vacations has been found');
+        printToHtml('vacationListNote', 'no vacations has been found');
         addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLength);
     }
     else {
         for (let i = 0; i < vacationsArray.length; i++) {
             const idx = vacationsArray[i].id;
             html += `
-                <tr>
-                    <td><b>${i + 1}</b>
-                    <td><b>${idx}</b>
-                        <input id='id${idx}' value='${idx}' type='hidden'/>
-                    </td>
-                    <td class='editable${idx}' id='destination${idx}'>${vacationsArray[i].destination}</td>
-                    <td class='editable${idx}' id='description${idx}'>${vacationsArray[i].description}</td>
-                    <td class='editable${idx}'><img id='image${idx}' width='80' src="./styles/images/${vacationsArray[i].image}" alt="${vacationsArray[i].image}"/></td>
-                    <td class='editable${idx}' id='fromDate${idx}'>${vacationsArray[i].fromDate}</td>
-                    <td class='editable${idx}' id='toDate${idx}'>${vacationsArray[i].toDate}</td>
-                    <td class='editable${idx}' id='price${idx}'>${vacationsArray[i].price}</td>
-                    <td id='buttonCell${idx}'>
-                        <button id='edit${idx}' class='edit optionsBtn'>Edit</button>
-                        <button id='delete${idx}' class='delete optionsBtn'>delete</button>
-                        <button id='details${idx}' class='info optionsBtn'>More Details</button>
-                    </td>
-                </tr>`;
+            <div class='card'>
+                <i id='deleteIcon${idx}' class='fas fa-times'></i>
+                <i id='editIcon${idx}' class="fas fa-pencil-alt"></i>
+                <input hidden value='${idx}'/>
+                <div><b>${vacationsArray[i].destination}</b></div>
+                <div>${vacationsArray[i].description}</div>
+                <div>${vacationsArray[i].price}$</div>
+                <div>
+                    <img width='80' src="./styles/images/${vacationsArray[i].image}" alt="${vacationsArray[i].image}"/>
+                </div>
+                <div>
+                    <p>From: ${vacationsArray[i].fromDate}</p>
+                    <p>To: ${vacationsArray[i].toDate}</p>
+                </div>
+            </div>`;
         }
-        html += `
-                    </tbody>
-                </table>`;
+        html += `</div>`;
         printToHtml('main', html);
         addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLength);
     }
 }
+
+function displayAddVacationModal() {
+    $('#myModal').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+}
+
+function paintModalElement(btnSaveId, vacationToEdit) {
+    $('#ModalElement').empty().append(`
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id='modalHeader' class="modal-title">Please fill out all the fields</h4>
+                    </div>
+                    <div class="modal-body">
+                        <label>Destination: <input id='addedDestination' required type='text' placeholder='destination'></label><br>
+                        <label>Description: <input id='addedDescription' required type='text' placeholder='description'></label><br>
+                        <label>Image: <input id='addedImage' required type='text' placeholder='image'></label><br>
+                        <label>From: <input id='addedFromDate' required type='date' placeholder='from'></label><br>
+                        <label>To: <input id='addedToDate' required type='date' placeholder='to'></label><br>
+                        <label>Price: <input id='addedPrice' required type='number' min='0' placeholder='price'></label><br>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="closeBtn btn btn-default" id=${btnSaveId}>Save</button>
+                        <button type="button" class="closeBtn btn btn-default" data-dismiss="modal" id='close'>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`)
+};
