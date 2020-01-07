@@ -1,24 +1,80 @@
+"use strict";
 //TODO: make all strings to lower case;
 
 const dal = require('../dal');
 const vacationModel = require('../models/vacation-model')
-const table = 'vacation';
+const vacationTable = 'vacation';
+const followTable = 'follow_vacation';
 
-function getVacations(callback) {
+function getVacations(userId, callback) {
+    userId = Number(userId);
     //get vacations and order it by vacations followed first
-    dal.readAll(`select * from ${table} order by id`, (err, allVacations) => {
+    dal.readAll(`select * from ${vacationTable} order by id`, (err, allVacations) => {
         allVacations = adjustVacationFormat(allVacations);
         if (err) {
             callback(err);
         } else {
-            //returns an array of obj
-            callback(null, allVacations);
+            dal.readAll(`select vacation_id from ${followTable} where user_id = ${userId} `, (err, userFollowedVacations) => {
+                if (err) {
+                    callback(err);
+                } else {
+                    //getting obj values into an array
+                    let userFollowedVacationsIds = createArrayOfFollowedVacationsId(userFollowedVacations);
+                    let organizedVacationArray = addFollowedVacationToOrganizedArray(allVacations, userFollowedVacationsIds);
+                    organizedVacationArray = addUnFollowedVacationsToOrganizedArray(allVacations, organizedVacationArray);
+
+                    const data = {
+                        organizedVacationArray: organizedVacationArray,
+                        userFollowedVacationsIds: userFollowedVacationsIds
+                    }
+                    callback(null, data);
+                }
+            })
         }
     })
 }
 
+function addUnFollowedVacationsToOrganizedArray(allVacations, organizedArray) {
+    let newArry = [...organizedArray];
+    let vacationIdAlreadyExist = false;
+    for (let i = 0; i < allVacations.length; i++) {
+        for (let j = 0; j < newArry.length; j++) {
+            vacationIdAlreadyExist = false;
+            if (newArry[j].id === allVacations[i].id) {
+                vacationIdAlreadyExist = true;
+                break;
+            }
+        }
+        if (vacationIdAlreadyExist === false) {
+            organizedArray.push(allVacations[i]);
+        }
+    }
+    return organizedArray;
+}
+
+function addFollowedVacationToOrganizedArray(allVacations, userFollowedVacationsIds) {
+    let organizedArray = [];
+    for (let i = 0; i < allVacations.length; i++) {
+        for (let j = 0; j < userFollowedVacationsIds.length; j++) {
+            if (userFollowedVacationsIds[j] === allVacations[i].id) {
+                organizedArray.push(allVacations[i]);
+            }
+        }
+    }
+    return organizedArray;
+}
+
+function createArrayOfFollowedVacationsId(userFollowedVacations) {
+    let userFollowedVacationsIds = [];
+    for (let i = 0; i < userFollowedVacations.length; i++) {
+        let followedVacationIdToArray = Object.values(userFollowedVacations[i]);
+        userFollowedVacationsIds.push(followedVacationIdToArray[0]);
+    }
+    return userFollowedVacationsIds;
+}
+
 function getSingleVacation(id, callback) {
-    dal.readOne(`select * from ${table} where id = ${id}`, (err, singleVacationData) => {
+    dal.readOne(`select * from ${vacationTable} where id = ${id}`, (err, singleVacationData) => {
         singleVacationData = adjustVacationFormat(singleVacationData);
         if (err) {
             callback(err);
@@ -36,7 +92,7 @@ function createVacation(vacationToADD, callback) {
     vacationToADD = new vacationModel.Vacation(null, vacationToADD.description, vacationToADD.destination, vacationToADD.image, vacationToADD.fromDate, vacationToADD.toDate, vacationToADD.price, vacationToADD.followers);
     const { id, description, destination, image, fromDate, toDate, price, followers } = vacationToADD;
 
-    dal.readAll(`select * from ${table} order by id`, (err, allVacations) => {
+    dal.readAll(`select * from ${vacationTable} order by id`, (err, allVacations) => {
         allVacations = adjustVacationFormat(allVacations);
 
         if (err) {
@@ -46,8 +102,8 @@ function createVacation(vacationToADD, callback) {
             if (isVacationAlreadyExist) {
                 callback(400);
             } else {
-                dal.createOne(`insert into ${table} (description, destination, image, fromDate, toDate, price, followers) values
-                    ('${description}', '${destination}', '${image}', '${fromDate}', '${toDate}', ${price}, ${followers})`, `select * from ${table} order by id`, (e, allVacations) => {
+                dal.createOne(`insert into ${vacationTable} (description, destination, image, fromDate, toDate, price, followers) values
+                    ('${description}', '${destination}', '${image}', '${fromDate}', '${toDate}', ${price}, ${followers})`, `select * from ${vacationTable} order by id`, (e, allVacations) => {
                     if (e) {
                         callback(e);
                     } else {
@@ -61,23 +117,36 @@ function createVacation(vacationToADD, callback) {
 }
 
 function updateVacation(editedVacationData, callback) {
-    //TODO: check why sometime invalid dates when updating followers
-    editedVacationData.fromDate = setDate(new Date(editedVacationData.fromDate), true);
-    editedVacationData.toDate = setDate(new Date(editedVacationData.toDate), true);
-    editedVacationData = new vacationModel.Vacation(editedVacationData.id, editedVacationData.description, editedVacationData.destination, editedVacationData.image, editedVacationData.fromDate, editedVacationData.toDate, editedVacationData.price, editedVacationData.followers);
-    const { id, description, destination, image, fromDate, toDate, price, followers } = editedVacationData
-    dal.updateOne(`update ${table} set id=${id},description='${description}',destination='${destination}',image='${image}',fromDate='${fromDate}',toDate='${toDate}',price=${price},followers=${followers} WHERE id = ${id};`, `SELECT * from ${table} where id=${id};`, (err, newUpdatedVacation) => {
-        newUpdatedVacation = adjustVacationFormat(newUpdatedVacation);
+    editedVacationData.id = Number(editedVacationData.id);
+    let query = '';
+    if (editedVacationData.destination) {
+        //TODO: check why sometime invalid dates when updating followers
+        editedVacationData.fromDate = setDate(new Date(editedVacationData.fromDate), true);
+        editedVacationData.toDate = setDate(new Date(editedVacationData.toDate), true);
+        editedVacationData = new vacationModel.Vacation(editedVacationData.id, editedVacationData.description, editedVacationData.destination, editedVacationData.image, editedVacationData.fromDate, editedVacationData.toDate, editedVacationData.price, editedVacationData.followers);
+        const { id, description, destination, image, fromDate, toDate, price, followers } = editedVacationData;
+        query = `update ${vacationTable} set id=${id},description='${description}',destination='${destination}',image='${image}',fromDate='${fromDate}',toDate='${toDate}',price=${price},followers=${followers} WHERE id = ${id};`;
+    } else {
+        if (editedVacationData.reduceOrAdd && editedVacationData.reduceOrAdd === 'add') {
+            query = `UPDATE ${vacationTable} SET followers = followers+1 WHERE vacation.id = ${editedVacationData.id};`;
+        } else if (editedVacationData.reduceOrAdd && editedVacationData.reduceOrAdd === 'reduce') {
+            query = `UPDATE ${vacationTable} SET followers = followers-1 WHERE vacation.id = ${editedVacationData.id};`;
+        } else {
+            console.log(editedVacationData);
+        }
+    }
+    console.log(query);
+    dal.updateOne(query, (err) => {
         if (err) {
             callback(err);
         } else {
-            callback(null, newUpdatedVacation[0].id);
+            callback(null);
         }
     })
 }
 
 function deleteVacation(id, callback) {
-    dal.deleteOne(`delete from ${table} where id = ${id}`, (e) => {
+    dal.deleteOne(`delete from ${vacationTable} where id = ${id}`, (e) => {
         if (e) {
             callback(e);
         } else {
@@ -111,8 +180,8 @@ function isVacationExist(allVacations, vacationToADD) {
 
 function adjustVacationFormat(vacations) {
     vacations = vacations.map(element => {
-        element.fromDate = setDate(new Date(element.fromDate));
-        element.toDate = setDate(new Date(element.toDate));
+        element.fromDate = setDate(element.fromDate);
+        element.toDate = setDate(element.toDate);
         return new vacationModel.Vacation(element.id, element.description, element.destination, element.image, element.fromDate, element.toDate, element.price, element.followers);
     });
     return vacations;

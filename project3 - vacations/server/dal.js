@@ -1,3 +1,4 @@
+"use strict";
 //TODO: 
 //1. create a 'follow' table in travel db
 //2. find a way to open and close connection to mysql only when needed
@@ -51,18 +52,12 @@ function createOne(query1,query2, callback) {
     });
 }
 
-function updateOne(query1,query2, callback) {
-    connection.query(query1, (err, result) => {
+function updateOne(query, callback) {
+    connection.query(query, (err) => {
         if (err) {
             callback(err);
         } else {
-            connection.query(query2, (err, result) => {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback(null, result);
-                }
-            });
+            callback(null);
         }
     });
 }

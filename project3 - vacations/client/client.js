@@ -1,11 +1,16 @@
-/* TODO:
-    - design
-    - make adding an image (when adding a vacation) possible
-    - needs to check for duplicate code
-    - change lower case to upper case or vice versa if needed (for example in: registration/login, adding/updating a vacation, etc.)
+"use strict";
+/* problems:
+        - problem with the modal!!!! opens up multiple modals and then the id's are not unique!!!
+        - fix problems with date (on adding and editing);
+        - is there any place to use /vacation/:id?!
+    TODO:
     - add the charts section
+    - change lower case to upper case or vice versa if needed (for example in: registration/login, adding/updating a vacation, etc.)
+    - make adding an image (when adding a vacation) possible
+    - show list ordered by vacation followed by user first.
+    - design
+    - needs to check for duplicate code
 */
-
 var app = {
     endPointStart: `http://localhost:3201/`,
     END_POINTS: {
@@ -21,7 +26,6 @@ var app = {
         PUT: 'PUT'
     },
     TOKEN_LOCAL_STORAGE_KEY: 'token',
-    clickOnFollow: 0
 };
 
 if (!window.localStorage.getItem('userNameForTitle')) {
@@ -32,7 +36,7 @@ if (!window.localStorage.getItem('userNameForTitle')) {
 
 navbarEventListeners();
 
-function navbarEventListeners(e) {
+function navbarEventListeners() {
     const links = document.querySelectorAll('#nav a[data-href]');
     for (let i = 0; i < links.length; i++) {
         links[i].addEventListener('click', (e) => {
@@ -59,7 +63,8 @@ function navigate(url) {
 }
 
 function showVacationTable() {
-    httpRequests(app.END_POINTS.vacations, app.METHODS.GET).then(res => tableView(res)).catch(status => {
+    const userId = window.localStorage.getItem('userId');
+    httpRequests(app.END_POINTS.vacations + '?userId=' + userId, app.METHODS.GET).then(res => tableView(res)).catch(status => {
         if (status === 500) {
             printToHtml('main', 'Internal Server Error');
         } else if (status === 401) {
@@ -72,7 +77,6 @@ function showVacationTable() {
 
 function httpRequests(endPoint, httpVerb, reqBody) {
     return new Promise((resolve, reject) => {
-
         const headers = { 'Content-Type': 'application/json' }
         if (localStorage.getItem(app.TOKEN_LOCAL_STORAGE_KEY)) {
             headers['Authorization'] = 'bearer ' + localStorage.getItem(app.TOKEN_LOCAL_STORAGE_KEY);
@@ -106,12 +110,12 @@ function httpRequests(endPoint, httpVerb, reqBody) {
     })
 }
 
-function tableView(vacationsArray, allVacations) {
+function tableView(vacations, allVacations) {
     showUserName();
     if (window.localStorage.getItem('isAdmin') === 'true') {
-        adminView(allVacations, vacationsArray)
+        adminView(allVacations, vacations)
     } else {
-        clientView(vacationsArray);
+        clientView(vacations);
     }
 }
 
@@ -120,37 +124,34 @@ function printToHtml(id, html) {
 }
 
 function addBtnEventListeners(vacationsArray) {
-    document.getElementById('add').addEventListener('click', (e) => {
+    $(document).on('click', '#add', (e) => {
         e.preventDefault();
-        paintModalElement('saveAddedVacation');
-        displayAddVacationModal();
+        paintModalElement('save');
     });
 
-    $(document).on('click', `#saveAddedVacation`, (e) => {
+    $(document).on('click', `#save`, (e) => {
         e.preventDefault();
         onSaveAddedVacation();
     });
 
     $(document).on('click', `#close`, (e) => {
         e.preventDefault();
-        printToHtml('modalHeader', "Please fill out all the fields")
+        closeModal();
     });
 
     for (let i = 0; i < vacationsArray.length; i++) {
         const id = vacationsArray[i].id;
         const singleVacationEndPoint = `vacations/${id}`;
-
-        $(document).on('click', `#editIcon${id}`, (e) => {
+        $(document).on('click', `#editIcon${id}`, { value: i }, (e) => {
             e.preventDefault();
-            const idx = event.target.id.slice(8);
-            paintModalElement('saveEditedVacation');
-            displayAddVacationModal();
-            /* onEditVacation(idx, singleVacationEndPoint); */
+            const id = event.target.id.slice(8);
+            const objToUpdate = vacationsArray[i];
+            paintModalElement(`saveChanges${id}`, objToUpdate);
+            onEditVacation(id, singleVacationEndPoint, objToUpdate.followers);
         });
 
         $(document).on('click', `#deleteIcon${id}`, (e) => {
             e.preventDefault();
-            debugger
             const idx = { id: event.target.id.slice(10) };
             httpRequests(singleVacationEndPoint, app.METHODS.DELETE, idx).then(res => {
                 tableView(res);
@@ -161,17 +162,6 @@ function addBtnEventListeners(vacationsArray) {
                     console.log(status);
                 }
             });
-        });
-
-        $(document).on('click', `#details${id}`, (e) => {
-            e.preventDefault();
-            httpRequests(singleVacationEndPoint, app.METHODS.GET, null).then(res => onMoreDetails(res)).catch(status => {
-                if (status === 500) {
-                    printToHtml('main', 'Internal Server Error')
-                } else {
-                    console.log(status);
-                }
-            });;
         });
     }
 }
@@ -196,8 +186,8 @@ function onSaveAddedVacation() {
     if (isEmpty === true) {
         printToHtml('modalHeader', "Can't save before filling out all the fields!")
     } else {
-        jQuery('#saveAddedVacation').attr('data-dismiss', 'modal');
         httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(res => {
+            closeModal();
             tableView(res);
         }).catch(status => {
             if (status === 500) {
@@ -211,21 +201,17 @@ function onSaveAddedVacation() {
     }
 }
 
-function onEditVacation(idx, singleVacationEndPoint) {
-    jQuery(`.editable${idx}`).attr('contenteditable', "true");
-    jQuery(`#buttonCell${idx}`).empty().append(`
-            <button id='saveChanges${idx}'>Save</button> <button id='cancelChanges${idx}'>Cancel</button>`);
-
+function onEditVacation(idx, singleVacationEndPoint, followers) {
     $(document).on('click', `#saveChanges${idx}`, (e) => {
         e.preventDefault();
         let editedObj = {
-            destination: jQuery(`#destination${idx}`).html(),
-            description: jQuery(`#description${idx}`).html(),
-            image: jQuery(`#image${idx}`).attr('alt'),
-            fromDate: jQuery(`#fromDate${idx}`).html(),
-            toDate: jQuery(`#toDate${idx}`).html(),
-            price: Number(jQuery(`#price${idx}`).html()),
-            followers: 0 //TODO: num of followers at adding must be 0?!
+            destination: jQuery(`#editDestination`).val(),
+            description: jQuery(`#editDescription`).val(),
+            image: jQuery(`#editImage`).val(),
+            fromDate: jQuery(`#editFromDate`).val(),
+            toDate: jQuery(`#editToDate`).val(),
+            price: Number(jQuery(`#editPrice`).val()),
+            followers: followers
         };
 
         let isDataTypeGood = true;
@@ -237,11 +223,11 @@ function onEditVacation(idx, singleVacationEndPoint) {
             }
         }
         if (isDataTypeGood === false) {
-            printToHtml('vacationListNote', "The field 'price' must be field with numbers and larger than 0.");
+            printToHtml('modalHeader', "The field 'price' must be field with numbers and larger than 0.");
         } else {
             httpRequests(singleVacationEndPoint, app.METHODS.PUT, editedObj).then(res => {
-                changeBackToOriginalBtn(res.newUpdatedVacationId);
-                tableView(res.allVacations);
+                closeModal();
+                tableView(res);
             }).catch(status => {
                 if (status === 500) {
 
@@ -257,14 +243,6 @@ function onEditVacation(idx, singleVacationEndPoint) {
         changeBackToOriginalBtn(idx);
         showVacationTable();
     });
-}
-
-function changeBackToOriginalBtn(idx) {
-    // TODO: when two rows or more are switched, the switching back occurs on all of them (instead of on only one)
-    jQuery(`#buttonCell${idx}`).empty().append(`<button id='edit${idx}' class='edit'>Edit</button>
-                <button id='delete${idx}' class='delete'>delete</button>
-                <button id='details${idx}' class='info'>More Details</button>`);
-    jQuery(`.editable${idx}`).attr('contenteditable', "false");
 }
 
 function onMoreDetails(res) {
@@ -294,7 +272,6 @@ function onMoreDetails(res) {
 }
 
 function registerView(note) {
-    //TODO: insert values to id and isAdmin and make their inputs not accessible to user.
     note = note ? note : '';
     const html = `
     <h2>Register</h2>
@@ -396,36 +373,49 @@ function emptyInputs(id) {
     document.getElementById(id).value = '';
 }
 
-function clientView(vacationsArray) {
-    if (vacationsArray.length === 0) {
+function clientView(vacations) {
+    let allVacations = vacations.organizedVacationArray;
+    let followedVacations = vacations.userFollowedVacationsIds;
+
+    if (allVacations.length === 0) {
         document.getElementById('main').innerHTML = 'No vacations have been found!';
     } else {
         let html = `<div>`;
-        for (let i = 0; i < vacationsArray.length; i++) {
+        let isFollowed = 'unFollowBtnColor';
+        for (let i = 0; i < allVacations.length; i++) {
+            for (let j = 0; j < followedVacations.length; j++) {
+                isFollowed = 'unFollowBtnColor';
+                if (followedVacations[j] === allVacations[i].id) {
+                    isFollowed = 'followBtnColor';
+                    break;
+                }
+            }
+
             html += `
                 <div class='card'>
-                    <div><b>${vacationsArray[i].destination}</b></div>
-                    <div>${vacationsArray[i].description}</div>
-                    <div>${vacationsArray[i].price}$</div>
+                    <div><b>${allVacations[i].destination}</b></div>
+                    <div>${allVacations[i].description}</div>
+                    <div>${allVacations[i].price}$</div>
                     <div>
-                        <img width='80' src="./styles/images/${vacationsArray[i].image}" alt="${vacationsArray[i].image}"/>
+                        <img width='80' src="./styles/images/${allVacations[i].image}" alt="${allVacations[i].image}"/>
                     </div>
                     <div>
-                        <p>From: ${vacationsArray[i].fromDate}</p>
-                        <p>To: ${vacationsArray[i].toDate}</p>
+                        <p>From: ${allVacations[i].fromDate}</p>
+                        <p>To: ${allVacations[i].toDate}</p>
                     </div>
-                    <button id='followBtn${vacationsArray[i].id}' class="btn btn-success btn-circle btn-circle-sm m-1">f</button>
+                    <button id='followBtn${allVacations[i].id}' class="btn btn-success btn-circle btn-circle-sm m-1 ${isFollowed}">f</button>
                 </div>`;
         }
         html += `</div>`;
         document.getElementById('main').innerHTML = html;
-        for (let i = 0; i < vacationsArray.length; i++) {
-            document.getElementById(`followBtn${vacationsArray[i].id}`).addEventListener('click', (e) => {
+
+        for (let i = 0; i < allVacations.length; i++) {
+            document.getElementById(`followBtn${allVacations[i].id}`).addEventListener('click', (e) => {
                 e.preventDefault();
                 const vacationId = e.target.id.slice(9);
-                //TODO: add a condition to differentiate between a pressed btn to follow to pressed one to unfollow
-                //if pressed to follow then
-                updateFollowersCount(vacationsArray, vacationId);
+                //TODO: cancel the green color after pressed btn;
+
+                /*  */
                 addToFollowDb(vacationId);
                 //else if pressed to unfollow then
             })
@@ -438,10 +428,18 @@ function addToFollowDb(vacationId) {
         userId: window.localStorage.getItem('userId'),
         vacationId: vacationId
     };
-    app.clickOnFollow += 1;
-    //make btn background color yellow
+    //TODO: make btn background color yellow
     httpRequests(app.END_POINTS.follow, app.METHODS.POST, followObjToAdd).then(res => {
+        //get back vacation id and then change btn color if unFollowed
         console.log(res);
+        if (res.isFollowed === true) {
+            $(`#followBtn${res.vacationId}`).toggleClass('unFollowBtnColor followBtnColor');
+            debugger
+            updateFollowersCount(res.vacationId, 'add');
+        } else {
+            $(`#followBtn${res.vacationId}`).toggleClass('followBtnColor unFollowBtnColor');
+            updateFollowersCount(res.vacationId, 'reduce');
+        }
     }).catch(status => {
         if (status === 400) {
             alert('vacation already been followed');
@@ -452,11 +450,14 @@ function addToFollowDb(vacationId) {
     });
 }
 
-function updateFollowersCount(vacationsArray, vacationId) {
-    let index = vacationsArray.findIndex(vacation => vacation.id == vacationId);
-    vacationsArray[index].followers += 1;
-    const vacationToUpdateFollowers = vacationsArray[index];
-    httpRequests(app.END_POINTS.vacations + '/' + vacationId, app.METHODS.PUT, vacationToUpdateFollowers).then(res => {
+function updateFollowersCount(vacationId, reduceOrAdd) {
+    debugger
+    const reqBody = {
+        userId: window.localStorage.getItem('userId'),
+        id: vacationId,
+        reduceOrAdd: reduceOrAdd
+    }
+    httpRequests(app.END_POINTS.vacations + '/' + vacationId, app.METHODS.PUT, reqBody).then(res => {
         console.log(res);
     }).catch(status => {
         console.log(status);
@@ -464,30 +465,16 @@ function updateFollowersCount(vacationsArray, vacationId) {
 }
 
 function adminView(allVacations, vacationsArray) {
-    //TODO: instead of table show each vacation on different card (div)
-    let vacationsListLength = allVacations ? allVacations.length : vacationsArray.length;
-    let addedVacationId;
-    if (allVacations) {
-        addedVacationId = allVacations[allVacations.length - 1].id + 1;
-    } else if (vacationsArray) {
-        if (vacationsArray.length === 0) {
-            addedVacationId = 1;
-        }
-        else {
-            addedVacationId = vacationsArray[vacationsArray.length - 1].id + 1;
-        }
-    }
-
     let html = `
     <h3 id='vacationListNote'> </h3>
+    <div id='modalElement'></div>
     <button id='add'>Add Vacation</button>
-    <div id="ModalElement"></div>
     <div id='vacationList'>`
 
     if (vacationsArray.length === 0) {
         printToHtml('main', html);
         printToHtml('vacationListNote', 'no vacations has been found');
-        addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLength);
+        addBtnEventListeners(vacationsArray);
     }
     else {
         for (let i = 0; i < vacationsArray.length; i++) {
@@ -511,40 +498,80 @@ function adminView(allVacations, vacationsArray) {
         }
         html += `</div>`;
         printToHtml('main', html);
-        addBtnEventListeners(vacationsArray, addedVacationId, vacationsListLength);
+        addBtnEventListeners(vacationsArray);
     }
 }
 
-function displayAddVacationModal() {
-    $('#myModal').modal({
-        backdrop: 'static',
-        keyboard: false
-    });
-}
-
-function paintModalElement(btnSaveId, vacationToEdit) {
-    $('#ModalElement').empty().append(`
-    <div id="myModal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 id='modalHeader' class="modal-title">Please fill out all the fields</h4>
-                    </div>
-                    <div class="modal-body">
-                        <label>Destination: <input id='addedDestination' required type='text' placeholder='destination'></label><br>
-                        <label>Description: <input id='addedDescription' required type='text' placeholder='description'></label><br>
-                        <label>Image: <input id='addedImage' required type='text' placeholder='image'></label><br>
-                        <label>From: <input id='addedFromDate' required type='date' placeholder='from'></label><br>
-                        <label>To: <input id='addedToDate' required type='date' placeholder='to'></label><br>
-                        <label>Price: <input id='addedPrice' required type='number' min='0' placeholder='price'></label><br>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="closeBtn btn btn-default" id=${btnSaveId}>Save</button>
-                        <button type="button" class="closeBtn btn btn-default" data-dismiss="modal" id='close'>Close</button>
-                    </div>
+function paintModalElement(saveId, objToUpdate) {
+    //TODO: problem with the modal!!!! opens up multiple modals and then the id's are not unique!!!
+    let modalBody = `<div class="modal-body">`;
+    if (objToUpdate) {
+        modalBody = modalBodyForUpdate(modalBody, objToUpdate);
+    } else {
+        modalBody = modalBodyForAdd(modalBody);
+    }
+    $('#modalElement').append(`  
+        <div id="myModal" class="modal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 id='modalHeader' class="modal-title">Please fill out all the fields</h4>
+                        </div>
+                        ${modalBody}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="closeBtn btn btn-default" id='${saveId}'>Save</button>
+                            <button type="button" class="closeBtn btn btn-default"  id='close'>Close</button>
+                        </div>
                 </div>
             </div>
-        </div>
-    </div>`)
+        </div>`)
+    displayVacationModal();
 };
+
+function modalBodyForAdd(modalBody) {
+    modalBody += `
+        <label>Destination: <input id='addedDestination' required type='text'></label><br>
+        <label>Description: <input id='addedDescription' required type='text'></label><br>
+        <label>Image: <input id='addedImage' required type='text'></label><br>
+        <label>From: <input id='addedFromDate' required type='date'></label><br>
+        <label>To: <input id='addedToDate' required type='date'></label><br>
+        <label>Price: <input id='addedPrice' required type='number' min='0'></label><br>
+        `;
+    return modalBody;
+}
+
+function modalBodyForUpdate(modalBody, objToUpdate) {
+    modalBody += `
+        <label>Destination: <input id='editDestination' required type='text' value='${objToUpdate.destination}'></label><br>
+        <label>Description: <input id='editDescription' required type='text' value='${objToUpdate.description}'></label><br>
+        <label>Image: <input id='editImage' required type='text' value='${objToUpdate.image}'></label><br>
+        <label>From: <input id='editFromDate' required type='date' value='${objToUpdate.fromDate}'></label><br>
+        <label>To: <input id='editToDate' required type='date' value='${objToUpdate.toDate}'></label><br>
+        <label>Price: <input id='editPrice' required type='number' min='0' value='${objToUpdate.price}'></label><br>
+        `;
+    return modalBody;
+}
+
+function closeModal() {
+    $('#myModal').modal('hide');
+    $('#modalElement').empty();
+    /* $("#myModal").on('hidden.bs.modal', function (e) {
+        e.preventDefault();
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+        $('#myModal').remove();
+    }); */
+    /*  $("#myModal").on('hidden.bs.modal', () => {
+         $(this).data('bs.modal', null);
+     }); */
+}
+
+function displayVacationModal() {
+    $('#myModal').modal('show');
+    /*  $('#myModal').modal({
+         backdrop: 'static',
+         keyboard: false
+     }); */
+}

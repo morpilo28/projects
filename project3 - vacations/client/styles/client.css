@@ -1,3 +1,6 @@
+*{
+    box-sizing: border-box;
+}
 .myTable {
     table-layout: fixed;
     width: 100%;
@@ -9,7 +12,7 @@
 
 input {
     text-align: center;
-    width: 100px;
+    width: 150px;
 }
 
 thead,
@@ -56,7 +59,15 @@ td {
 }
 
 .btn:hover,
-.button:active {
-    background-color: yellow;
+.button:active{
     color: black;
+    background-color: yellow;
+}
+
+.followBtnColor{
+    background-color: yellow;
+}
+
+.unFollowBtnColor{
+    background-color: white;
 }
