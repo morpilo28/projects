@@ -2,7 +2,7 @@
 //TODO: make all strings to lower case;
 
 const dal = require('../dal');
-const vacationModel = require('../models/vacation-model')
+const vacationModel = require('../models/vacation-model');
 const vacationTable = 'vacation';
 const followTable = 'follow_vacation';
 
@@ -29,9 +29,9 @@ function getVacations(userId, callback) {
                     }
                     callback(null, data);
                 }
-            })
+            });
         }
-    })
+    });
 }
 
 function addUnFollowedVacationsToOrganizedArray(allVacations, organizedArray) {
@@ -135,7 +135,7 @@ function updateVacation(editedVacationData, callback) {
             console.log(editedVacationData);
         }
     }
-    console.log(query);
+    
     dal.updateOne(query, (err) => {
         if (err) {
             callback(err);
@@ -146,6 +146,7 @@ function updateVacation(editedVacationData, callback) {
 }
 
 function deleteVacation(id, callback) {
+    id = Number(id);
     dal.deleteOne(`delete from ${vacationTable} where id = ${id}`, (e) => {
         if (e) {
             callback(e);

@@ -1,13 +1,13 @@
 "use strict";
 /* problems:
         - problem with the modal!!!! opens up multiple modals and then the id's are not unique!!!
-        - fix problems with date (on adding and editing);
+        - check if dates is ok and no problems
         - is there any place to use /vacation/:id?!
     TODO:
     - add the charts section
+    - socket.io
     - change lower case to upper case or vice versa if needed (for example in: registration/login, adding/updating a vacation, etc.)
     - make adding an image (when adding a vacation) possible
-    - show list ordered by vacation followed by user first.
     - design
     - needs to check for duplicate code
 */
@@ -31,7 +31,7 @@ var app = {
 if (!window.localStorage.getItem('userNameForTitle')) {
     loginView();
 } else {
-    showVacationTable();
+    showVacationList();
 }
 
 navbarEventListeners();
@@ -53,7 +53,7 @@ function navigate(url) {
             loginView();
             break;
         case 'vacations':
-            showVacationTable();
+            showVacationList();
             break;
         case 'logout':
             window.localStorage.clear();
@@ -62,9 +62,9 @@ function navigate(url) {
     }
 }
 
-function showVacationTable() {
+function showVacationList() {
     const userId = window.localStorage.getItem('userId');
-    httpRequests(app.END_POINTS.vacations + '?userId=' + userId, app.METHODS.GET).then(res => tableView(res)).catch(status => {
+    httpRequests(app.END_POINTS.vacations + '?userId=' + userId, app.METHODS.GET).then(res => vacationListView(res)).catch(status => {
         if (status === 500) {
             printToHtml('main', 'Internal Server Error');
         } else if (status === 401) {
@@ -110,10 +110,10 @@ function httpRequests(endPoint, httpVerb, reqBody) {
     })
 }
 
-function tableView(vacations, allVacations) {
+function vacationListView(vacations) {
     showUserName();
     if (window.localStorage.getItem('isAdmin') === 'true') {
-        adminView(allVacations, vacations)
+        adminView(vacations)
     } else {
         clientView(vacations);
     }
@@ -152,9 +152,12 @@ function addBtnEventListeners(vacationsArray) {
 
         $(document).on('click', `#deleteIcon${id}`, (e) => {
             e.preventDefault();
-            const idx = { id: event.target.id.slice(10) };
-            httpRequests(singleVacationEndPoint, app.METHODS.DELETE, idx).then(res => {
-                tableView(res);
+            const data = {
+                id: event.target.id.slice(10),
+                userId: window.localStorage.getItem('userId')
+            };
+            httpRequests(singleVacationEndPoint, app.METHODS.DELETE, data).then(res => {
+                vacationListView(res);
             }).catch(status => {
                 if (status === 500) {
                     printToHtml('main', 'Internal Server Error')
@@ -188,7 +191,7 @@ function onSaveAddedVacation() {
     } else {
         httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(res => {
             closeModal();
-            tableView(res);
+            vacationListView(res);
         }).catch(status => {
             if (status === 500) {
                 printToHtml('main', 'Internal Server Error')
@@ -205,29 +208,43 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
     $(document).on('click', `#saveChanges${idx}`, (e) => {
         e.preventDefault();
         let editedObj = {
+            id: idx,
             destination: jQuery(`#editDestination`).val(),
             description: jQuery(`#editDescription`).val(),
             image: jQuery(`#editImage`).val(),
             fromDate: jQuery(`#editFromDate`).val(),
             toDate: jQuery(`#editToDate`).val(),
             price: Number(jQuery(`#editPrice`).val()),
-            followers: followers
+            followers: followers,
+            userId: window.localStorage.getItem('userId')
         };
 
         let isDataTypeGood = true;
+        let message = '';
         for (let key in editedObj) {
+            if (key === 'fromDate' || key === 'toDate') {
+                if ((editedObj[key]) === '') {
+                    isDataTypeGood = false;
+                    message="Date fields must be field!";
+                    break;
+                }
+            }
+
             if (key === 'price') {
                 if (isNaN(editedObj[key]) || editedObj[key] === 0) {
                     isDataTypeGood = false;
+                    message="'Price' field must be field with numbers and larger than 0.";
+                    break;
                 }
             }
         }
+
         if (isDataTypeGood === false) {
-            printToHtml('modalHeader', "The field 'price' must be field with numbers and larger than 0.");
+            printToHtml('modalHeader', message);
         } else {
             httpRequests(singleVacationEndPoint, app.METHODS.PUT, editedObj).then(res => {
                 closeModal();
-                tableView(res);
+                vacationListView(res);
             }).catch(status => {
                 if (status === 500) {
 
@@ -241,10 +258,11 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
     $(document).on('click', `#cancelChanges${idx}`, (e) => {
         e.preventDefault();
         changeBackToOriginalBtn(idx);
-        showVacationTable();
+        showVacationList();
     });
 }
 
+//TODO: see if it's needed
 function onMoreDetails(res) {
     let html = `
             <div>
@@ -267,7 +285,7 @@ function onMoreDetails(res) {
 
     document.getElementById('returnToFullList').addEventListener('click', (e) => {
         e.preventDefault();
-        tableView(res.allVacations);
+        vacationListView(res.allVacations);
     })
 }
 
@@ -417,7 +435,7 @@ function clientView(vacations) {
 
                 /*  */
                 addToFollowDb(vacationId);
-                //else if pressed to unfollow then
+                //else if pressed to unFollow then
             })
         }
     }
@@ -430,11 +448,9 @@ function addToFollowDb(vacationId) {
     };
     //TODO: make btn background color yellow
     httpRequests(app.END_POINTS.follow, app.METHODS.POST, followObjToAdd).then(res => {
-        //get back vacation id and then change btn color if unFollowed
         console.log(res);
         if (res.isFollowed === true) {
             $(`#followBtn${res.vacationId}`).toggleClass('unFollowBtnColor followBtnColor');
-            debugger
             updateFollowersCount(res.vacationId, 'add');
         } else {
             $(`#followBtn${res.vacationId}`).toggleClass('followBtnColor unFollowBtnColor');
@@ -451,7 +467,6 @@ function addToFollowDb(vacationId) {
 }
 
 function updateFollowersCount(vacationId, reduceOrAdd) {
-    debugger
     const reqBody = {
         userId: window.localStorage.getItem('userId'),
         id: vacationId,
@@ -464,41 +479,42 @@ function updateFollowersCount(vacationId, reduceOrAdd) {
     });
 }
 
-function adminView(allVacations, vacationsArray) {
+function adminView(vacationsArray) {
+    const vacations = vacationsArray.organizedVacationArray ? vacationsArray.organizedVacationArray : vacationsArray;
     let html = `
     <h3 id='vacationListNote'> </h3>
     <div id='modalElement'></div>
     <button id='add'>Add Vacation</button>
     <div id='vacationList'>`
 
-    if (vacationsArray.length === 0) {
+    if (vacations.length === 0) {
         printToHtml('main', html);
         printToHtml('vacationListNote', 'no vacations has been found');
-        addBtnEventListeners(vacationsArray);
+        addBtnEventListeners(vacations);
     }
     else {
-        for (let i = 0; i < vacationsArray.length; i++) {
-            const idx = vacationsArray[i].id;
+        for (let i = 0; i < vacations.length; i++) {
+            const idx = vacations[i].id;
             html += `
             <div class='card'>
                 <i id='deleteIcon${idx}' class='fas fa-times'></i>
                 <i id='editIcon${idx}' class="fas fa-pencil-alt"></i>
                 <input hidden value='${idx}'/>
-                <div><b>${vacationsArray[i].destination}</b></div>
-                <div>${vacationsArray[i].description}</div>
-                <div>${vacationsArray[i].price}$</div>
+                <div><b>${vacations[i].destination}</b></div>
+                <div>${vacations[i].description}</div>
+                <div>${vacations[i].price}$</div>
                 <div>
-                    <img width='80' src="./styles/images/${vacationsArray[i].image}" alt="${vacationsArray[i].image}"/>
+                    <img width='80' src="./styles/images/${vacations[i].image}" alt="${vacations[i].image}"/>
                 </div>
                 <div>
-                    <p>From: ${vacationsArray[i].fromDate}</p>
-                    <p>To: ${vacationsArray[i].toDate}</p>
+                    <p>From: ${vacations[i].fromDate}</p>
+                    <p>To: ${vacations[i].toDate}</p>
                 </div>
             </div>`;
         }
         html += `</div>`;
         printToHtml('main', html);
-        addBtnEventListeners(vacationsArray);
+        addBtnEventListeners(vacations);
     }
 }
 

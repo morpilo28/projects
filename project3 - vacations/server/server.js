@@ -111,12 +111,13 @@ app.put('/vacations/:id', (req, res) => {
 })
 
 app.delete('/vacations/:id', (req, res) => {
-    const id = Number(req.body.id);
+    const id = req.body.id;
+    const userId = req.body.userId;
     vacationBl.deleteVacation(id, (e) => {
         if (e) {
             return res.status(500).send();
         } else {
-            vacationBl.getVacations((e, allVacations) => {
+            vacationBl.getVacations(userId, (e, allVacations) => {
                 if (e) {
                     return res.status(500).send();
                 } else {
@@ -175,7 +176,6 @@ app.post('/follow', function (req, res) {
     followBl.addFollow(followObjToAdd, (e) => {
         if (e) {
             followBl.deleteFollow((followObjToAdd), (e, vacationId) => {
-                console.log(vacationId);
                 if (e) {
                     return res.status(400).send(e);
                 } else {
