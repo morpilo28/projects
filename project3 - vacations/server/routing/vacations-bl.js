@@ -6,30 +6,34 @@ const vacationModel = require('../models/vacation-model');
 const vacationTable = 'vacation';
 const followTable = 'follow_vacation';
 
-function getVacations(userId, callback) {
+function getVacations(userId, callback, isForChart) {
     userId = Number(userId);
+    let query = isForChart === 'true' ? `select * from ${vacationTable} where followers != 0` : `select * from ${vacationTable} order by id`;
     //get vacations and order it by vacations followed first
-    dal.readAll(`select * from ${vacationTable} order by id`, (err, allVacations) => {
+    dal.readAll(query, (err, allVacations) => {
         allVacations = adjustVacationFormat(allVacations);
         if (err) {
             callback(err);
         } else {
-            dal.readAll(`select vacation_id from ${followTable} where user_id = ${userId} `, (err, userFollowedVacations) => {
-                if (err) {
-                    callback(err);
-                } else {
-                    //getting obj values into an array
-                    let userFollowedVacationsIds = createArrayOfFollowedVacationsId(userFollowedVacations);
-                    let organizedVacationArray = addFollowedVacationToOrganizedArray(allVacations, userFollowedVacationsIds);
-                    organizedVacationArray = addUnFollowedVacationsToOrganizedArray(allVacations, organizedVacationArray);
+            if (isForChart === 'true') {
+                callback(null, allVacations);
+            } else {
+                dal.readAll(`select vacation_id from ${followTable} where user_id = ${userId} `, (err, userFollowedVacations) => {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        let userFollowedVacationsIds = createArrayOfFollowedVacationsId(userFollowedVacations);
+                        let organizedVacationArray = addFollowedVacationToOrganizedArray(allVacations, userFollowedVacationsIds);
+                        organizedVacationArray = addUnFollowedVacationsToOrganizedArray(allVacations, organizedVacationArray);
 
-                    const data = {
-                        organizedVacationArray: organizedVacationArray,
-                        userFollowedVacationsIds: userFollowedVacationsIds
+                        const data = {
+                            organizedVacationArray: organizedVacationArray,
+                            userFollowedVacationsIds: userFollowedVacationsIds
+                        }
+                        callback(null, data);
                     }
-                    callback(null, data);
-                }
-            });
+                });
+            }
         }
     });
 }
@@ -135,7 +139,7 @@ function updateVacation(editedVacationData, callback) {
             console.log(editedVacationData);
         }
     }
-    
+
     dal.updateOne(query, (err) => {
         if (err) {
             callback(err);
@@ -149,6 +153,7 @@ function deleteVacation(id, callback) {
     id = Number(id);
     dal.deleteOne(`delete from ${vacationTable} where id = ${id}`, (e) => {
         if (e) {
+            console.log(e);
             callback(e);
         } else {
             callback(null);

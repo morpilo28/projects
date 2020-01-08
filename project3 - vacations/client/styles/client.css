@@ -1,6 +1,7 @@
-*{
+* {
     box-sizing: border-box;
 }
+
 .myTable {
     table-layout: fixed;
     width: 100%;
@@ -59,15 +60,15 @@ td {
 }
 
 .btn:hover,
-.button:active{
+.button:active {
     color: black;
     background-color: yellow;
 }
 
-.followBtnColor{
+.followBtnColor {
     background-color: yellow;
 }
 
-.unFollowBtnColor{
+.unFollowBtnColor {
     background-color: white;
 }

@@ -16,12 +16,12 @@ function addFollow(followObjToAdd, callback) {
     })
 }
 
-function deleteFollow(followObjToAdd, callback){
+function deleteFollow(followObjToAdd, callback) {
     followObjToAdd = modalFollowObj(followObjToAdd);
-    dal.deleteOne(`delete from ${table} where user_id = ${followObjToAdd.userId} and vacation_id = ${followObjToAdd.vacationId}`,(e)=>{
-        if(e){
+    dal.deleteOne(`delete from ${table} where user_id = ${followObjToAdd.userId} and vacation_id = ${followObjToAdd.vacationId}`, (e) => {
+        if (e) {
             callback('problem with deleting');
-        }else{
+        } else {
             callback(null, followObjToAdd.vacationId);
         }
     })
@@ -34,7 +34,29 @@ function modalFollowObj(followObjToAdd) {
     return followObjToAdd;
 }
 
+function getOneVacationFollowed(vacationId, callback) {
+    dal.readAll(`select * from ${table} where vacation_id = ${vacationId};`, (e, data) => {
+        if (e) {
+            callback('vacation already followed');
+        } else {
+            callback(null, data);
+        }
+    })
+}
+
+function deleteAllVacationFollow(vacationId, callback) {
+    dal.deleteOne(`delete from ${table} where vacation_id = ${vacationId}`, (e) => {
+        if (e) {
+            console.log(e);
+            callback('problem with deleting');
+        } else {
+            callback(null);
+        }
+    })
+}
 module.exports = {
     addFollow: addFollow,
-    deleteFollow: deleteFollow
+    deleteFollow: deleteFollow,
+    getOneVacationFollowed: getOneVacationFollowed,
+    deleteAllVacationFollow: deleteAllVacationFollow
 }

@@ -47,13 +47,19 @@ app.use((req, res, next) => {
 
 app.get('/vacations', (req, res) => {
     const userId = req.query.userId;
+    let forChart = '';
+    if (req.query.forChart) {
+        forChart = req.query.forChart;
+    } else {
+        forChart = 'false';
+    }
     vacationBl.getVacations(userId, (e, data) => {
         if (e) {
             return res.status(500).send();
         } else {
             return res.send(data);
         }
-    })
+    }, forChart);
 })
 
 app.get('/vacations/:id', (req, res) => {
@@ -102,7 +108,7 @@ app.put('/vacations/:id', (req, res) => {
                 if (e) {
                     return res.status(500).send();
                 } else {
-                  
+
                     return res.send(allVacations);
                 }
             })
@@ -111,19 +117,33 @@ app.put('/vacations/:id', (req, res) => {
 })
 
 app.delete('/vacations/:id', (req, res) => {
-    const id = req.body.id;
+    const vacationId = req.body.id;
     const userId = req.body.userId;
-    vacationBl.deleteVacation(id, (e) => {
+    followBl.getOneVacationFollowed(vacationId, (e, data) => {
         if (e) {
             return res.status(500).send();
         } else {
-            vacationBl.getVacations(userId, (e, allVacations) => {
-                if (e) {
-                    return res.status(500).send();
-                } else {
-                    return res.send(allVacations);
-                }
-            })
+            if (data.length !== 0) {
+                followBl.deleteAllVacationFollow(vacationId, (e) => {
+                    if (e) {
+                        return res.status(500).send();
+                    } else {
+                        vacationBl.deleteVacation(vacationId, (e) => {
+                            if (e) {
+                                return res.status(500).send();
+                            } else {
+                                vacationBl.getVacations(userId, (e, allVacations) => {
+                                    if (e) {
+                                        return res.status(500).send();
+                                    } else {
+                                        return res.send(allVacations);
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
         }
     })
 })
