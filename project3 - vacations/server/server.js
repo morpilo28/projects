@@ -119,31 +119,18 @@ app.put('/vacations/:id', (req, res) => {
 app.delete('/vacations/:id', (req, res) => {
     const vacationId = req.body.id;
     const userId = req.body.userId;
-    followBl.getOneVacationFollowed(vacationId, (e, data) => {
+
+    vacationBl.deleteVacation(vacationId,userId, (e) => {
         if (e) {
             return res.status(500).send();
         } else {
-            if (data.length !== 0) {
-                followBl.deleteAllVacationFollow(vacationId, (e) => {
-                    if (e) {
-                        return res.status(500).send();
-                    } else {
-                        vacationBl.deleteVacation(vacationId, (e) => {
-                            if (e) {
-                                return res.status(500).send();
-                            } else {
-                                vacationBl.getVacations(userId, (e, allVacations) => {
-                                    if (e) {
-                                        return res.status(500).send();
-                                    } else {
-                                        return res.send(allVacations);
-                                    }
-                                })
-                            }
-                        })
-                    }
-                })
-            }
+            vacationBl.getVacations(userId, (e, allVacations) => {
+                if (e) {
+                    return res.status(500).send();
+                } else {
+                    return res.send(allVacations);
+                }
+            })
         }
     })
 })
@@ -193,24 +180,10 @@ app.post('/register', function (req, res) {
 
 app.post('/follow', function (req, res) {
     const followObjToAdd = req.body;
-    followBl.addFollow(followObjToAdd, (e) => {
+    usersBl.checkIfFollowed(followObjToAdd, (e, data) => {
         if (e) {
-            followBl.deleteFollow((followObjToAdd), (e, vacationId) => {
-                if (e) {
-                    return res.status(400).send(e);
-                } else {
-                    const data = {
-                        isFollowed: false,
-                        vacationId: vacationId
-                    }
-                    res.send(data);
-                }
-            })
+            return res.status(400).send(e);
         } else {
-            const data = {
-                isFollowed: true,
-                vacationId: followObjToAdd.vacationId
-            }
             return res.send(data);
         }
     })

@@ -9,7 +9,6 @@ const followTable = 'follow_vacation';
 function getVacations(userId, callback, isForChart) {
     userId = Number(userId);
     let query = isForChart === 'true' ? `select * from ${vacationTable} where followers != 0` : `select * from ${vacationTable} order by id`;
-    //get vacations and order it by vacations followed first
     dal.readAll(query, (err, allVacations) => {
         allVacations = adjustVacationFormat(allVacations);
         if (err) {
@@ -36,45 +35,6 @@ function getVacations(userId, callback, isForChart) {
             }
         }
     });
-}
-
-function addUnFollowedVacationsToOrganizedArray(allVacations, organizedArray) {
-    let newArry = [...organizedArray];
-    let vacationIdAlreadyExist = false;
-    for (let i = 0; i < allVacations.length; i++) {
-        for (let j = 0; j < newArry.length; j++) {
-            vacationIdAlreadyExist = false;
-            if (newArry[j].id === allVacations[i].id) {
-                vacationIdAlreadyExist = true;
-                break;
-            }
-        }
-        if (vacationIdAlreadyExist === false) {
-            organizedArray.push(allVacations[i]);
-        }
-    }
-    return organizedArray;
-}
-
-function addFollowedVacationToOrganizedArray(allVacations, userFollowedVacationsIds) {
-    let organizedArray = [];
-    for (let i = 0; i < allVacations.length; i++) {
-        for (let j = 0; j < userFollowedVacationsIds.length; j++) {
-            if (userFollowedVacationsIds[j] === allVacations[i].id) {
-                organizedArray.push(allVacations[i]);
-            }
-        }
-    }
-    return organizedArray;
-}
-
-function createArrayOfFollowedVacationsId(userFollowedVacations) {
-    let userFollowedVacationsIds = [];
-    for (let i = 0; i < userFollowedVacations.length; i++) {
-        let followedVacationIdToArray = Object.values(userFollowedVacations[i]);
-        userFollowedVacationsIds.push(followedVacationIdToArray[0]);
-    }
-    return userFollowedVacationsIds;
 }
 
 function getSingleVacation(id, callback) {
@@ -149,16 +109,80 @@ function updateVacation(editedVacationData, callback) {
     })
 }
 
-function deleteVacation(id, callback) {
-    id = Number(id);
-    dal.deleteOne(`delete from ${vacationTable} where id = ${id}`, (e) => {
+function deleteVacation(vacationId,userId, callback) {
+    vacationId = Number(vacationId);
+    userId = Number(userId);
+    dal.readAll(`select * from ${followTable} where vacation_id = ${vacationId};`, (e, data) => {
         if (e) {
-            console.log(e);
             callback(e);
         } else {
-            callback(null);
+            if (data.length !== 0) {
+                dal.deleteOne(`delete from ${followTable} where vacation_id = ${vacationId}`, (e) => {
+                    if (e) {
+                        console.log(e);
+                        callback(e);
+                    } else {
+                        dal.deleteOne(`delete from ${vacationTable} where id = ${vacationId}`, (e) => {
+                            if (e) {
+                                console.log(e);
+                                callback(e);
+                            } else {
+                                callback(null);
+                            }
+                        })
+                    }
+                })
+            }else{
+                dal.deleteOne(`delete from ${vacationTable} where id = ${vacationId}`, (e) => {
+                    if (e) {
+                        console.log(e);
+                        callback(e);
+                    } else {
+                        callback(null);
+                    }
+                })
+            }
         }
     })
+}
+
+function addUnFollowedVacationsToOrganizedArray(allVacations, organizedArray) {
+    let newArry = [...organizedArray];
+    let vacationIdAlreadyExist = false;
+    for (let i = 0; i < allVacations.length; i++) {
+        for (let j = 0; j < newArry.length; j++) {
+            vacationIdAlreadyExist = false;
+            if (newArry[j].id === allVacations[i].id) {
+                vacationIdAlreadyExist = true;
+                break;
+            }
+        }
+        if (vacationIdAlreadyExist === false) {
+            organizedArray.push(allVacations[i]);
+        }
+    }
+    return organizedArray;
+}
+
+function addFollowedVacationToOrganizedArray(allVacations, userFollowedVacationsIds) {
+    let organizedArray = [];
+    for (let i = 0; i < allVacations.length; i++) {
+        for (let j = 0; j < userFollowedVacationsIds.length; j++) {
+            if (userFollowedVacationsIds[j] === allVacations[i].id) {
+                organizedArray.push(allVacations[i]);
+            }
+        }
+    }
+    return organizedArray;
+}
+
+function createArrayOfFollowedVacationsId(userFollowedVacations) {
+    let userFollowedVacationsIds = [];
+    for (let i = 0; i < userFollowedVacations.length; i++) {
+        let followedVacationIdToArray = Object.values(userFollowedVacations[i]);
+        userFollowedVacationsIds.push(followedVacationIdToArray[0]);
+    }
+    return userFollowedVacationsIds;
 }
 
 function setDate(date, isFromUpdate) {

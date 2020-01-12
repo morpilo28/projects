@@ -11,7 +11,8 @@
     - design
     - needs to check for duplicate code
 */
-var app = {
+
+const app = {
     endPointStart: `http://localhost:3201/`,
     END_POINTS: {
         vacations: 'vacations',
@@ -28,16 +29,19 @@ var app = {
     TOKEN_LOCAL_STORAGE_KEY: 'token',
 };
 
-if (!window.localStorage.getItem('userNameForTitle')) {
-    loginView();
-} else {
-    if(window.localStorage.getItem('isAdmin') === 'true'){
-        addChartNavigationLink();
-    }
-    showVacationList();
-}
+init();
+function init() {
+    navbarEventListeners();
 
-navbarEventListeners();
+    if (!window.localStorage.getItem('userNameForTitle')) {
+        loginView();
+    } else {
+        if (window.localStorage.getItem('isAdmin') === 'true') {
+            addChartNavigationLink();
+        }
+        showVacationList();
+    }
+}
 
 function navbarEventListeners() {
     const links = document.querySelectorAll('#nav a[data-href]');
@@ -47,6 +51,12 @@ function navbarEventListeners() {
             navigate(e.target.dataset.href);
         })
     }
+
+    $(document).on('click', '#chart', (e) => {
+        e.preventDefault();
+        buildChart();
+    });
+
 }
 
 function navigate(url) {
@@ -76,6 +86,8 @@ function buildChart() {
             numOfFollowers.push(numOfFollowersToArray[7]);
             vacationsFollowed.push(numOfFollowersToArray[0] + '-' + numOfFollowersToArray[2]);
         }
+        // TODO: try to make the y labels be according to the followers value or make a min-max labels;
+        // numOfFollowers = numOfFollowers.sort((a, b) => a - b).reverse(); 
         let html = `<canvas id="myChart" style="display: block; height: 467px; width: 935px;"></canvas>`;
         printToHtml('main', html);
         var ctx = document.getElementById('myChart').getContext('2d');
@@ -97,8 +109,7 @@ function buildChart() {
                     }],
                     yAxes: [{
                         type: 'category',
-                        labels: [6, 5, 4, 3, 2, 1, 0],
-
+                        labels: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], //needs to set is dynamically
                     }]
                 },
             }
@@ -443,10 +454,7 @@ function loginValidation() {
 }
 
 function addChartNavigationLink() {
-    $('#nav').append(` <a id='chart' data-href="chart" href="chart"> | Chart</a>`);
-    $(document).on('click', '#chart', (e) => {
-        buildChart();
-    });
+    $('#nav').append(` <a id='chart' data-href="chart" href=""> | Chart</a>`);
 }
 
 function emptyInputs(id) {

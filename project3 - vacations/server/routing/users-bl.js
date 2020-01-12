@@ -3,6 +3,8 @@
 const dal = require('../dal');
 const table = 'user';
 const userModel = require('../models/user-model');
+const followTable = 'follow_vacation';
+const followModel = require('../models/follow-model');
 
 function isUserNameAlreadyExist(registeredUser, callback) {
     //checking if a userName already exist in the db
@@ -53,15 +55,54 @@ function validateUser(userToValidate, callback) {
     })
 }
 
-function createUserTypeObj(allUsers){
+function createUserTypeObj(allUsers) {
     allUsers = allUsers.map(element => {
         return new userModel.User(element.id, element.first_name, element.last_name, element.user_name, element.password, element.is_admin);
     });
     return allUsers;
 }
 
+function checkIfFollowed(followObjToAdd, callback) {
+    followObjToAdd = modalFollowObj(followObjToAdd);
+    dal.readAll(`select * from ${followTable} where vacation_id = ${followObjToAdd.vacationId} && user_id = ${followObjToAdd.userId};`, (e, data) => {
+        if (data.length !== 0) {
+            dal.deleteOne(`delete from ${followTable} where user_id = ${followObjToAdd.userId} and vacation_id = ${followObjToAdd.vacationId}`, (e) => {
+                if (e) {
+                    callback('problem with deleting');
+                } else {
+                    const data = {
+                        isFollowed: false,
+                        vacationId: followObjToAdd.vacationId
+                    }
+                    callback(null, data);
+                }
+            })
+        } else {
+            dal.createOne(`insert into ${followTable} (user_id, vacation_id) values (${followObjToAdd.userId}, ${followObjToAdd.vacationId});`, `select * from ${followTable};`, (e, allFollowedVacation) => {
+                if (e) {
+                    callback(e);
+                } else {
+                    const data = {
+                        isFollowed: true,
+                        vacationId: followObjToAdd.vacationId
+                    }
+                    callback(null, data);
+                }
+            })
+        }
+    })
+}
+
+function modalFollowObj(followObjToAdd) {
+    followObjToAdd.userId = Number(followObjToAdd.userId);
+    followObjToAdd.vacationId = Number(followObjToAdd.vacationId);
+    followObjToAdd = new followModel.Follow(followObjToAdd.userId, followObjToAdd.vacationId);
+    return followObjToAdd;
+}
+
 module.exports = {
     registerUser: registerUser,
     validateUser: validateUser,
-    isUserNameAlreadyExist: isUserNameAlreadyExist
+    isUserNameAlreadyExist: isUserNameAlreadyExist,
+    checkIfFollowed: checkIfFollowed,
 }
