@@ -91,7 +91,7 @@ app.get('/vacations/:id', (req, res) => {
 
 app.post('/vacations', (req, res) => {
     const vacationToAddObj = req.body;
-    vacationBl.createVacation(vacationToAddObj, (e, allVacations) => {
+    vacationBl.createVacation(vacationToAddObj, (e, vacation) => {
         if (e) {
             if (e === 400) {
                 return res.status(400).send();
@@ -99,8 +99,8 @@ app.post('/vacations', (req, res) => {
                 return res.status(500).send(e);
             }
         } else {
-            io.emit('ADD_VACATION', 'ADD_VACATION');
-            return res.send(allVacations);
+            io.emit('ADD_VACATION', vacation);
+            return res.send();
         }
     })
 })

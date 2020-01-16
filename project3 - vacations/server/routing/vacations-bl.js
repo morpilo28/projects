@@ -54,7 +54,7 @@ function createVacation(vacationToADD, callback) {
     //1. make insert img possible
     vacationToADD.price = Number(vacationToADD.price);
     vacationToADD = new vacationModel.Vacation(null, vacationToADD.description, vacationToADD.destination, vacationToADD.image, vacationToADD.fromDate, vacationToADD.toDate, vacationToADD.price, vacationToADD.followers);
-    const { id, description, destination, image, fromDate, toDate, price, followers } = vacationToADD;
+    const { description, destination, image, fromDate, toDate, price, followers } = vacationToADD;
 
     dal.readAll(`select * from ${vacationTable} order by id`, (err, allVacations) => {
         allVacations = adjustVacationFormat(allVacations);
@@ -62,8 +62,8 @@ function createVacation(vacationToADD, callback) {
         if (err) {
             callback(err);
         } else {
-            let isVacationAlreadyExist = isVacationExist(allVacations, vacationToADD);
-            if (isVacationAlreadyExist) {
+            let vacation = getVacationIfExists(allVacations, vacationToADD);
+            if (vacation) {
                 callback(400);
             } else {
                 dal.createOne(`insert into ${vacationTable} (description, destination, image, fromDate, toDate, price, followers) values
@@ -72,7 +72,8 @@ function createVacation(vacationToADD, callback) {
                         callback(e);
                     } else {
                         allVacations = adjustVacationFormat(allVacations);
-                        callback(null, allVacations);
+                        let createdVacation = getVacationIfExists(allVacations, vacationToADD);
+                        callback(null, createdVacation);
                     }
                 })
             }
@@ -195,14 +196,14 @@ function setDate(date, isFromUpdate) {
     return dateFormated;
 }
 
-function isVacationExist(allVacations, vacationToADD) {
+function getVacationIfExists(allVacations, vacationToADD) {
     let fromDate = setDate(new Date(vacationToADD.fromDate));
     let toDate = setDate(new Date(vacationToADD.toDate));
     for (let i = 0; i < allVacations.length; i++) {
         const a = allVacations[i];
         const b = vacationToADD;
         if (a.destination === b.destination && a.fromDate === fromDate && a.toDate === toDate && a.price === b.price) {
-            return true;
+            return a;
         }
     }
     return false;
