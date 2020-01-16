@@ -10,8 +10,6 @@
     - design
     - needs to check for duplicate code
 */
-var socket = io.connect('http://localhost:3201/');
-
 
 
 const app = {
@@ -54,7 +52,7 @@ function navbarEventListeners() {
         })
     }
 
-    $(document).on('click', '#chart', (e) => {
+    $('#chart').on('click', (e) => {
         e.preventDefault();
         buildChart();
     });
@@ -190,37 +188,26 @@ function printToHtml(id, html) {
 }
 
 function addBtnEventListeners(vacationsArray) {
-    $(document).off('click', '#add');
-    $(document).on('click', '#add', (e) => {
+    $('#add').on('click', (e) => {
         e.preventDefault();
         paintModalElement('save');
-    });
-
-    $(document).on('click', `#save`, (e) => {
-        e.preventDefault();
-        onSaveAddedVacation();
-    });
-
-    $(document).on('click', `#close`, (e) => {
-        e.preventDefault();
-        closeModal();
     });
 
     for (let i = 0; i < vacationsArray.length; i++) {
         const id = vacationsArray[i].id;
         const singleVacationEndPoint = `vacations/${id}`;
-        $(document).on('click', `#editIcon${id}`, { value: i }, (e) => {
+        $(`#editIcon${id}`).on('click', { value: i }, (e) => {
             e.preventDefault();
-            const id = event.target.id.slice(8);
+            const id = e.target.id.slice(8);
             const objToUpdate = vacationsArray[i];
             paintModalElement(`saveChanges${id}`, objToUpdate);
             onEditVacation(id, singleVacationEndPoint, objToUpdate.followers);
         });
 
-        $(document).on('click', `#deleteIcon${id}`, (e) => {
+        $(`#deleteIcon${id}`).on('click', (e) => {
             e.preventDefault();
             const data = {
-                id: event.target.id.slice(10),
+                id: e.target.id.slice(10),
                 userId: window.localStorage.getItem('userId')
             };
             httpRequests(singleVacationEndPoint, app.METHODS.DELETE, data).then(res => {
@@ -272,7 +259,7 @@ function onSaveAddedVacation() {
 }
 
 function onEditVacation(idx, singleVacationEndPoint, followers) {
-    $(document).on('click', `#saveChanges${idx}`, (e) => {
+    $(`#saveChanges${idx}`).on('click', (e) => {
         e.preventDefault();
         let editedObj = {
             id: idx,
@@ -322,7 +309,7 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
         }
     });
 
-    $(document).on('click', `#cancelChanges${idx}`, (e) => {
+    $(`#cancelChanges${idx}`).on('click', (e) => {
         e.preventDefault();
         changeBackToOriginalBtn(idx);
         showVacationList();
@@ -616,7 +603,20 @@ function paintModalElement(saveId, objToUpdate) {
                 </div>
             </div>
         </div>
-    </div>`)
+    </div>`);
+
+    if (saveId === "save") {
+        $(`#save`).on('click', (e) => {
+            e.preventDefault();
+            onSaveAddedVacation();
+        });
+    }
+
+    $(`#close`).on('click', (e) => {
+        e.preventDefault();
+        closeModal();
+    });
+
     displayVacationModal();
 };
 
@@ -655,4 +655,16 @@ function displayVacationModal() {
          backdrop: 'static',
          keyboard: false
      }); */
+}
+
+function onAddVacationEvent(data) {
+    console.log(data);
+}
+
+function onEditVacationEvent(data) {
+    console.log(data);
+}
+
+function onDeleteVacationEvent(data) {
+    console.log(data);
 }

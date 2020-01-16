@@ -66,7 +66,7 @@ app.get('/vacations', (req, res) => {
             return res.send(data);
         }
     }, forChart);
-})
+});
 
 app.get('/vacations/:id', (req, res) => {
     const id = Number(req.params.id);
@@ -99,6 +99,7 @@ app.post('/vacations', (req, res) => {
                 return res.status(500).send(e);
             }
         } else {
+            io.emit('ADD_VACATION', 'ADD_VACATION');
             return res.send(allVacations);
         }
     })
@@ -114,7 +115,7 @@ app.put('/vacations/:id', (req, res) => {
                 if (e) {
                     return res.status(500).send();
                 } else {
-
+                    io.emit('EDIT_VACATION', 'EDIT_VACATION');
                     return res.send(allVacations);
                 }
             })
@@ -134,6 +135,7 @@ app.delete('/vacations/:id', (req, res) => {
                 if (e) {
                     return res.status(500).send();
                 } else {
+                    io.emit('DELETE_VACATION', 'DELETE_VACATION');
                     return res.send(allVacations);
                 }
             })
