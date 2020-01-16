@@ -633,12 +633,14 @@ function modalBodyForAdd(modalBody) {
 }
 
 function modalBodyForUpdate(modalBody, objToUpdate) {
+    let [toDay, toMonth, toYear] = objToUpdate.toDate.split('-');
+    let [fromDay, fromMonth, fromYear] = objToUpdate.fromDate.split('-');
     modalBody += `
         <label>Destination: <input id='editDestination' required type='text' value='${objToUpdate.destination}'></label><br>
         <label>Description: <input id='editDescription' required type='text' value='${objToUpdate.description}'></label><br>
         <label>Image: <input id='editImage' required type='text' value='${objToUpdate.image}'></label><br>
-        <label>From: <input id='editFromDate' required type='date' value='${objToUpdate.fromDate}'></label><br>
-        <label>To: <input id='editToDate' required type='date' value='${objToUpdate.toDate}'></label><br>
+        <label>From: <input id='editFromDate' required type='date' value='${fromYear}-${fromMonth}-${fromDay}'></label><br>
+        <label>To: <input id='editToDate' required type='date' value='${toYear}-${toMonth}-${toDay}'></label><br>
         <label>Price: <input id='editPrice' required type='number' min='0' value='${objToUpdate.price}'></label><br>
         `;
     return modalBody;
