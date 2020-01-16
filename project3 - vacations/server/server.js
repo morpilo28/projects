@@ -107,18 +107,12 @@ app.post('/vacations', (req, res) => {
 
 app.put('/vacations/:id', (req, res) => {
     const editedVacationData = req.body;
-    vacationBl.updateVacation(editedVacationData, (e) => {
+    vacationBl.updateVacation(editedVacationData, (e, updatedVacation) => {
         if (e) {
             return res.status(500).send();
         } else {
-            vacationBl.getVacations(editedVacationData.userId, (e, allVacations) => {
-                if (e) {
-                    return res.status(500).send();
-                } else {
-                    io.emit('EDIT_VACATION', 'EDIT_VACATION');
-                    return res.send(allVacations);
-                }
-            })
+            io.emit('EDIT_VACATION', updatedVacation);
+            return res.send();
         }
     })
 })
@@ -131,14 +125,7 @@ app.delete('/vacations/:id', (req, res) => {
         if (e) {
             return res.status(500).send();
         } else {
-            vacationBl.getVacations(userId, (e, allVacations) => {
-                if (e) {
-                    return res.status(500).send();
-                } else {
-                    io.emit('DELETE_VACATION', 'DELETE_VACATION');
-                    return res.send(allVacations);
-                }
-            })
+            io.emit('DELETE_VACATION', {id: vacationId});
         }
     })
 })

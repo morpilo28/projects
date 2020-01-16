@@ -105,7 +105,7 @@ function updateVacation(editedVacationData, callback) {
         if (err) {
             callback(err);
         } else {
-            callback(null);
+            getSingleVacation(editedVacationData.id, callback);
         }
     })
 }

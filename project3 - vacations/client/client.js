@@ -223,6 +223,29 @@ function addBtnEventListeners(vacationsArray) {
     }
 }
 
+function addVacationToView(vacation) {
+    // TODO add vacation to view
+    if (window.localStorage.getItem('isAdmin') === 'true') {
+        // `<div class='card'>
+        //         <i id='deleteIcon${vacation.id}' class='fas fa-times'></i>
+        //         <i id='editIcon${vacation.id}' class="fas fa-pencil-alt"></i>
+        //         <input hidden value='${vacation.id}'/>
+        //         <div><b>${vacation.destination}</b></div>
+        //         <div>${vacation.description}</div>
+        //         <div>${vacation.price}$</div>
+        //         <div>
+        //             <img width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>
+        //         </div>
+        //         <div>
+        //             <p>From: ${vacation.fromDate}</p>
+        //             <p>To: ${vacation.toDate}</p>
+        //         </div>
+        //     </div>`;
+    } else {
+
+    }
+}
+
 function onSaveAddedVacation() {
     const vacationToAdd = {
         destination: document.getElementById(`addedDestination`).value,
@@ -243,9 +266,8 @@ function onSaveAddedVacation() {
     if (isEmpty === true) {
         printToHtml('modalHeader', "Can't save before filling out all the fields!")
     } else {
-        httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(res => {
+        httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(createdVacation => {
             closeModal();
-            vacationListView(res);
         }).catch(status => {
             if (status === 500) {
                 printToHtml('main', 'Internal Server Error')
@@ -659,8 +681,9 @@ function displayVacationModal() {
      }); */
 }
 
-function onAddVacationEvent(data) {
-    console.log(data);
+function onAddVacationEvent(createdVacation) {
+    addVacationToView(createdVacation);
+    console.log(createdVacation);
 }
 
 function onEditVacationEvent(data) {
