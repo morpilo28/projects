@@ -1,6 +1,5 @@
 "use strict";
 /* problems:
-        - problem with the modal!!!! opens up multiple modals and then the id's are not unique!!!
         - check if dates is ok and no problems
         - is there any place to use /vacation/:id?!
     TODO:
@@ -11,6 +10,9 @@
     - design
     - needs to check for duplicate code
 */
+var socket = io.connect('http://localhost:3201/');
+
+
 
 const app = {
     endPointStart: `http://localhost:3201/`,
@@ -183,10 +185,12 @@ function vacationListView(vacations) {
 }
 
 function printToHtml(id, html) {
+    $('#' + id).empty();
     document.getElementById(id).innerHTML = html;
 }
 
 function addBtnEventListeners(vacationsArray) {
+    $(document).off('click', '#add');
     $(document).on('click', '#add', (e) => {
         e.preventDefault();
         paintModalElement('save');
@@ -518,7 +522,6 @@ function addToFollowDb(vacationId) {
     };
     //TODO: make btn background color yellow
     httpRequests(app.END_POINTS.follow, app.METHODS.POST, followObjToAdd).then(res => {
-        console.log(res);
         if (res.isFollowed === true) {
             $(`#followBtn${res.vacationId}`).toggleClass('unFollowBtnColor followBtnColor');
             updateFollowersCount(res.vacationId, 'add');
@@ -543,7 +546,6 @@ function updateFollowersCount(vacationId, reduceOrAdd) {
         reduceOrAdd: reduceOrAdd
     }
     httpRequests(app.END_POINTS.vacations + '/' + vacationId, app.METHODS.PUT, reqBody).then(res => {
-        console.log(res);
     }).catch(status => {
         console.log(status);
     });
@@ -553,7 +555,6 @@ function adminView(vacationsArray) {
     const vacations = vacationsArray.organizedVacationArray ? vacationsArray.organizedVacationArray : vacationsArray;
     let html = `
     <h3 id='vacationListNote'> </h3>
-    <div id='modalElement'></div>
     <button id='add'>Add Vacation</button>
     <div id='vacationList'>`
 
@@ -586,6 +587,7 @@ function adminView(vacationsArray) {
         printToHtml('main', html);
         addBtnEventListeners(vacations);
     }
+
 }
 
 function paintModalElement(saveId, objToUpdate) {
@@ -596,7 +598,8 @@ function paintModalElement(saveId, objToUpdate) {
     } else {
         modalBody = modalBodyForAdd(modalBody);
     }
-    $('#modalElement').append(`  
+    $('#main').append(`  
+    <div id='modalElement'>
         <div id="myModal" class="modal" role="dialog">
             <div class="modal-dialog modal-sm">
                 <div class="modal-dialog modal-dialog-centered">
@@ -612,7 +615,8 @@ function paintModalElement(saveId, objToUpdate) {
                         </div>
                 </div>
             </div>
-        </div>`)
+        </div>
+    </div>`)
     displayVacationModal();
 };
 
@@ -642,16 +646,7 @@ function modalBodyForUpdate(modalBody, objToUpdate) {
 
 function closeModal() {
     $('#myModal').modal('hide');
-    $('#modalElement').empty();
-    /* $("#myModal").on('hidden.bs.modal', function (e) {
-        e.preventDefault();
-        $('body').removeClass('modal-open');
-        $('.modal-backdrop').remove();
-        $('#myModal').remove();
-    }); */
-    /*  $("#myModal").on('hidden.bs.modal', () => {
-         $(this).data('bs.modal', null);
-     }); */
+    $('#modalElement').remove();
 }
 
 function displayVacationModal() {

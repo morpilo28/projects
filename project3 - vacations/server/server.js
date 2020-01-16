@@ -3,9 +3,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const app = express();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+
 const vacationBl = require('./routing/vacations-bl');
 const usersBl = require('./routing/users-bl');
-const followBl = require('./routing/follow-bl');
 const PORT = 3201;
 const cors = require('cors');
 const SECRET_KEY_FOR_JWT = '687d6f87sd6f87sd6f78sd6f87sd';
@@ -45,6 +47,10 @@ app.use((req, res, next) => {
     }
 })
 
+/* app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+ */
 app.get('/vacations', (req, res) => {
     const userId = req.query.userId;
     let forChart = '';
@@ -120,7 +126,7 @@ app.delete('/vacations/:id', (req, res) => {
     const vacationId = req.body.id;
     const userId = req.body.userId;
 
-    vacationBl.deleteVacation(vacationId,userId, (e) => {
+    vacationBl.deleteVacation(vacationId, userId, (e) => {
         if (e) {
             return res.status(500).send();
         } else {
@@ -189,6 +195,13 @@ app.post('/follow', function (req, res) {
     })
 });
 
-app.listen(process.env.PORT || PORT, () =>
+io.on('connection', function(socket){
+    console.log('a user connected');
+    socket.on('disconnect', function(){
+      console.log('user disconnected');
+    });
+  });
+
+http.listen(process.env.PORT || PORT, () =>
     console.log(`Example app listening on port ${process.env.PORT || PORT}!`),
 );

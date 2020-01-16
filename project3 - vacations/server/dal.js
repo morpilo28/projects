@@ -1,7 +1,5 @@
 "use strict";
-//TODO: 
-//1. create a 'follow' table in travel db
-//2. find a way to open and close connection to mysql only when needed
+//TODO: find a way to open and close connection to mysql only when needed
 
 const mysql = require('mysql');
 const connection = mysql.createConnection({

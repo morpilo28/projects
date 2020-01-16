@@ -13,7 +13,6 @@ function adminView(allVacations, vacationsArray) {
         }
     }
 
-    //TODO: consider using form
     let html = `
     <h3 id='tableNote'> </h3>
     <button id='add'>Add Vacation</button>
