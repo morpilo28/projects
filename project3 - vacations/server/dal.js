@@ -22,6 +22,7 @@ function readAll(query, callback) {
             callback(null, result);
         }
     });
+
 }
 
 function readOne(query, callback) {
@@ -69,22 +70,6 @@ function deleteOne(query, callback) {
         }
     });
 }
-/* 
-function connect() {
-    var connection = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "",
-        database: 'leasing'
-    });
-    connection.connect((err) => {
-        if (err) throw err;
-        console.log("Connected!");
-    });
-}
-function disconnect(connection) {
-    connection.end();
-} */
 
 module.exports = {
     readAll: readAll,
@@ -92,4 +77,4 @@ module.exports = {
     createOne: createOne,
     updateOne: updateOne,
     deleteOne: deleteOne
-}
+};
