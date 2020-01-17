@@ -30,6 +30,7 @@ const app = {
 };
 
 init();
+
 function init() {
     navbarEventListeners();
 
@@ -140,7 +141,7 @@ function showVacationList() {
 
 function httpRequests(endPoint, httpVerb, reqBody) {
     return new Promise((resolve, reject) => {
-        const headers = { 'Content-Type': 'application/json' }
+        const headers = {'Content-Type': 'application/json'};
         if (localStorage.getItem(app.TOKEN_LOCAL_STORAGE_KEY)) {
             headers['Authorization'] = 'bearer ' + localStorage.getItem(app.TOKEN_LOCAL_STORAGE_KEY);
         }
@@ -148,7 +149,7 @@ function httpRequests(endPoint, httpVerb, reqBody) {
         const fetchOptions = {
             method: httpVerb,
             headers: headers,
-        }
+        };
 
         if (httpVerb === app.METHODS.DELETE || httpVerb === app.METHODS.POST || httpVerb === app.METHODS.PUT && reqBody) {
             fetchOptions['body'] = JSON.stringify(reqBody);
@@ -196,7 +197,7 @@ function addBtnEventListeners(vacationsArray) {
     for (let i = 0; i < vacationsArray.length; i++) {
         const id = vacationsArray[i].id;
         const singleVacationEndPoint = `vacations/${id}`;
-        $(`#editIcon${id}`).on('click', { value: i }, (e) => {
+        $(`#editIcon${id}`).on('click', {value: i}, (e) => {
             e.preventDefault();
             const id = e.target.id.slice(8);
             const objToUpdate = vacationsArray[i];
@@ -220,29 +221,6 @@ function addBtnEventListeners(vacationsArray) {
                 }
             });
         });
-    }
-}
-
-function addVacationToView(vacation) {
-    // TODO add vacation to view
-    if (window.localStorage.getItem('isAdmin') === 'true') {
-        // `<div class='card'>
-        //         <i id='deleteIcon${vacation.id}' class='fas fa-times'></i>
-        //         <i id='editIcon${vacation.id}' class="fas fa-pencil-alt"></i>
-        //         <input hidden value='${vacation.id}'/>
-        //         <div><b>${vacation.destination}</b></div>
-        //         <div>${vacation.description}</div>
-        //         <div>${vacation.price}$</div>
-        //         <div>
-        //             <img width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>
-        //         </div>
-        //         <div>
-        //             <p>From: ${vacation.fromDate}</p>
-        //             <p>To: ${vacation.toDate}</p>
-        //         </div>
-        //     </div>`;
-    } else {
-
     }
 }
 
@@ -272,7 +250,7 @@ function onSaveAddedVacation() {
             if (status === 500) {
                 printToHtml('main', 'Internal Server Error')
             } else if (status === 400) {
-                printToHtml('main', 'The added vacation already exist.')
+                printToHtml('modalHeader', 'The added vacation already exist.')
             } else {
                 console.log(status);
             }
@@ -320,7 +298,7 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
         } else {
             httpRequests(singleVacationEndPoint, app.METHODS.PUT, editedObj).then(res => {
                 closeModal();
-                vacationListView(res);
+                // vacationListView(res);
             }).catch(status => {
                 if (status === 500) {
 
@@ -329,12 +307,6 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
                 }
             });
         }
-    });
-
-    $(`#cancelChanges${idx}`).on('click', (e) => {
-        e.preventDefault();
-        changeBackToOriginalBtn(idx);
-        showVacationList();
     });
 }
 
@@ -356,7 +328,7 @@ function onMoreDetails(res) {
                 <br><br>
                 <button id='returnToFullList'>Return To Full List</button>
             </div>
-            `
+            `;
     printToHtml('main', html);
 
     document.getElementById('returnToFullList').addEventListener('click', (e) => {
@@ -379,7 +351,7 @@ function registerView(note) {
             <button id='register'>Register</button>
         </div>
     </div>
-    `
+    `;
     printToHtml('main', html);
     document.getElementById('register').addEventListener('click', register);
 }
@@ -394,7 +366,7 @@ function register() {
     };
 
     httpRequests(app.END_POINTS.register, app.METHODS.POST, params).then(res => {
-        const idArray = ['firstName', 'lastName', 'userName', 'password']
+        const idArray = ['firstName', 'lastName', 'userName', 'password'];
         for (let i = 0; i < idArray.length; i++) {
             emptyInputs(idArray[i]);
         }
@@ -421,7 +393,7 @@ function loginView(note) {
         <button id='login'>Login</button>
         <p><u>Not yet a member? <a id='register' href='register'>Register Here!</u></a>
     </div>
-    `
+    `;
     printToHtml('main', html);
     document.getElementById('register').addEventListener('click', (e) => {
         e.preventDefault();
@@ -434,8 +406,7 @@ function showUserName() {
     const savedUserName = window.localStorage.getItem('userNameForTitle');
     if (!savedUserName) {
         document.getElementById('userNameForTitle').innerHTML = `Hello Guest,`;
-    }
-    else {
+    } else {
         document.getElementById('userNameForTitle').innerHTML = `Hello ${(savedUserName).charAt(0).toUpperCase() + savedUserName.slice(1)},`;
     }
 }
@@ -474,14 +445,23 @@ function emptyInputs(id) {
     document.getElementById(id).value = '';
 }
 
+function followBtnListener(vacation) {
+    document.getElementById(`followBtn${vacation.id}`).addEventListener('click', (e) => {
+        e.preventDefault();
+        const vacationId = e.target.id.slice(9);
+        //TODO: cancel the green color after pressed btn;
+        addToFollowDb(vacationId);
+    })
+}
+
 function clientView(vacations) {
     let allVacations = vacations.organizedVacationArray;
     let followedVacations = vacations.userFollowedVacationsIds;
 
     if (allVacations.length === 0) {
-        document.getElementById('main').innerHTML = 'No vacations have been found!';
+        printToHtml('main', 'No vacations have been found!');
     } else {
-        let html = `<div>`;
+        let html = `<div id="vacationList">`;
         let isFollowed = 'unFollowBtnColor';
         for (let i = 0; i < allVacations.length; i++) {
             for (let j = 0; j < followedVacations.length; j++) {
@@ -492,34 +472,13 @@ function clientView(vacations) {
                 }
             }
 
-            html += `
-                <div class='card'>
-                    <div><b>${allVacations[i].destination}</b></div>
-                    <div>${allVacations[i].description}</div>
-                    <div>${allVacations[i].price}$</div>
-                    <div>
-                        <img width='80' src="./styles/images/${allVacations[i].image}" alt="${allVacations[i].image}"/>
-                    </div>
-                    <div>
-                        <p>From: ${allVacations[i].fromDate}</p>
-                        <p>To: ${allVacations[i].toDate}</p>
-                    </div>
-                    <button id='followBtn${allVacations[i].id}' class="btn btn-success btn-circle btn-circle-sm m-1 ${isFollowed}">f</button>
-                </div>`;
+            html += createClientCard(allVacations[i], isFollowed);
         }
         html += `</div>`;
-        document.getElementById('main').innerHTML = html;
+        printToHtml('main', html);
 
         for (let i = 0; i < allVacations.length; i++) {
-            document.getElementById(`followBtn${allVacations[i].id}`).addEventListener('click', (e) => {
-                e.preventDefault();
-                const vacationId = e.target.id.slice(9);
-                //TODO: cancel the green color after pressed btn;
-
-                /*  */
-                addToFollowDb(vacationId);
-                //else if pressed to unFollow then
-            })
+            followBtnListener(allVacations[i]);
         }
     }
 }
@@ -541,8 +500,7 @@ function addToFollowDb(vacationId) {
     }).catch(status => {
         if (status === 400) {
             alert('vacation already been followed');
-        }
-        else {
+        } else {
             console.log(status);
         }
     });
@@ -553,7 +511,7 @@ function updateFollowersCount(vacationId, reduceOrAdd) {
         userId: window.localStorage.getItem('userId'),
         id: vacationId,
         reduceOrAdd: reduceOrAdd
-    }
+    };
     httpRequests(app.END_POINTS.vacations + '/' + vacationId, app.METHODS.PUT, reqBody).then(res => {
     }).catch(status => {
         console.log(status);
@@ -565,42 +523,23 @@ function adminView(vacationsArray) {
     let html = `
     <h3 id='vacationListNote'> </h3>
     <button id='add'>Add Vacation</button>
-    <div id='vacationList'>`
+    <div id='vacationList'>`;
 
     if (vacations.length === 0) {
         printToHtml('main', html);
         printToHtml('vacationListNote', 'no vacations has been found');
         addBtnEventListeners(vacations);
-    }
-    else {
+    } else {
         for (let i = 0; i < vacations.length; i++) {
-            const idx = vacations[i].id;
-            html += `
-            <div class='card'>
-                <i id='deleteIcon${idx}' class='fas fa-times'></i>
-                <i id='editIcon${idx}' class="fas fa-pencil-alt"></i>
-                <input hidden value='${idx}'/>
-                <div><b>${vacations[i].destination}</b></div>
-                <div>${vacations[i].description}</div>
-                <div>${vacations[i].price}$</div>
-                <div>
-                    <img width='80' src="./styles/images/${vacations[i].image}" alt="${vacations[i].image}"/>
-                </div>
-                <div>
-                    <p>From: ${vacations[i].fromDate}</p>
-                    <p>To: ${vacations[i].toDate}</p>
-                </div>
-            </div>`;
+            html += createAdminCard(vacations[i]);
         }
         html += `</div>`;
         printToHtml('main', html);
         addBtnEventListeners(vacations);
     }
-
 }
 
 function paintModalElement(saveId, objToUpdate) {
-    //TODO: problem with the modal!!!! opens up multiple modals and then the id's are not unique!!!
     let modalBody = `<div class="modal-body">`;
     if (objToUpdate) {
         modalBody = modalBodyForUpdate(modalBody, objToUpdate);
@@ -640,7 +579,7 @@ function paintModalElement(saveId, objToUpdate) {
     });
 
     displayVacationModal();
-};
+}
 
 function modalBodyForAdd(modalBody) {
     modalBody += `
@@ -683,13 +622,64 @@ function displayVacationModal() {
 
 function onAddVacationEvent(createdVacation) {
     addVacationToView(createdVacation);
-    console.log(createdVacation);
 }
 
-function onEditVacationEvent(data) {
-    console.log(data);
+function addVacationToView(vacation) {
+    if (window.localStorage.getItem('isAdmin') === 'true') {
+        let html = createAdminCard(vacation);
+        $('#vacationList').append(html);
+    } else if (window.localStorage.getItem('isAdmin') === 'false') {
+        let html = createClientCard(vacation, 'unFollowBtnColor');
+        $('#vacationList').append(html);
+        followBtnListener(vacation);
+    }
 }
 
-function onDeleteVacationEvent(data) {
-    console.log(data);
+function createAdminCard(vacation) {
+    const html = `<div id="${vacation.id}" class='card'>
+                 <i id='deleteIcon${vacation.id}' class='fas fa-times'></i>
+                 <i id='editIcon${vacation.id}' class="fas fa-pencil-alt"></i>
+                 <input hidden value='${vacation.id}'/>
+                 <div id="destination${vacation.id}"><b>${vacation.destination}</b></div>
+                 <div id="description${vacation.id}">${vacation.description}</div>
+                 <div id="price${vacation.id}">${vacation.price}$</div>
+                 <div>
+                     <img id="img${vacation.id}" width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>
+                 </div>
+                 <div>
+                     <p id="fromDate${vacation.id}">From: ${vacation.fromDate}</p>
+                     <p id="toDate${vacation.id}">To: ${vacation.toDate}</p>
+                 </div>
+             </div>`;
+    return html;
+}
+
+function createClientCard(vacation, isFollowed) {
+    const html = `<div id="vacation.id" class='card'>
+                    <div id="destination${vacation.id}"><b>${vacation.destination}</b></div>
+                    <div id="description${vacation.id}">${vacation.description}</div>
+                    <div id="price${vacation.id}">${vacation.price}$</div>
+                    <div>
+                        <img id="img${vacation.id}" width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>
+                    </div>
+                    <div>
+                        <p id="fromDate${vacation.id}">From: ${vacation.fromDate}</p>
+                        <p id="toDate${vacation.id}">To: ${vacation.toDate}</p>
+                    </div>
+                    <button id='followBtn${vacation.id}' class="btn btn-success btn-circle btn-circle-sm m-1 ${isFollowed}">f</button>
+                </div>`;
+    return html;
+}
+
+function onEditVacationEvent(newEditedVacationValues) {
+    $(`#destination${newEditedVacationValues.id}`).replaceWith(`<div><b>${newEditedVacationValues.destination}</b></div>`);
+    $(`#description${newEditedVacationValues.id}`).text(newEditedVacationValues.description);
+    $(`#price${newEditedVacationValues.id}`).text(`${newEditedVacationValues.price}$`);
+    $(`#img${newEditedVacationValues.id}`).attr("src",`./styles/images/${newEditedVacationValues.image}`).attr("alt",newEditedVacationValues.image);
+    $(`#fromDate${newEditedVacationValues.id}`).text(newEditedVacationValues.fromDate);
+    $(`#toDate${newEditedVacationValues.id}`).text(newEditedVacationValues.toDate);
+}
+
+function onDeleteVacationEvent(deletedVacationId) {
+    $('#' + deletedVacationId.id).remove();
 }
