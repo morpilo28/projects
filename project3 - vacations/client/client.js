@@ -53,7 +53,7 @@ function navbarEventListeners() {
         })
     }
 
-    $('#chart').on('click', (e) => {
+    $(document).on('click','#chart', (e) => {
         e.preventDefault();
         buildChart();
     });
@@ -188,6 +188,34 @@ function printToHtml(id, html) {
     document.getElementById(id).innerHTML = html;
 }
 
+function deleteBtnEventListener(id, singleVacationEndPoint) {
+    $(`#deleteIcon${id}`).on('click', (e) => {
+        e.preventDefault();
+        const data = {
+            id: e.target.id.slice(10),
+            userId: window.localStorage.getItem('userId')
+        };
+        httpRequests(singleVacationEndPoint, app.METHODS.DELETE, data).then(res => {
+        }).catch(status => {
+            if (status === 500) {
+                printToHtml('main', 'Internal Server Error')
+            } else {
+                console.log(status);
+            }
+        });
+    });
+}
+
+function editBtnEventListener(vacationId, obj, singleVacationEndPoint) {
+    $(`#editIcon${vacationId}`).on('click', (e) => {
+        e.preventDefault();
+        const id = e.target.id.slice(8);
+        const objToUpdate = obj;
+        paintModalElement(`saveChanges${id}`, objToUpdate);
+        onEditVacation(id, singleVacationEndPoint, objToUpdate.followers);
+    });
+}
+
 function addBtnEventListeners(vacationsArray) {
     $('#add').on('click', (e) => {
         e.preventDefault();
@@ -197,30 +225,8 @@ function addBtnEventListeners(vacationsArray) {
     for (let i = 0; i < vacationsArray.length; i++) {
         const id = vacationsArray[i].id;
         const singleVacationEndPoint = `vacations/${id}`;
-        $(`#editIcon${id}`).on('click', {value: i}, (e) => {
-            e.preventDefault();
-            const id = e.target.id.slice(8);
-            const objToUpdate = vacationsArray[i];
-            paintModalElement(`saveChanges${id}`, objToUpdate);
-            onEditVacation(id, singleVacationEndPoint, objToUpdate.followers);
-        });
-
-        $(`#deleteIcon${id}`).on('click', (e) => {
-            e.preventDefault();
-            const data = {
-                id: e.target.id.slice(10),
-                userId: window.localStorage.getItem('userId')
-            };
-            httpRequests(singleVacationEndPoint, app.METHODS.DELETE, data).then(res => {
-                vacationListView(res);
-            }).catch(status => {
-                if (status === 500) {
-                    printToHtml('main', 'Internal Server Error')
-                } else {
-                    console.log(status);
-                }
-            });
-        });
+        editBtnEventListener(id, vacationsArray[i], singleVacationEndPoint);
+        deleteBtnEventListener(id, singleVacationEndPoint);
     }
 }
 
@@ -242,19 +248,31 @@ function onSaveAddedVacation() {
     });
 
     if (isEmpty === true) {
-        printToHtml('modalHeader', "Can't save before filling out all the fields!")
+        printToHtml('modalHeader', "Can't save before filling out all the fields!");
     } else {
-        httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(createdVacation => {
-            closeModal();
-        }).catch(status => {
-            if (status === 500) {
-                printToHtml('main', 'Internal Server Error')
-            } else if (status === 400) {
-                printToHtml('modalHeader', 'The added vacation already exist.')
-            } else {
-                console.log(status);
-            }
-        });
+        //TODO: when save is clicked, if condition works and vacation is not added. however, the modal doesn't stay on to show message to user
+        let today = new Date().getTime();
+        let fromDate = new Date(vacationToAdd.fromDate).getTime();
+        let toDate = new Date(vacationToAdd.toDate).getTime();
+        if(fromDate < today){
+            printToHtml('modalHeader', 'From date must be in the future');
+        }else if(toDate < today){
+            printToHtml('modalHeader', 'To date must be in the future');
+        }else if(toDate < fromDate){
+            printToHtml('modalHeader', 'To date must be after "From" date');
+        }else {
+            httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(createdVacation => {
+                closeModal();
+            }).catch(status => {
+                if (status === 500) {
+                    printToHtml('main', 'Internal Server Error')
+                } else if (status === 400) {
+                    printToHtml('modalHeader', 'The added vacation already exist.')
+                } else {
+                    console.log(status);
+                }
+            });
+        }
     }
 }
 
@@ -593,9 +611,9 @@ function modalBodyForAdd(modalBody) {
     return modalBody;
 }
 
-function modalBodyForUpdate(modalBody, objToUpdate) {
-    let [toDay, toMonth, toYear] = objToUpdate.toDate.split('-');
-    let [fromDay, fromMonth, fromYear] = objToUpdate.fromDate.split('-');
+function modalBodyForUpdate(modalBody, objToUpdate){
+    let [toDay, toMonth, toYear] = formatDate(objToUpdate.toDate);
+    let [fromDay, fromMonth, fromYear] = formatDate(objToUpdate.fromDate);
     modalBody += `
         <label>Destination: <input id='editDestination' required type='text' value='${objToUpdate.destination}'></label><br>
         <label>Description: <input id='editDescription' required type='text' value='${objToUpdate.description}'></label><br>
@@ -605,6 +623,11 @@ function modalBodyForUpdate(modalBody, objToUpdate) {
         <label>Price: <input id='editPrice' required type='number' min='0' value='${objToUpdate.price}'></label><br>
         `;
     return modalBody;
+}
+
+function formatDate(dateToFormat){
+    dateToFormat = dateToFormat.split('-');
+    return dateToFormat;
 }
 
 function closeModal() {
@@ -621,13 +644,18 @@ function displayVacationModal() {
 }
 
 function onAddVacationEvent(createdVacation) {
+    console.log('add');
     addVacationToView(createdVacation);
 }
 
 function addVacationToView(vacation) {
+    debugger;
     if (window.localStorage.getItem('isAdmin') === 'true') {
+        let singleEndPoint = `vacations/${vacation.id}`;
         let html = createAdminCard(vacation);
         $('#vacationList').append(html);
+        deleteBtnEventListener(vacation.id, singleEndPoint);
+        editBtnEventListener(vacation.id, vacation, singleEndPoint);
     } else if (window.localStorage.getItem('isAdmin') === 'false') {
         let html = createClientCard(vacation, 'unFollowBtnColor');
         $('#vacationList').append(html);
@@ -655,7 +683,7 @@ function createAdminCard(vacation) {
 }
 
 function createClientCard(vacation, isFollowed) {
-    const html = `<div id="vacation.id" class='card'>
+    const html = `<div id="${vacation.id}" class='card'>
                     <div id="destination${vacation.id}"><b>${vacation.destination}</b></div>
                     <div id="description${vacation.id}">${vacation.description}</div>
                     <div id="price${vacation.id}">${vacation.price}$</div>
@@ -672,6 +700,7 @@ function createClientCard(vacation, isFollowed) {
 }
 
 function onEditVacationEvent(newEditedVacationValues) {
+    console.log('edited');
     $(`#destination${newEditedVacationValues.id}`).replaceWith(`<div><b>${newEditedVacationValues.destination}</b></div>`);
     $(`#description${newEditedVacationValues.id}`).text(newEditedVacationValues.description);
     $(`#price${newEditedVacationValues.id}`).text(`${newEditedVacationValues.price}$`);
@@ -681,5 +710,6 @@ function onEditVacationEvent(newEditedVacationValues) {
 }
 
 function onDeleteVacationEvent(deletedVacationId) {
+    console.log('deleted');
     $('#' + deletedVacationId.id).remove();
 }
