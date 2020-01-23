@@ -673,7 +673,7 @@ function createAdminCard(vacation) {
                  <i id='editIcon${vacation.id}' class="fas fa-pencil-alt editIcon"></i>
                  <input hidden value='${vacation.id}'/>
                  <div id="destination${vacation.id}"><b>${vacation.destination}</b></div>
-                 <textarea readonly id="description${vacation.id}" class="textArea">${vacation.description}</textarea>
+                 <textarea readonly id="description${vacation.id}" class="cardTextArea">${vacation.description}</textarea>
                  <div id="price${vacation.id}">${vacation.price}$</div>
                  <div>
                      <img id="img${vacation.id}" width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>

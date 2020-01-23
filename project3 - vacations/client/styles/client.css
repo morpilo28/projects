@@ -86,7 +86,8 @@ td {
     right: 5px;
 }
 
-.textArea{
+.cardTextArea{
     border: none;
     width: 85%;
+    overflow:auto;
 }
