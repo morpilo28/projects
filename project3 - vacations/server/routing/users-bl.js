@@ -26,7 +26,7 @@ function isUserNameAlreadyExist(registeredUser, callback) {
 
 function registerUser(userToAdd, callback) {
     userToAdd = new userModel.User(null, userToAdd.firstName, userToAdd.lastName, userToAdd.userName, userToAdd.password, userToAdd.isAdmin);
-    const { id, firstName, lastName, userName, password, isAdmin } = userToAdd;
+    const {firstName, lastName, userName, password, isAdmin} = userToAdd;
     dal.createOne(`insert into ${table} (first_name, last_name, user_name, password, is_admin) values ('${firstName}','${lastName}','${userName}', '${password}', '${isAdmin}');`, `select * from ${table} where user_name like '${userName}'`, (e, data) => {
         if (e) {
             callback(e);

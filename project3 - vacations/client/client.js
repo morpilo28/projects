@@ -261,7 +261,7 @@ function isValueEmpty(vacationToAdd) {
 function onSaveAddedVacation() {
     const vacationToAdd = {
         destination: document.getElementById(`addedDestination`).value,
-        description: document.getElementById(`addedDescription`).value,
+        description: (document.getElementById(`addedDescription`).value).toLowerCase(),
         image: document.getElementById(`addedImage`).value,
         fromDate: document.getElementById(`addedFromDate`).value,
         toDate: document.getElementById(`addedToDate`).value,
@@ -296,7 +296,7 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
         let editedObj = {
             id: idx,
             destination: jQuery(`#editDestination`).val(),
-            description: jQuery(`#editDescription`).val(),
+            description: jQuery(`#editDescription`).val().toLowerCase(),
             image: jQuery(`#editImage`).val(),
             fromDate: jQuery(`#editFromDate`).val(),
             toDate: jQuery(`#editToDate`).val(),

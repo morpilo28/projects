@@ -136,8 +136,8 @@ app.post('/login', function (req, res) {
             return res.status(400).send('no user has been found');
         } else {
             const token = jwt.sign({
-                userName: req.body.userName
-            }, SECRET_KEY_FOR_JWT,
+                    userName: req.body.userName
+                }, SECRET_KEY_FOR_JWT,
                 {
                     expiresIn: '365d'
                 });
@@ -180,12 +180,12 @@ app.post('/follow', function (req, res) {
     })
 });
 
-io.on('connection', function(socket){
+io.on('connection', function (socket) {
     console.log('a user connected');
-    socket.on('disconnect', function(){
-      console.log('user disconnected');
+    socket.on('disconnect', function () {
+        console.log('user disconnected');
     });
-  });
+});
 
 http.listen(process.env.PORT || PORT, () =>
     console.log(`Example app listening on port ${process.env.PORT || PORT}!`),
