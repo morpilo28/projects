@@ -4,7 +4,6 @@
         - is there any place to use /vacation/:id?!
     TODO:
     - add the charts section
-    - socket.io
     - change lower case to upper case or vice versa if needed (for example in: registration/login, adding/updating a vacation, etc.)
     - make adding an image (when adding a vacation) possible
     - design
@@ -231,6 +230,34 @@ function addBtnEventListeners(vacationsArray) {
     }
 }
 
+function isDateValid(vacationToAdd) {
+    let today = new Date().setHours(0, 0, 0, 0);
+    let fromDate = new Date(vacationToAdd.fromDate).setHours(0, 0, 0, 0);
+    let toDate = new Date(vacationToAdd.toDate).setHours(0, 0, 0, 0);
+    if (fromDate < today) {
+        printToHtml('modalHeader', '"From" date must be in the future');
+        return false;
+    } else if (toDate < today) {
+        printToHtml('modalHeader', '"To" date must be in the future');
+        return false;
+    } else if (toDate < fromDate) {
+        printToHtml('modalHeader', '"To" date must be after "From" date');
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function isValueEmpty(vacationToAdd) {
+    let isEmpty = false;
+    Object.values(vacationToAdd).forEach(value => {
+        if (value === '') {
+            isEmpty = true
+        }
+    });
+    return isEmpty;
+}
+
 function onSaveAddedVacation() {
     const vacationToAdd = {
         destination: document.getElementById(`addedDestination`).value,
@@ -241,26 +268,13 @@ function onSaveAddedVacation() {
         price: document.getElementById(`addedPrice`).value,
         followers: 0
     };
-    let isEmpty = false;
-    Object.values(vacationToAdd).forEach(value => {
-        if (value === '') {
-            isEmpty = true
-        }
-    });
+    let isEmpty = isValueEmpty(vacationToAdd);
 
     if (isEmpty === true) {
         printToHtml('modalHeader', "Can't save before filling out all the fields!");
     } else {
-        let today = new Date().setHours(0, 0, 0, 0);
-        let fromDate = new Date(vacationToAdd.fromDate).setHours(0, 0, 0, 0);
-        let toDate = new Date(vacationToAdd.toDate).setHours(0, 0, 0, 0);
-        if (fromDate < today) {
-            printToHtml('modalHeader', '"From" date must be in the future');
-        } else if (toDate < today) {
-            printToHtml('modalHeader', '"To" date must be in the future');
-        } else if (toDate < fromDate) {
-            printToHtml('modalHeader', '"To" date must be after "From" date');
-        } else {
+        let isDateValidBoolean = isDateValid(vacationToAdd);
+        if (isDateValidBoolean) {
             httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(createdVacation => {
                 closeModal();
             }).catch(status => {
@@ -291,39 +305,23 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
             userId: getUserId()
         };
 
-        let isDataTypeGood = true;
-        let message = '';
-        for (let key in editedObj) {
-            if (key === 'fromDate' || key === 'toDate') {
-                if ((editedObj[key]) === '') {
-                    isDataTypeGood = false;
-                    message = "Date fields must be field!";
-                    break;
-                }
-            }
-
-            if (key === 'price') {
-                if (isNaN(editedObj[key]) || editedObj[key] === 0) {
-                    isDataTypeGood = false;
-                    message = "'Price' field must be field with numbers and larger than 0.";
-                    break;
-                }
-            }
-        }
-
-        if (isDataTypeGood === false) {
-            printToHtml('modalHeader', message);
+        let isEmpty = isValueEmpty(editedObj);
+        if (isEmpty === true) {
+            printToHtml('modalHeader', "Can't save before filling out all the fields!");
         } else {
-            httpRequests(singleVacationEndPoint, app.METHODS.PUT, editedObj).then(res => {
-                closeModal();
-                // vacationListView(res);
-            }).catch(status => {
-                if (status === 500) {
+            let isDateValidBoolean = isDateValid(editedObj);
+            if (isDateValidBoolean) {
+                httpRequests(singleVacationEndPoint, app.METHODS.PUT, editedObj).then(res => {
+                    closeModal();
+                    // vacationListView(res);
+                }).catch(status => {
+                    if (status === 500) {
 
-                } else {
-                    console.log(status);
-                }
-            });
+                    } else {
+                        console.log(status);
+                    }
+                });
+            }
         }
     });
 }
