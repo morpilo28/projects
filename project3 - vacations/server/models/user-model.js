@@ -1,3 +1,5 @@
+"use strict";
+
 function User(id, firstName, lastName, userName, password, isAdmin) {
     this.id = id;
     this.firstName = firstName;
@@ -9,4 +11,4 @@ function User(id, firstName, lastName, userName, password, isAdmin) {
 
 module.exports = {
     User:User
-}
+};

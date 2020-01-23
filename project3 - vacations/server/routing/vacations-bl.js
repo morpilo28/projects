@@ -1,6 +1,4 @@
 "use strict";
-//TODO: make all strings to lower case;
-
 const dal = require('../dal');
 const vacationModel = require('../models/vacation-model');
 const vacationTable = 'vacation';
@@ -28,7 +26,7 @@ function getVacations(userId, callback, isForChart) {
                         const data = {
                             organizedVacationArray: organizedVacationArray,
                             userFollowedVacationsIds: userFollowedVacationsIds
-                        }
+                        };
                         callback(null, data);
                     }
                 });
@@ -50,8 +48,7 @@ function getSingleVacation(id, callback) {
 }
 
 function createVacation(vacationToADD, callback) {
-    //TODO: 
-    //1. make insert img possible
+    //TODO: make insert img possible
     vacationToADD.price = Number(vacationToADD.price);
     vacationToADD = new vacationModel.Vacation(null, vacationToADD.description, vacationToADD.destination, vacationToADD.image, vacationToADD.fromDate, vacationToADD.toDate, vacationToADD.price, vacationToADD.followers);
     const {description, destination, image, fromDate, toDate, price, followers} = vacationToADD;
@@ -224,4 +221,4 @@ module.exports = {
     createVacation: createVacation,
     updateVacation: updateVacation,
     deleteVacation: deleteVacation,
-}
+};

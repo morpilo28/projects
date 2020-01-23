@@ -1,4 +1,5 @@
-  
+"use strict";
+
 function Vacation(id, description, destination, image, fromDate, toDate, price, followers) {
     this.id = id;
     this.description = description;
@@ -12,4 +13,4 @@ function Vacation(id, description, destination, image, fromDate, toDate, price, 
 
 module.exports = {
     Vacation:Vacation
-}
+};

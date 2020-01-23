@@ -1,3 +1,5 @@
+"use strict";
+
 function Follow(userId, vacationId) {
     this.userId = userId;
     this.vacationId = vacationId;
@@ -5,4 +7,4 @@ function Follow(userId, vacationId) {
 
 module.exports = {
     Follow:Follow
-}
+};

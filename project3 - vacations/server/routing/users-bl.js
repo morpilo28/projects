@@ -1,5 +1,4 @@
-//TODO: make all strings to lower case;
-
+"use strict";
 const dal = require('../dal');
 const table = 'user';
 const userModel = require('../models/user-model');
@@ -73,7 +72,7 @@ function checkIfFollowed(followObjToAdd, callback) {
                     const data = {
                         isFollowed: false,
                         vacationId: followObjToAdd.vacationId
-                    }
+                    };
                     callback(null, data);
                 }
             })
@@ -85,7 +84,7 @@ function checkIfFollowed(followObjToAdd, callback) {
                     const data = {
                         isFollowed: true,
                         vacationId: followObjToAdd.vacationId
-                    }
+                    };
                     callback(null, data);
                 }
             })
@@ -105,4 +104,4 @@ module.exports = {
     validateUser: validateUser,
     isUserNameAlreadyExist: isUserNameAlreadyExist,
     checkIfFollowed: checkIfFollowed,
-}
+};
