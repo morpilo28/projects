@@ -557,7 +557,7 @@ function adminView(vacationsArray) {
 function paintModalElement(saveId, objToUpdate) {
     let modalBody = `<div class="modal-body">`;
     if (objToUpdate) {
-        modalBody = modalBodyForUpdate(modalBody, objToUpdate);
+        modalBody = modalBodyForUpdate(modalBody, objToUpdate.id, saveId);
     } else {
         modalBody = modalBodyForAdd(modalBody);
     }
@@ -608,16 +608,24 @@ function modalBodyForAdd(modalBody) {
     return modalBody;
 }
 
-function modalBodyForUpdate(modalBody, objToUpdate) {
-    let [toDay, toMonth, toYear] = formatDate(objToUpdate.toDate);
-    let [fromDay, fromMonth, fromYear] = formatDate(objToUpdate.fromDate);
+function modalBodyForUpdate(modalBody, objToUpdateId) {
+    let objToEdit = {
+        destination: $(`#destination${objToUpdateId}`).text(),
+        description: $(`#description${objToUpdateId}`).text(),
+        price: $(`#price${objToUpdateId}`).text().slice(0, -1),
+        image: $(`#img${objToUpdateId}`).attr('alt'),
+        fromDate: $(`#fromDate${objToUpdateId}`).text(),
+        toDate: $(`#toDate${objToUpdateId}`).text(),
+    }
+    let [fromDay, fromMonth, fromYear] = formatDate(objToEdit.fromDate);
+    let [toDay, toMonth, toYear] = formatDate(objToEdit.toDate);
     modalBody += `
-        <label>Destination: <input id='editDestination' required type='text' value='${objToUpdate.destination}'></label><br>
-        <label>Description: <input id='editDescription' required type='text' value='${objToUpdate.description}'></label><br>
-        <label>Image: <input id='editImage' required type='text' value='${objToUpdate.image}'></label><br>
+        <label>Destination: <input id='editDestination' required type='text' value='${objToEdit.destination}'></label><br>
+        <label>Description: <input id='editDescription' required type='text' value='${objToEdit.description}'></label><br>
+        <label>Image: <input id='editImage' required type='text' value='${objToEdit.image}'></label><br>
         <label>From: <input id='editFromDate' required type='date' value='${fromYear}-${fromMonth}-${fromDay}'></label><br>
         <label>To: <input id='editToDate' required type='date' value='${toYear}-${toMonth}-${toDay}'></label><br>
-        <label>Price: <input id='editPrice' required type='number' min='0' value='${objToUpdate.price}'></label><br>
+        <label>Price: <input id='editPrice' required type='number' min='0' value='${objToEdit.price}'></label><br>
         `;
     return modalBody;
 }
@@ -671,8 +679,8 @@ function createAdminCard(vacation) {
                      <img id="img${vacation.id}" width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>
                  </div>
                  <div>
-                     <p id="fromDate${vacation.id}">From: ${vacation.fromDate}</p>
-                     <p id="toDate${vacation.id}">To: ${vacation.toDate}</p>
+                    <div>From: <span id="fromDate${vacation.id}">${vacation.fromDate}</span></div> 
+                     <div>To: <span id="toDate${vacation.id}">${vacation.toDate}</span></div>
                  </div>
              </div>`;
 }
@@ -695,7 +703,7 @@ function createClientCard(vacation, isFollowed) {
 
 function onEditVacationEvent(newEditedVacationValues) {
     console.log('edited');
-    $(`#destination${newEditedVacationValues.id}`).replaceWith(`<div><b>${newEditedVacationValues.destination}</b></div>`);
+    $(`#destination${newEditedVacationValues.id}`).replaceWith(`<div id="destination${newEditedVacationValues.id}"><b>${newEditedVacationValues.destination}</b></div>`);
     $(`#description${newEditedVacationValues.id}`).text(newEditedVacationValues.description);
     $(`#price${newEditedVacationValues.id}`).text(`${newEditedVacationValues.price}$`);
     $(`#img${newEditedVacationValues.id}`).attr("src", `./styles/images/${newEditedVacationValues.image}`).attr("alt", newEditedVacationValues.image);
