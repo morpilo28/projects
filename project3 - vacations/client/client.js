@@ -621,7 +621,7 @@ function modalBodyForUpdate(modalBody, objToUpdateId) {
     let [toDay, toMonth, toYear] = formatDate(objToEdit.toDate);
     modalBody += `
         <label>Destination: <input id='editDestination' required type='text' value='${objToEdit.destination}'></label><br>
-        <label>Description: <input id='editDescription' required type='text' value='${objToEdit.description}'></label><br>
+        <label>Description: <textarea id='editDescription' required type='text'>${objToEdit.description}</textarea></label><br>
         <label>Image: <input id='editImage' required type='text' value='${objToEdit.image}'></label><br>
         <label>From: <input id='editFromDate' required type='date' value='${fromYear}-${fromMonth}-${fromDay}'></label><br>
         <label>To: <input id='editToDate' required type='date' value='${toYear}-${toMonth}-${toDay}'></label><br>
@@ -673,7 +673,7 @@ function createAdminCard(vacation) {
                  <i id='editIcon${vacation.id}' class="fas fa-pencil-alt editIcon"></i>
                  <input hidden value='${vacation.id}'/>
                  <div id="destination${vacation.id}"><b>${vacation.destination}</b></div>
-                 <div id="description${vacation.id}">${vacation.description}</div>
+                 <textarea readonly id="description${vacation.id}" class="textArea">${vacation.description}</textarea>
                  <div id="price${vacation.id}">${vacation.price}$</div>
                  <div>
                      <img id="img${vacation.id}" width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>

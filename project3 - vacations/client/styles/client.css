@@ -85,3 +85,8 @@ td {
     top: 27px;
     right: 5px;
 }
+
+.textArea{
+    border: none;
+    width: 85%;
+}
