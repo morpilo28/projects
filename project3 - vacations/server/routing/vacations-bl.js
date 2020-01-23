@@ -54,7 +54,7 @@ function createVacation(vacationToADD, callback) {
     //1. make insert img possible
     vacationToADD.price = Number(vacationToADD.price);
     vacationToADD = new vacationModel.Vacation(null, vacationToADD.description, vacationToADD.destination, vacationToADD.image, vacationToADD.fromDate, vacationToADD.toDate, vacationToADD.price, vacationToADD.followers);
-    const { description, destination, image, fromDate, toDate, price, followers } = vacationToADD;
+    const {description, destination, image, fromDate, toDate, price, followers} = vacationToADD;
 
     dal.readAll(`select * from ${vacationTable} order by id`, (err, allVacations) => {
         allVacations = adjustVacationFormat(allVacations);
@@ -89,7 +89,7 @@ function updateVacation(editedVacationData, callback) {
         editedVacationData.fromDate = setDate(new Date(editedVacationData.fromDate), true);
         editedVacationData.toDate = setDate(new Date(editedVacationData.toDate), true);
         editedVacationData = new vacationModel.Vacation(editedVacationData.id, editedVacationData.description, editedVacationData.destination, editedVacationData.image, editedVacationData.fromDate, editedVacationData.toDate, editedVacationData.price, editedVacationData.followers);
-        const { id, description, destination, image, fromDate, toDate, price, followers } = editedVacationData;
+        const {id, description, destination, image, fromDate, toDate, price, followers} = editedVacationData;
         query = `update ${vacationTable} set id=${id},description='${description}',destination='${destination}',image='${image}',fromDate='${fromDate}',toDate='${toDate}',price=${price},followers=${followers} WHERE id = ${id};`;
     } else {
         if (editedVacationData.reduceOrAdd && editedVacationData.reduceOrAdd === 'add') {
@@ -110,7 +110,7 @@ function updateVacation(editedVacationData, callback) {
     })
 }
 
-function deleteVacation(vacationId,userId, callback) {
+function deleteVacation(vacationId, userId, callback) {
     vacationId = Number(vacationId);
     userId = Number(userId);
     dal.readAll(`select * from ${followTable} where vacation_id = ${vacationId};`, (e, data) => {
@@ -133,7 +133,7 @@ function deleteVacation(vacationId,userId, callback) {
                         })
                     }
                 })
-            }else{
+            } else {
                 dal.deleteOne(`delete from ${vacationTable} where id = ${vacationId}`, (e) => {
                     if (e) {
                         console.log(e);
