@@ -616,7 +616,7 @@ function modalBodyForUpdate(modalBody, objToUpdateId) {
         image: $(`#img${objToUpdateId}`).attr('alt'),
         fromDate: $(`#fromDate${objToUpdateId}`).text(),
         toDate: $(`#toDate${objToUpdateId}`).text(),
-    }
+    };
     let [fromDay, fromMonth, fromYear] = formatDate(objToEdit.fromDate);
     let [toDay, toMonth, toYear] = formatDate(objToEdit.toDate);
     modalBody += `
@@ -669,8 +669,8 @@ function addVacationToView(vacation) {
 
 function createAdminCard(vacation) {
     return `<div id="${vacation.id}" class='card'>
-                 <i id='deleteIcon${vacation.id}' class='fas fa-times'></i>
-                 <i id='editIcon${vacation.id}' class="fas fa-pencil-alt"></i>
+                 <i id='deleteIcon${vacation.id}' class='fas fa-times deleteIcon'></i>
+                 <i id='editIcon${vacation.id}' class="fas fa-pencil-alt editIcon"></i>
                  <input hidden value='${vacation.id}'/>
                  <div id="destination${vacation.id}"><b>${vacation.destination}</b></div>
                  <div id="description${vacation.id}">${vacation.description}</div>

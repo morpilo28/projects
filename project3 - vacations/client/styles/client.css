@@ -36,7 +36,8 @@ td {
 
 .card {
     float: left;
-    width: 20%;
+    width: 19%;
+    height:200px;
     margin: 5px;
 }
 
@@ -71,4 +72,16 @@ td {
 
 .unFollowBtnColor {
     background-color: white;
+}
+
+.deleteIcon{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.editIcon{
+    position: absolute;
+    top: 27px;
+    right: 5px;
 }
