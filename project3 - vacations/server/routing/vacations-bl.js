@@ -187,23 +187,23 @@ function createArrayOfFollowedVacationsId(userFollowedVacations) {
 }
 
 function setDate(date, isFromUpdate) {
-    let dateFormated;
+    let dateFormatted;
     if (isFromUpdate) {
-        dateFormated = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+        dateFormatted = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
     } else {
-        dateFormated = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
+        dateFormatted = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
     }
-    return dateFormated;
+    return dateFormatted;
 }
 
 function getVacationIfExists(allVacations, vacationToADD) {
     let fromDate = setDate(new Date(vacationToADD.fromDate));
     let toDate = setDate(new Date(vacationToADD.toDate));
     for (let i = 0; i < allVacations.length; i++) {
-        const a = allVacations[i];
-        const b = vacationToADD;
-        if (a.destination === b.destination && a.fromDate === fromDate && a.toDate === toDate && a.price === b.price) {
-            return a;
+        const vacationsFromDb = allVacations[i];
+        const newVacation = vacationToADD;
+        if (vacationsFromDb.destination === newVacation.destination && vacationsFromDb.fromDate === fromDate && vacationsFromDb.toDate === toDate && vacationsFromDb.price === newVacation.price) {
+            return vacationsFromDb;
         }
     }
     return false;
