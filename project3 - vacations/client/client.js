@@ -53,7 +53,7 @@ function navbarEventListeners() {
         })
     }
 
-    $(document).on('click','#chart', (e) => {
+    $(document).on('click', '#chart', (e) => {
         e.preventDefault();
         buildChart();
     });
@@ -78,7 +78,7 @@ function navigate(url) {
 }
 
 function buildChart() {
-    const userId = window.localStorage.getItem('userId');
+    const userId = getUserId();
     httpRequests(app.END_POINTS.vacations + '?userId=' + userId + '&forChart=true', app.METHODS.GET).then(res => {
         let numOfFollowers = [];
         let vacationsFollowed = [];
@@ -126,13 +126,15 @@ function buildChart() {
     });
 }
 
+function getUserId() {
+    return window.localStorage.getItem('userId');
+}
+
 function showVacationList() {
-    const userId = window.localStorage.getItem('userId');
+    const userId = getUserId();
     httpRequests(app.END_POINTS.vacations + '?userId=' + userId, app.METHODS.GET).then(res => vacationListView(res)).catch(status => {
         if (status === 500) {
             printToHtml('main', 'Internal Server Error');
-        } else if (status === 401) {
-            printToHtml('main', 'Area for members only! Please Login to show the list');
         } else {
             console.log(status);
         }
@@ -193,10 +195,9 @@ function deleteBtnEventListener(id, singleVacationEndPoint) {
         e.preventDefault();
         const data = {
             id: e.target.id.slice(10),
-            userId: window.localStorage.getItem('userId')
+            userId: getUserId()
         };
-        httpRequests(singleVacationEndPoint, app.METHODS.DELETE, data).then(res => {
-        }).catch(status => {
+        httpRequests(singleVacationEndPoint, app.METHODS.DELETE, data).then().catch(status => {
             if (status === 500) {
                 printToHtml('main', 'Internal Server Error')
             } else {
@@ -250,17 +251,16 @@ function onSaveAddedVacation() {
     if (isEmpty === true) {
         printToHtml('modalHeader', "Can't save before filling out all the fields!");
     } else {
-        //TODO: when save is clicked, if condition works and vacation is not added. however, the modal doesn't stay on to show message to user
-        let today = new Date().getTime();
-        let fromDate = new Date(vacationToAdd.fromDate).getTime();
-        let toDate = new Date(vacationToAdd.toDate).getTime();
-        if(fromDate < today){
-            printToHtml('modalHeader', 'From date must be in the future');
-        }else if(toDate < today){
-            printToHtml('modalHeader', 'To date must be in the future');
-        }else if(toDate < fromDate){
-            printToHtml('modalHeader', 'To date must be after "From" date');
-        }else {
+        let today = new Date().setHours(0, 0, 0, 0);
+        let fromDate = new Date(vacationToAdd.fromDate).setHours(0, 0, 0, 0);
+        let toDate = new Date(vacationToAdd.toDate).setHours(0, 0, 0, 0);
+        if (fromDate < today) {
+            printToHtml('modalHeader', '"From" date must be in the future');
+        } else if (toDate < today) {
+            printToHtml('modalHeader', '"To" date must be in the future');
+        } else if (toDate < fromDate) {
+            printToHtml('modalHeader', '"To" date must be after "From" date');
+        } else {
             httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(createdVacation => {
                 closeModal();
             }).catch(status => {
@@ -288,7 +288,7 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
             toDate: jQuery(`#editToDate`).val(),
             price: Number(jQuery(`#editPrice`).val()),
             followers: followers,
-            userId: window.localStorage.getItem('userId')
+            userId: getUserId()
         };
 
         let isDataTypeGood = true;
@@ -503,7 +503,7 @@ function clientView(vacations) {
 
 function addToFollowDb(vacationId) {
     const followObjToAdd = {
-        userId: window.localStorage.getItem('userId'),
+        userId: getUserId(),
         vacationId: vacationId
     };
     //TODO: make btn background color yellow
@@ -526,12 +526,11 @@ function addToFollowDb(vacationId) {
 
 function updateFollowersCount(vacationId, reduceOrAdd) {
     const reqBody = {
-        userId: window.localStorage.getItem('userId'),
+        userId: getUserId(),
         id: vacationId,
         reduceOrAdd: reduceOrAdd
     };
-    httpRequests(app.END_POINTS.vacations + '/' + vacationId, app.METHODS.PUT, reqBody).then(res => {
-    }).catch(status => {
+    httpRequests(app.END_POINTS.vacations + '/' + vacationId, app.METHODS.PUT, reqBody).then().catch(status => {
         console.log(status);
     });
 }
@@ -611,7 +610,7 @@ function modalBodyForAdd(modalBody) {
     return modalBody;
 }
 
-function modalBodyForUpdate(modalBody, objToUpdate){
+function modalBodyForUpdate(modalBody, objToUpdate) {
     let [toDay, toMonth, toYear] = formatDate(objToUpdate.toDate);
     let [fromDay, fromMonth, fromYear] = formatDate(objToUpdate.fromDate);
     modalBody += `
@@ -625,7 +624,7 @@ function modalBodyForUpdate(modalBody, objToUpdate){
     return modalBody;
 }
 
-function formatDate(dateToFormat){
+function formatDate(dateToFormat) {
     dateToFormat = dateToFormat.split('-');
     return dateToFormat;
 }
@@ -649,7 +648,6 @@ function onAddVacationEvent(createdVacation) {
 }
 
 function addVacationToView(vacation) {
-    debugger;
     if (window.localStorage.getItem('isAdmin') === 'true') {
         let singleEndPoint = `vacations/${vacation.id}`;
         let html = createAdminCard(vacation);
@@ -664,7 +662,7 @@ function addVacationToView(vacation) {
 }
 
 function createAdminCard(vacation) {
-    const html = `<div id="${vacation.id}" class='card'>
+    return `<div id="${vacation.id}" class='card'>
                  <i id='deleteIcon${vacation.id}' class='fas fa-times'></i>
                  <i id='editIcon${vacation.id}' class="fas fa-pencil-alt"></i>
                  <input hidden value='${vacation.id}'/>
@@ -679,11 +677,10 @@ function createAdminCard(vacation) {
                      <p id="toDate${vacation.id}">To: ${vacation.toDate}</p>
                  </div>
              </div>`;
-    return html;
 }
 
 function createClientCard(vacation, isFollowed) {
-    const html = `<div id="${vacation.id}" class='card'>
+    return `<div id="${vacation.id}" class='card'>
                     <div id="destination${vacation.id}"><b>${vacation.destination}</b></div>
                     <div id="description${vacation.id}">${vacation.description}</div>
                     <div id="price${vacation.id}">${vacation.price}$</div>
@@ -696,7 +693,6 @@ function createClientCard(vacation, isFollowed) {
                     </div>
                     <button id='followBtn${vacation.id}' class="btn btn-success btn-circle btn-circle-sm m-1 ${isFollowed}">f</button>
                 </div>`;
-    return html;
 }
 
 function onEditVacationEvent(newEditedVacationValues) {
@@ -704,7 +700,7 @@ function onEditVacationEvent(newEditedVacationValues) {
     $(`#destination${newEditedVacationValues.id}`).replaceWith(`<div><b>${newEditedVacationValues.destination}</b></div>`);
     $(`#description${newEditedVacationValues.id}`).text(newEditedVacationValues.description);
     $(`#price${newEditedVacationValues.id}`).text(`${newEditedVacationValues.price}$`);
-    $(`#img${newEditedVacationValues.id}`).attr("src",`./styles/images/${newEditedVacationValues.image}`).attr("alt",newEditedVacationValues.image);
+    $(`#img${newEditedVacationValues.id}`).attr("src", `./styles/images/${newEditedVacationValues.image}`).attr("alt", newEditedVacationValues.image);
     $(`#fromDate${newEditedVacationValues.id}`).text(newEditedVacationValues.fromDate);
     $(`#toDate${newEditedVacationValues.id}`).text(newEditedVacationValues.toDate);
 }

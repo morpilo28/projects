@@ -28,7 +28,7 @@ app.use((req, res, next) => {
         client: req.method === 'GET' && req.path === '/vacations/' && req.query.client === 'client',
         register: req.method === 'POST' && req.path === '/register',
         login: req.method === 'POST' && req.path === '/login',
-    }
+    };
 
     if (allowed.register || allowed.login || allowed.client) {
         next();
@@ -45,12 +45,8 @@ app.use((req, res, next) => {
             res.status(401).send();
         }
     }
-})
-
-/* app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/index.html');
 });
- */
+
 app.get('/vacations', (req, res) => {
     const userId = req.query.userId;
     let forChart = '';
@@ -78,16 +74,16 @@ app.get('/vacations/:id', (req, res) => {
                 if (e) {
                     return res.status(500).send();
                 } else {
-                    responseObj = {
+                    let responseObj = {
                         singleVacationData: singleVacationData,
                         allVacations: allVacations
-                    }
+                    };
                     return res.send(responseObj);
                 }
             })
         }
     })
-})
+});
 
 app.post('/vacations', (req, res) => {
     const vacationToAddObj = req.body;
@@ -103,7 +99,7 @@ app.post('/vacations', (req, res) => {
             return res.send();
         }
     })
-})
+});
 
 app.put('/vacations/:id', (req, res) => {
     const editedVacationData = req.body;
@@ -115,7 +111,7 @@ app.put('/vacations/:id', (req, res) => {
             return res.send();
         }
     })
-})
+});
 
 app.delete('/vacations/:id', (req, res) => {
     const vacationId = req.body.id;
@@ -128,13 +124,13 @@ app.delete('/vacations/:id', (req, res) => {
             io.emit('DELETE_VACATION', {id: vacationId});
         }
     })
-})
+});
 
 app.post('/login', function (req, res) {
     const userToValidate = {
         userName: req.body.userName,
         password: req.body.password,
-    }
+    };
     usersBl.validateUser(userToValidate, (e, user) => {
         if (e) {
             return res.status(400).send('no user has been found');
@@ -150,7 +146,7 @@ app.post('/login', function (req, res) {
                 userName: user.userName,
                 userId: user.id,
                 isAdmin: user.isAdmin
-            }
+            };
             return res.send(responseObj);
         }
     })
