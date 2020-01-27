@@ -9,9 +9,11 @@
     - design
     - needs to check for duplicate code
 */
+const PORT = 3201;
 
 const app = {
-    endPointStart: `http://localhost:3201/`,
+    baseEndPoint: `http://localhost:3201/`,
+    serverImgBaseUrl:'http://localhost:3201/uploadImages/', 
     END_POINTS: {
         vacations: 'vacations',
         login: 'login',
@@ -155,7 +157,7 @@ function httpRequests(endPoint, httpVerb, reqBody) {
             fetchOptions['body'] = JSON.stringify(reqBody);
         }
 
-        fetch(app.endPointStart + endPoint, fetchOptions).then(responseData => {
+        fetch(app.baseEndPoint + endPoint, fetchOptions).then(responseData => {
             let dataType = responseData.headers.get('content-type');
             if (responseData.status !== 200) {
                 reject(responseData.status);
@@ -261,7 +263,7 @@ function onSaveAddedVacation() {
     const vacationToAdd = {
         destination: document.getElementById(`addedDestination`).value,
         description: (document.getElementById(`addedDescription`).value).toLowerCase(),
-        image: document.getElementById(`addedImage`).value,
+        image: document.getElementById(`addedImage`).files[0].name,
         fromDate: document.getElementById(`addedFromDate`).value,
         toDate: document.getElementById(`addedToDate`).value,
         price: document.getElementById(`addedPrice`).value,
@@ -569,7 +571,8 @@ function paintModalElement(saveId, objToUpdate) {
                         <div class="modal-header">
                             <h4 id='modalHeader' class="modal-title">Please fill out all the fields</h4>
                         </div>
-                        ${modalBody}
+                        <div>
+                            ${modalBody}
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="closeBtn btn btn-default" id='${saveId}'>Save</button>
@@ -583,6 +586,7 @@ function paintModalElement(saveId, objToUpdate) {
     if (saveId === "save") {
         $(`#save`).on('click', (e) => {
             e.preventDefault();
+            debugger
             onSaveAddedVacation();
         });
     }
@@ -597,14 +601,19 @@ function paintModalElement(saveId, objToUpdate) {
 
 function modalBodyForAdd(modalBody) {
     modalBody += `
+        <form action="http://localhost:3201/uploadImages" method="POST" enctype="multipart/form-data">
+            <label>Image: <br/>
+                <input name="imgName" id='addedImage' required type='file'><br/>
+                <button>SAVE</button>
+            </label><br>
+        </form>
         <label>Destination: <input id='addedDestination' required type='text'></label><br>
-        <label>Description: <input id='addedDescription' required type='text'></label><br>
-        <label>Image: <input id='addedImage' required type='text'></label><br>
+        <label>Description: <textarea id='addedDescription' required type='text'></textarea></label><br>
         <label>From: <input id='addedFromDate' required type='date'></label><br>
         <label>To: <input id='addedToDate' required type='date'></label><br>
-        <label>Price: <input id='addedPrice' required type='number' min='0'></label><br>
-        `;
+        <label>Price: <input id='addedPrice' required type='number' min='0'></label><br>`;
     return modalBody;
+    /* <label>Image: <input id='addedImage' required type='text'></label><br> */
 }
 
 function modalBodyForUpdate(modalBody, objToUpdateId) {

@@ -2,6 +2,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
 const app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
@@ -11,8 +13,11 @@ const usersBl = require('./routing/users-bl');
 const PORT = 3201;
 const cors = require('cors');
 const SECRET_KEY_FOR_JWT = '687d6f87sd6f87sd6f78sd6f87sd';
+
 app.use(bodyParser.json());
 app.use(cors());
+
+app.use(express.static('./public'));
 
 app.use((req, res, next) => {
     /*  console.log({
@@ -24,13 +29,15 @@ app.use((req, res, next) => {
          query: req.query,
          url: req.url
      }) */
+
     const allowed = {
         client: req.method === 'GET' && req.path === '/vacations/' && req.query.client === 'client',
         register: req.method === 'POST' && req.path === '/register',
         login: req.method === 'POST' && req.path === '/login',
+        upload: req.method === 'POST' && req.path === '/uploadImages'
     };
 
-    if (allowed.register || allowed.login || allowed.client) {
+    if (allowed.register || allowed.login || allowed.client || allowed.upload) {
         next();
     } else {
         if (req.headers.authorization) {
@@ -46,6 +53,25 @@ app.use((req, res, next) => {
         }
     }
 });
+
+var upload = multer({
+    storage: multer.diskStorage({
+        destination: function (req, file, callback) { callback(null, './public/images/'); },
+        filename: function (req, file, callback) { callback(null, path.parse(file.originalname).name + '-' + Date.now() + path.extname(file.originalname)); }
+    }),
+    fileFilter: function (req, file, callback) { isFileTypeImg(file, callback) }
+}).single('imgName');
+
+function isFileTypeImg(file, callback) {
+    const fileType = /jpeg|jpg|png|gif/;
+    const extName = fileType.test(path.extname(file.originalname).toLocaleLowerCase());
+    const mimeType = fileType.test(file.mimetype);
+    if (extName && mimeType) {
+        return callback(null, true);
+    } else {
+        callback('file type not supported. image type only');
+    }
+}
 
 app.get('/vacations', (req, res) => {
     const userId = req.query.userId;
@@ -121,7 +147,7 @@ app.delete('/vacations/:id', (req, res) => {
         if (e) {
             return res.status(500).send();
         } else {
-            io.emit('DELETE_VACATION', {id: vacationId});
+            io.emit('DELETE_VACATION', { id: vacationId });
         }
     })
 });
@@ -136,8 +162,8 @@ app.post('/login', function (req, res) {
             return res.status(400).send('no user has been found');
         } else {
             const token = jwt.sign({
-                    userName: req.body.userName
-                }, SECRET_KEY_FOR_JWT,
+                userName: req.body.userName
+            }, SECRET_KEY_FOR_JWT,
                 {
                     expiresIn: '365d'
                 });
@@ -179,6 +205,18 @@ app.post('/follow', function (req, res) {
         }
     })
 });
+
+app.post('/uploadImages', (req, res) => {
+    upload(req, res, (e) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            console.log(req.file);
+            return res.send();
+        }
+    })
+})
 
 io.on('connection', function (socket) {
     console.log('a user connected');
