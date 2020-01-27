@@ -17,6 +17,7 @@ const SECRET_KEY_FOR_JWT = '687d6f87sd6f87sd6f78sd6f87sd';
 app.use(bodyParser.json());
 app.use(cors());
 
+//TODO: make the images file on server folder
 app.use(express.static('./public'));
 
 app.use((req, res, next) => {
