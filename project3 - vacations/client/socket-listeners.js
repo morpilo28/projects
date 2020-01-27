@@ -7,3 +7,4 @@ socket.on('ADD_VACATION', onAddVacationEvent);
 socket.on('DELETE_VACATION', onDeleteVacationEvent);
 
 socket.on('EDIT_VACATION', onEditVacationEvent);
+

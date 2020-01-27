@@ -49,15 +49,28 @@ td {
 .btn-success {
     color: black;
     background-color: #fff;
-    width: 10px;
+    width: 36px;
 }
 
 .btn {
     font-weight: bold;
     transition: none;
-    line-height: 0.7;
+    line-height: 1.2;
     border-radius: 1.25rem;
-    padding: .5rem .8rem;
+    padding: 0.5rem .8rem;
+}
+
+.btnFollowPosition,.btnFollowersPosition{
+    position: absolute;
+    right: 0;
+}
+
+.btnFollowPosition{
+    top: 1px;
+}
+
+.btnFollowersPosition{
+    bottom: 1px;
 }
 
 .btn:hover,

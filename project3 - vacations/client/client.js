@@ -10,7 +10,6 @@
     - needs to check for duplicate code
 */
 
-
 const app = {
     endPointStart: `http://localhost:3201/`,
     END_POINTS: {
@@ -694,10 +693,11 @@ function createClientCard(vacation, isFollowed) {
                         <img id="img${vacation.id}" width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>
                     </div>
                     <div>
-                        <p id="fromDate${vacation.id}">From: ${vacation.fromDate}</p>
-                        <p id="toDate${vacation.id}">To: ${vacation.toDate}</p>
+                        <div>From: <span id="fromDate${vacation.id}">${vacation.fromDate}</span></div> 
+                        <div>To: <span id="toDate${vacation.id}">${vacation.toDate}</span></div>
                     </div>
-                    <button id='followBtn${vacation.id}' class="btn btn-success btn-circle btn-circle-sm m-1 ${isFollowed}">f</button>
+                    <button id='followBtn${vacation.id}' class="btnFollowPosition btn btn-success btn-circle btn-circle-sm m-1 ${isFollowed}">f</button>
+                    <button id="followersBtn${vacation.id}" class="btnFollowersPosition btn btn-success  btn-circle-sm m-1">${vacation.followers}</button>
                 </div>`;
 }
 
@@ -709,6 +709,7 @@ function onEditVacationEvent(newEditedVacationValues) {
     $(`#img${newEditedVacationValues.id}`).attr("src", `./styles/images/${newEditedVacationValues.image}`).attr("alt", newEditedVacationValues.image);
     $(`#fromDate${newEditedVacationValues.id}`).text(newEditedVacationValues.fromDate);
     $(`#toDate${newEditedVacationValues.id}`).text(newEditedVacationValues.toDate);
+    $(`#followersBtn${newEditedVacationValues.id}`).text(newEditedVacationValues.followers);
 }
 
 function onDeleteVacationEvent(deletedVacationId) {
