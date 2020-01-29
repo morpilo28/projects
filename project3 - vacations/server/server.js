@@ -66,7 +66,7 @@ var upload = multer({
         filename: function (req, file, callback) { callback(null, path.parse(file.originalname).name + '-' + Date.now() + path.extname(file.originalname)); }
     }),
     fileFilter: function (req, file, callback) { isFileTypeImg(file, callback) }
-}).single('addedImgFile');
+}).single('imgFile');
 
 function isFileTypeImg(file, callback) {
     const fileType = /jpeg|jpg|png|gif/;

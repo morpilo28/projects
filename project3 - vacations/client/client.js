@@ -275,7 +275,7 @@ function isValueEmpty(vacationToAdd) {
 function onSaveAddedVacation() {
     const imageFile = (document.getElementById('addedImage')).files[0];
     const formData = new FormData();
-    formData.append('addedImgFile', imageFile);
+    formData.append('imgFile', imageFile);
     const imgNameForDb = addTimeStampToImgName(imageFile);
 
     const vacationToAdd = {
@@ -313,7 +313,7 @@ function onSaveAddedVacation() {
 function addTimeStampToImgName(imageFile) {
     const imgFileNameWithExtension = imageFile.name;
     //TODO: try catch - if file name consist of dots (beyond the extension dot).
-    const imgNameWithoutExtension = imgFileNameWithExtension.substr(0, imgFileNameWithExtension.lastIndexOf('.')); 
+    const imgNameWithoutExtension = imgFileNameWithExtension.substr(0, imgFileNameWithExtension.lastIndexOf('.'));
     const imgExtension = imgFileNameWithExtension.split('.').pop();
 
     return imgNameWithoutExtension + '-' + Date.now() + '.' + imgExtension;
@@ -322,11 +322,17 @@ function addTimeStampToImgName(imageFile) {
 function onEditVacation(idx, singleVacationEndPoint, followers) {
     $(`#saveChanges${idx}`).on('click', (e) => {
         e.preventDefault();
+
+        const imageFile = (document.getElementById(`editImage`)).files[0];
+        const formData = new FormData();
+        formData.append('imgFile', imageFile);
+        const imgNameForDb = addTimeStampToImgName(imageFile);
+
         let editedObj = {
             id: idx,
             destination: jQuery(`#editDestination`).val(),
             description: jQuery(`#editDescription`).val().toLowerCase(),
-            image: jQuery(`#editImage`).val(),
+            image: imgNameForDb,
             fromDate: jQuery(`#editFromDate`).val(),
             toDate: jQuery(`#editToDate`).val(),
             price: Number(jQuery(`#editPrice`).val()),
@@ -340,6 +346,7 @@ function onEditVacation(idx, singleVacationEndPoint, followers) {
         } else {
             let isDateValidBoolean = isDateValid(editedObj);
             if (isDateValidBoolean) {
+                httpRequests(app.END_POINTS.uploadImg, app.METHODS.POST, formData).then().catch(status => console.log(status));
                 httpRequests(singleVacationEndPoint, app.METHODS.PUT, editedObj).then(res => {
                     closeModal();
                     // vacationListView(res);
@@ -654,9 +661,11 @@ function modalBodyForUpdate(modalBody, objToUpdateId) {
     let [fromDay, fromMonth, fromYear] = formatDate(objToEdit.fromDate);
     let [toDay, toMonth, toYear] = formatDate(objToEdit.toDate);
     modalBody += `
+        <label>Image: <br/>
+            <input id='editImage' required type='file' value='${objToEdit.image}'>
+        </label><br>
         <label>Destination: <input id='editDestination' required type='text' value='${objToEdit.destination}'></label><br>
         <label>Description: <textarea id='editDescription' required type='text'>${objToEdit.description}</textarea></label><br>
-        <label>Image: <input id='editImage' required type='text' value='${objToEdit.image}'></label><br>
         <label>From: <input id='editFromDate' required type='date' value='${fromYear}-${fromMonth}-${fromDay}'></label><br>
         <label>To: <input id='editToDate' required type='date' value='${toYear}-${toMonth}-${toDay}'></label><br>
         <label>Price: <input id='editPrice' required type='number' min='0' value='${objToEdit.price}'></label><br>
