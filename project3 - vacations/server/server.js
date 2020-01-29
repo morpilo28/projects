@@ -7,6 +7,7 @@ const path = require('path');
 const app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+/* const upload = multer(); */
 
 const vacationBl = require('./routing/vacations-bl');
 const usersBl = require('./routing/users-bl');
@@ -18,7 +19,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //TODO: make the images file on server folder
-app.use(express.static('./public'));
+app.use('./images', express.static(path.join(__dirname, 'images')));
 
 app.use((req, res, next) => {
     /*  console.log({
@@ -57,11 +58,11 @@ app.use((req, res, next) => {
 
 var upload = multer({
     storage: multer.diskStorage({
-        destination: function (req, file, callback) { callback(null, './public/images/'); },
+        destination: function (req, file, callback) { callback(null, path.join(__dirname, 'images')); },
         filename: function (req, file, callback) { callback(null, path.parse(file.originalname).name + '-' + Date.now() + path.extname(file.originalname)); }
     }),
     fileFilter: function (req, file, callback) { isFileTypeImg(file, callback) }
-}).single('imgName');
+}).single('addedImgFile');
 
 function isFileTypeImg(file, callback) {
     const fileType = /jpeg|jpg|png|gif/;
@@ -207,14 +208,15 @@ app.post('/follow', function (req, res) {
     })
 });
 
-app.post('/uploadImages', (req, res) => {
+app.post('/uploadImg', upload, (req, res) => {
+    /* res.setHeader("Access-Control-Allow-Origin", "*"); */
     upload(req, res, (e) => {
         if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+            console.log('the error is: ' + e);
+            return res.status(500).end('problem with uploading img');
         } else {
             console.log(req.file);
-            return res.send();
+            return res.end('done');
         }
     })
 })

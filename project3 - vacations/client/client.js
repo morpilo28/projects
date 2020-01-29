@@ -13,12 +13,13 @@ const PORT = 3201;
 
 const app = {
     baseEndPoint: `http://localhost:3201/`,
-    serverImgBaseUrl:'http://localhost:3201/uploadImages/', 
+    serverImgBaseUrl: 'http://localhost:3201/uploadImages/',
     END_POINTS: {
         vacations: 'vacations',
         login: 'login',
         register: 'register',
-        follow: 'follow'
+        follow: 'follow',
+        uploadImg: 'uploadImg'
     },
     METHODS: {
         GET: 'GET',
@@ -143,7 +144,15 @@ function showVacationList() {
 
 function httpRequests(endPoint, httpVerb, reqBody) {
     return new Promise((resolve, reject) => {
-        const headers = {'Content-Type': 'application/json'};
+        let headers = {};
+
+        if (!(reqBody instanceof FormData) || !reqBody) {
+            headers = { 'Content-Type': 'application/json' };
+        }
+
+        // TODO: if content type is set to 'multipart/form-data' - then it creates the error "Multipart: Boundary not found"
+        //const headers = reqBody instanceof FormData? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json'}
+
         if (localStorage.getItem(app.TOKEN_LOCAL_STORAGE_KEY)) {
             headers['Authorization'] = 'bearer ' + localStorage.getItem(app.TOKEN_LOCAL_STORAGE_KEY);
         }
@@ -154,7 +163,11 @@ function httpRequests(endPoint, httpVerb, reqBody) {
         };
 
         if (httpVerb === app.METHODS.DELETE || httpVerb === app.METHODS.POST || httpVerb === app.METHODS.PUT && reqBody) {
-            fetchOptions['body'] = JSON.stringify(reqBody);
+            if (reqBody instanceof FormData) {
+                fetchOptions['body'] = reqBody;
+            } else {
+                fetchOptions['body'] = JSON.stringify(reqBody);
+            }
         }
 
         fetch(app.baseEndPoint + endPoint, fetchOptions).then(responseData => {
@@ -164,6 +177,8 @@ function httpRequests(endPoint, httpVerb, reqBody) {
             }
             //TODO: what happens when dataType is null (admin.js:264 Uncaught (in promise) TypeError: Cannot read property 'indexOf' of null)
             //TODO: check if this next statement is suitable to address the problem of null data type
+
+            console.log(dataType);
             dataType = !dataType ? 'text/html; charset=utf-8' : dataType;
             if (dataType.indexOf('json') > -1) {
                 responseData.json().then(res => resolve(res));
@@ -197,6 +212,7 @@ function deleteBtnEventListener(id, singleVacationEndPoint) {
             id: e.target.id.slice(10),
             userId: getUserId()
         };
+
         httpRequests(singleVacationEndPoint, app.METHODS.DELETE, data).then().catch(status => {
             if (status === 500) {
                 printToHtml('main', 'Internal Server Error')
@@ -260,10 +276,18 @@ function isValueEmpty(vacationToAdd) {
 }
 
 function onSaveAddedVacation() {
+    const imageFile = (document.getElementById('addedImage')).files[0];
+    const formData = new FormData();
+    formData.append('addedImgFile', imageFile);
+    const imgFileNameWithExtension = imageFile.name;
+    const imgNameWithoutExtension = imgFileNameWithExtension.substr(0, imgFileNameWithExtension.lastIndexOf('.'));
+    const imgExtension = imgFileNameWithExtension.split('.').pop();
+
+    debugger
     const vacationToAdd = {
         destination: document.getElementById(`addedDestination`).value,
         description: (document.getElementById(`addedDescription`).value).toLowerCase(),
-        image: document.getElementById(`addedImage`).files[0].name,
+        image: imgNameWithoutExtension +'-'+ Date.now() +'.'+ imgExtension,
         fromDate: document.getElementById(`addedFromDate`).value,
         toDate: document.getElementById(`addedToDate`).value,
         price: document.getElementById(`addedPrice`).value,
@@ -276,6 +300,7 @@ function onSaveAddedVacation() {
     } else {
         let isDateValidBoolean = isDateValid(vacationToAdd);
         if (isDateValidBoolean) {
+            httpRequests(app.END_POINTS.uploadImg, app.METHODS.POST, formData).then().catch(status => console.log(status));
             httpRequests(app.END_POINTS.vacations, app.METHODS.POST, vacationToAdd).then(createdVacation => {
                 closeModal();
             }).catch(status => {
@@ -571,13 +596,15 @@ function paintModalElement(saveId, objToUpdate) {
                         <div class="modal-header">
                             <h4 id='modalHeader' class="modal-title">Please fill out all the fields</h4>
                         </div>
-                        <div>
-                            ${modalBody}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="closeBtn btn btn-default" id='${saveId}'>Save</button>
-                            <button type="button" class="closeBtn btn btn-default"  id='close'>Close</button>
-                        </div>
+                        <form id='addedVacationForm'>
+                            <div>
+                                ${modalBody}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="closeBtn btn btn-default" id='${saveId}'>Save</button>
+                                <button type="button" class="closeBtn btn btn-default" id='close'>Close</button>
+                            </div>
+                        </form>
                 </div>
             </div>
         </div>
@@ -586,7 +613,6 @@ function paintModalElement(saveId, objToUpdate) {
     if (saveId === "save") {
         $(`#save`).on('click', (e) => {
             e.preventDefault();
-            debugger
             onSaveAddedVacation();
         });
     }
@@ -601,17 +627,14 @@ function paintModalElement(saveId, objToUpdate) {
 
 function modalBodyForAdd(modalBody) {
     modalBody += `
-        <form action="http://localhost:3201/uploadImages" method="POST" enctype="multipart/form-data">
             <label>Image: <br/>
-                <input name="imgName" id='addedImage' required type='file'><br/>
-                <button>SAVE</button>
+                <input id='addedImage' required type='file'><br/>
             </label><br>
-        </form>
-        <label>Destination: <input id='addedDestination' required type='text'></label><br>
-        <label>Description: <textarea id='addedDescription' required type='text'></textarea></label><br>
-        <label>From: <input id='addedFromDate' required type='date'></label><br>
-        <label>To: <input id='addedToDate' required type='date'></label><br>
-        <label>Price: <input id='addedPrice' required type='number' min='0'></label><br>`;
+            <label>Destination: <input id='addedDestination' required type='text'></label><br>
+            <label>Description: <textarea id='addedDescription' required type='text'></textarea></label><br>
+            <label>From: <input id='addedFromDate' required type='date'></label><br>
+            <label>To: <input id='addedToDate' required type='date'></label><br>
+            <label>Price: <input id='addedPrice' required type='number' min='0'></label><br>`;
     return modalBody;
     /* <label>Image: <input id='addedImage' required type='text'></label><br> */
 }
