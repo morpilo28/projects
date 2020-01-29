@@ -15,31 +15,35 @@ const PORT = 3201;
 const cors = require('cors');
 const SECRET_KEY_FOR_JWT = '687d6f87sd6f87sd6f78sd6f87sd';
 
+app.use('/images', express.static(path.join(__dirname, '/images')));
 app.use(bodyParser.json());
 app.use(cors());
 
+/*   app.use((req, res, next) => {
+        console.log({
+            method: req.method,
+            path: req.path,
+            originalUrl: req.originalUrl,
+            body: req.body,
+            params: req.params,
+            query: req.query,
+            url: req.url
+        })
+        next();
+    }); */
+
 //TODO: make the images file on server folder
-app.use('./images', express.static(path.join(__dirname, 'images')));
 
 app.use((req, res, next) => {
-    /*  console.log({
-         method: req.method,
-         path: req.path,
-         originalUrl: req.originalUrl,
-         body: req.body,
-         params: req.params,
-         query: req.query,
-         url: req.url
-     }) */
-
     const allowed = {
         client: req.method === 'GET' && req.path === '/vacations/' && req.query.client === 'client',
         register: req.method === 'POST' && req.path === '/register',
         login: req.method === 'POST' && req.path === '/login',
-        upload: req.method === 'POST' && req.path === '/uploadImages'
+        upload: req.method === 'POST' && req.path === '/uploadImages',
+        imgSrc: req.method === 'GET' && (req.path.indexOf('images') > -1)
     };
 
-    if (allowed.register || allowed.login || allowed.client || allowed.upload) {
+    if (allowed.register || allowed.login || allowed.client || allowed.upload || allowed.imgSrc) {
         next();
     } else {
         if (req.headers.authorization) {

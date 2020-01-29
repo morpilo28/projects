@@ -9,8 +9,6 @@
     - design
     - needs to check for duplicate code
 */
-const PORT = 3201;
-
 const app = {
     baseEndPoint: `http://localhost:3201/`,
     serverImgBaseUrl: 'http://localhost:3201/images/',
@@ -279,6 +277,7 @@ function onSaveAddedVacation() {
     const formData = new FormData();
     formData.append('addedImgFile', imageFile);
     const imgNameForDb = addTimeStampToImgName(imageFile);
+
     const vacationToAdd = {
         destination: document.getElementById(`addedDestination`).value,
         description: (document.getElementById(`addedDescription`).value).toLowerCase(),
@@ -713,7 +712,7 @@ function createAdminCard(vacation) {
                  <textarea readonly id="description${vacation.id}" class="cardTextArea">${vacation.description}</textarea>
                  <div id="price${vacation.id}">${vacation.price}$</div>
                  <div>
-                     <img id="img${vacation.id}" width='80' src="./styles/images/${vacation.image}" alt="${vacation.image}"/>
+                     <img id="img${vacation.id}" width='80' src="${app.serverImgBaseUrl + vacation.image}" alt="${vacation.image}"/>
                  </div>
                  <div>
                     <div>From: <span id="fromDate${vacation.id}">${vacation.fromDate}</span></div> 
