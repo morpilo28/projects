@@ -1,14 +1,14 @@
 "use strict";
-/* problems:
-        - check if dates is ok and no problems
-        - is there any place to use /vacation/:id?!
-    TODO:
-    - add the charts section
-    - change lower case to upper case or vice versa if needed (for example in: registration/login, adding/updating a vacation, etc.)
-    - make adding an image (when adding a vacation) possible
-    - design
-    - needs to check for duplicate code
-*/
+    //TODO: when displaying cards, show img from server images folder - fix src url;
+    //TODO: when uploading img check if exist. if so don't add again (probably will need to change uploaded file saved name);
+    //TODO: check if dates is ok and no problems;
+    //TODO: is there any place to use /vacation/:id?!;
+    //TODO: fix chart section;
+    //TODO: change lower case to upper case or vice versa if needed (for example in: registration/login, adding/updating a vacation, etc.);
+    //TODO: make adding an image (when adding a vacation) possible;
+    //TODO: design;
+    //TODO: needs to check for duplicate code;
+
 const app = {
     baseEndPoint: `http://localhost:3201/`,
     serverImgBaseUrl: 'http://localhost:3201/images/',
