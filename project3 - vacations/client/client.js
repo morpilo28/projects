@@ -13,7 +13,7 @@ const PORT = 3201;
 
 const app = {
     baseEndPoint: `http://localhost:3201/`,
-    serverImgBaseUrl: 'http://localhost:3201/uploadImages/',
+    serverImgBaseUrl: 'http://localhost:3201/images/',
     END_POINTS: {
         vacations: 'vacations',
         login: 'login',
@@ -178,7 +178,6 @@ function httpRequests(endPoint, httpVerb, reqBody) {
             //TODO: what happens when dataType is null (admin.js:264 Uncaught (in promise) TypeError: Cannot read property 'indexOf' of null)
             //TODO: check if this next statement is suitable to address the problem of null data type
 
-            console.log(dataType);
             dataType = !dataType ? 'text/html; charset=utf-8' : dataType;
             if (dataType.indexOf('json') > -1) {
                 responseData.json().then(res => resolve(res));
@@ -279,15 +278,11 @@ function onSaveAddedVacation() {
     const imageFile = (document.getElementById('addedImage')).files[0];
     const formData = new FormData();
     formData.append('addedImgFile', imageFile);
-    const imgFileNameWithExtension = imageFile.name;
-    const imgNameWithoutExtension = imgFileNameWithExtension.substr(0, imgFileNameWithExtension.lastIndexOf('.'));
-    const imgExtension = imgFileNameWithExtension.split('.').pop();
-
-    debugger
+    const imgNameForDb = addTimeStampToImgName(imageFile);
     const vacationToAdd = {
         destination: document.getElementById(`addedDestination`).value,
         description: (document.getElementById(`addedDescription`).value).toLowerCase(),
-        image: imgNameWithoutExtension +'-'+ Date.now() +'.'+ imgExtension,
+        image: imgNameForDb,
         fromDate: document.getElementById(`addedFromDate`).value,
         toDate: document.getElementById(`addedToDate`).value,
         price: document.getElementById(`addedPrice`).value,
@@ -314,6 +309,15 @@ function onSaveAddedVacation() {
             });
         }
     }
+}
+
+function addTimeStampToImgName(imageFile) {
+    const imgFileNameWithExtension = imageFile.name;
+    //TODO: try catch - if file name consist of dots (beyond the extension dot).
+    const imgNameWithoutExtension = imgFileNameWithExtension.substr(0, imgFileNameWithExtension.lastIndexOf('.')); 
+    const imgExtension = imgFileNameWithExtension.split('.').pop();
+
+    return imgNameWithoutExtension + '-' + Date.now() + '.' + imgExtension;
 }
 
 function onEditVacation(idx, singleVacationEndPoint, followers) {
@@ -699,6 +703,8 @@ function addVacationToView(vacation) {
 }
 
 function createAdminCard(vacation) {
+    //TODO: make img src attr go to server images folder - maybe: "${app.serverImgBaseUrl + vacation.image}"
+    console.log(app.serverImgBaseUrl + vacation.image);
     return `<div id="${vacation.id}" class='card'>
                  <i id='deleteIcon${vacation.id}' class='fas fa-times deleteIcon'></i>
                  <i id='editIcon${vacation.id}' class="fas fa-pencil-alt editIcon"></i>
