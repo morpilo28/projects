@@ -1,10 +1,11 @@
 <div>
     <h1><b>Please Login</b></h1>
+    <p>{{note}}</p>
     <label>User Name: 
-        <input type="text" placeholder="USER NAME"> 
+        <input [(ngModel)]='user.name' type="text" placeholder="NAME" name="name"> 
     </label>
     <label>Password: 
-        <input type="password" placeholder="PASSWORD">
+        <input [(ngModel)]='user.password' type="password" placeholder="PASSWORD" name="password">
     </label><br><br>
-    <button>Login</button>
+    <button (click)='onSubmitForm()'>Login</button>
 </div>

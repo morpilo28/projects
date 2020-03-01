@@ -22,14 +22,14 @@ function get(collection) {
 }
 
 //getOne('administrator', "5e57cf70b97e27183cd46a6c").then(res => console.log(res)); // from bl 
-function getOne(collection, id) {
+function getOne(collection, filterKeys, filterValue) {
     return new Promise(async (resolve, reject) => {
         const client = createNewMongoClient();
         try {
             await connectToMongo(client);
             const db = getDb(client);
-            id = new ObjectId(id); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
-            const singleDocument = await db.collection(collection).findOne({ _id: id });
+            
+            const singleDocument = await db.collection(collection).findOne({ filterKey: filterValue });
 
             resolve(singleDocument);
             closeMongoConnection(client);

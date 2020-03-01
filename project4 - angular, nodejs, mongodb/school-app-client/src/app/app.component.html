@@ -1,10 +1,11 @@
-<nav>
-  <span [routerLink]='["/login"]'><b>| Login | </b></span>
-  <span [routerLink]='["/school"]'><b>| School | </b></span>
-  <span [routerLink]='["/administration"]'><b>Administration | </b></span>
+<app-user-info class="floatRight"></app-user-info>
+<span class='floatLeft navMargin'>Logo</span>
+<nav class='floatLeft navMargin'>
+  |<span [routerLink]='["/login"]'><b> Login </b></span>|
+  <span [routerLink]='["/school"]'><b> School  </b></span>|
+  <span *ngIf='isAllowed' [routerLink]='["/administration"]'><b> Administration  |</b></span>
 </nav>
 
-<app-user-info></app-user-info>
 <hr>
 <br><br>
 <router-outlet></router-outlet>

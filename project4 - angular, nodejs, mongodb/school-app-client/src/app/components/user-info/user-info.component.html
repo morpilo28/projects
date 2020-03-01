@@ -1,1 +1,9 @@
-<p>user-info works!</p>
+<ng-container *ngIf='currentUser'>
+    <div class="userDetails">
+        <span>{{currentUser.name | titlecase}}, {{currentUser.role | titlecase}}</span><br>
+        <span (click)='logout()'><u> Logout</u></span>
+    </div>
+    <div class="userImg">
+        <img [src]="" [alt]='currentUser.image' />
+    </div>
+</ng-container>
