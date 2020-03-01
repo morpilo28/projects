@@ -9,7 +9,6 @@ const usersCollection = 'administrator';
 router.get('/', (req, res) => {
     //get('administrator').then(res => console.log(res)); // from bl
     dal.get(usersCollection).then(response=>{
-        console.log(response);
         return res.send(response);    
     })
     
@@ -26,8 +25,6 @@ router.post('/login', (req, res) => {
             console.log(e);
             return res.status(500).send(e);
         } else {
-            console.log(data);
-
             const token = jwt.sign({
                 userName:userToValidate.name
             },SECRET_KEY_FOR_JWT,

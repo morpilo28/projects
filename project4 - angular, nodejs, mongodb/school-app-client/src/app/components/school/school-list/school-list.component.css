@@ -1,0 +1,23 @@
+h6 {
+    display: inline-block;
+    width: 100%;
+    font-size: 2em;
+    margin: 10px 0 10px 0;
+}
+
+img {
+    border: 1px solid black;
+}
+
+.floatLeft {
+    float: left;
+}
+
+.itemContainer{
+    clear: both;
+    margin-bottom: -42px;
+}
+
+.listContainer{
+    overflow-y: auto;
+}

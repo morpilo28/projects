@@ -1,0 +1,22 @@
+.courses,
+.students {
+    width: 20%;
+    height: 500px;
+    float: left;
+    margin: 0 10px 0 10px;
+}
+
+.courses {
+    background-color: green;
+}
+
+.students {
+    background-color: blue;
+}
+
+.main {
+    width: 50%;
+    background-color: yellow;
+    height: 500px;
+    float: right;
+}

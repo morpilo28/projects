@@ -11,10 +11,8 @@ const usersCollection = 'administrator';
 const dal = require('../dal');
 
 function isUserExist(userToValidate, cb) {
-    //get('administrator').then(res => console.log(res)); // from bl
     dal.get(usersCollection).then(data => {
         const allUsers = data;
-        console.log(data);
         let singleUser = allUsers.filter((obj) => obj.name === userToValidate.name && obj.password === userToValidate.password);
         if (singleUser.length === 0) {
             cb('no user has been found');

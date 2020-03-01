@@ -10,6 +10,8 @@ import { SchoolComponent } from './components/school/school.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { AdministrationComponent } from './components/administration/administration.component';
 import { TokenInterceptor } from './interceptors/token.Interceptor';
+import { SchoolMainContainerComponent } from './components/school/school-main-container/school-main-container.component';
+import { SchoolListComponent } from './components/school/school-list/school-list.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { TokenInterceptor } from './interceptors/token.Interceptor';
     LoginComponent,
     SchoolComponent,
     UserInfoComponent,
-    AdministrationComponent
+    AdministrationComponent,
+    SchoolMainContainerComponent,
+    SchoolListComponent
   ],
   imports: [
     BrowserModule,
