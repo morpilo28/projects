@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from 'src/app/services/user.service';
 import { CourseService } from 'src/app/services/course.service';
 import { CourseModel } from 'src/app/models/course-model';
 import { StudentsService } from 'src/app/services/students.service';
@@ -16,6 +15,7 @@ export class SchoolComponent implements OnInit {
   private studentsListKeys = [];
   private coursesListKeys = [];
   private courseAndStudentCount: { coursesCount: number, studentsCount: number } = { coursesCount: 0, studentsCount: 0 };
+  private _mainContainerFilter;
 
   constructor(private courseService: CourseService, private studentsService: StudentsService) { }
 
@@ -35,5 +35,9 @@ export class SchoolComponent implements OnInit {
       },
       err => console.log(err)
     )
+  }
+
+  filterForMainContainer(value) {
+    this._mainContainerFilter = value;
   }
 }

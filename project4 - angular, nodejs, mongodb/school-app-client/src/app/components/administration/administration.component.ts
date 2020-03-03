@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { UserModel } from 'src/app/models/user-model';
 import { UserService } from 'src/app/services/user.service';
 
@@ -10,6 +10,7 @@ import { UserService } from 'src/app/services/user.service';
 export class AdministrationComponent implements OnInit {
   private usersList: UserModel[] = [];
   private usersListKeys = [];
+  private _mainContainerFilter;
 
   constructor(private userService: UserService) { }
 
@@ -23,4 +24,8 @@ export class AdministrationComponent implements OnInit {
       err => console.log(err));
   }
 
+
+  filterForMainContainer(value) {
+    this._mainContainerFilter = value;
+  }
 }

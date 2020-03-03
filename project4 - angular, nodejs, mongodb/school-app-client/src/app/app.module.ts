@@ -10,9 +10,8 @@ import { SchoolComponent } from './components/school/school.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { AdministrationComponent } from './components/administration/administration.component';
 import { TokenInterceptor } from './interceptors/token.Interceptor';
-import { SchoolMainContainerComponent } from './components/school/school-main-container/school-main-container.component';
+import { MainContainerComponent } from './components/main-container/main-container.component';
 import { ListComponent } from './components/list/list.component';
-import { ListItemComponent } from './components/list-item/list-item.component';
 
 @NgModule({
   declarations: [
@@ -21,9 +20,8 @@ import { ListItemComponent } from './components/list-item/list-item.component';
     SchoolComponent,
     UserInfoComponent,
     AdministrationComponent,
-    SchoolMainContainerComponent,
+    MainContainerComponent,
     ListComponent,
-    ListItemComponent
   ],
   imports: [
     BrowserModule,

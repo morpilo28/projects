@@ -1,5 +1,5 @@
 <h6>
-    <span> {{title}} </span> <span (click)='add(title)'>+</span>
+    <span> {{title}} </span> <span (click)="add(title, 'add')">+</span>
 </h6>
 <div class='listContainer'>
     <ng-container class="itemContainer" *ngFor="let item of list">

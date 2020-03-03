@@ -1,5 +1,3 @@
-<!-- <app-school-list class="courses" [title]="listTitle[0]" [keys]='keys' [list]='coursesList'></app-school-list> -->
-<!-- <app-school-list class="students" [title]='listTitle[1]' [keys]='keys' [list]='studentsList'></app-school-list> -->
-<app-list class="courses" title='courses' [list]='coursesList'></app-list>
-<app-list class="students" title='students' [list]='studentsList'></app-list>
-<app-school-main-container class="main" [courseAndStudentCount] = 'courseAndStudentCount'></app-school-main-container>
+<app-list class="courses" title='courses' [list]='coursesList' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
+<app-list class="students" title='students' [list]='studentsList' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
+<app-main-container class="main" [courseAndStudentCount] = 'courseAndStudentCount' [mainContainerFilter] = '_mainContainerFilter'></app-main-container>

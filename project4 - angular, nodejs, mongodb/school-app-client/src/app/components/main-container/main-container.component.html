@@ -1,0 +1,23 @@
+<h2 *ngIf='courseAndStudentCount && !mainContainerFilter'>Total of {{courseAndStudentCount.coursesCount}} courses and
+    {{courseAndStudentCount.studentsCount}} students</h2>
+<div *ngIf='mainContainerFilter'>
+    <button (click)='save()'>Save</button>
+    <button (click)='delete()'>Delete</button><br>
+    <label>name: <input /><br></label>
+    <label *ngIf="mainContainerFilter.title === 'courses'">description: <textarea></textarea><br></label>
+    <label *ngIf="mainContainerFilter.title === 'students' || mainContainerFilter.title === 'administrators'">phone: <input /><br></label>
+    <label *ngIf="mainContainerFilter.title === 'students' || mainContainerFilter.title === 'administrators'">email: <input /><br></label>
+    <label *ngIf="mainContainerFilter.title === 'administrators'">role: <input /> <br></label>
+    <label>image: <img /> <br></label>
+    <p *ngIf="mainContainerFilter.title === 'courses'">total N students taking this course <br></p>
+    <label *ngIf="mainContainerFilter.title === 'students'">courses:
+        <input type="radio" id='courseA' />
+        <label for='courseA'>course A</label>
+        <input type="radio" id='courseB' />
+        <label for='courseB'>course B</label>
+    </label>
+</div>
+
+
+
+{{mainContainerFilter | json}}

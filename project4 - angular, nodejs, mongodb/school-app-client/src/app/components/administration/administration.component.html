@@ -1,1 +1,2 @@
-<app-list title='administrators' [list]='usersList'></app-list>
+<app-list title='administrators' [list]='usersList' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
+<app-main-container class="main" [mainContainerFilter] = '_mainContainerFilter'></app-main-container>
