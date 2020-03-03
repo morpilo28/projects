@@ -8,10 +8,17 @@ const usersCollection = 'administrator';
 
 router.get('/', (req, res) => {
     //get('administrator').then(res => console.log(res)); // from bl
-    dal.get(usersCollection).then(response=>{
-        return res.send(response);    
+    userBl.get((e,allUsers)=>{
+        if(e){
+            console.log(e);
+            return res.status(500).send();
+        }else{
+            allUsers.map((usrObj)=>{
+                delete usrObj['password']; 
+            })
+            return res.send(allUsers);
+        }
     })
-    
 });
 
 router.post('/login', (req, res) => {

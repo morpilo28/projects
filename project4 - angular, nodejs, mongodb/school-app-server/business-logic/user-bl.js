@@ -10,6 +10,13 @@ const ObjectId = require('mongodb').ObjectId;
 const usersCollection = 'administrator';
 const dal = require('../dal');
 
+function get(cb) {
+    dal.get(usersCollection).then(data => {
+        const allUsers = data;
+            cb(null, allUsers);
+    }).catch(e => cb("can't get user's list"));
+}
+
 function isUserExist(userToValidate, cb) {
     dal.get(usersCollection).then(data => {
         const allUsers = data;
@@ -42,4 +49,5 @@ function getUser(user, cb) {
 
 module.exports = {
     isUserExist: isUserExist,
+    get:get,
 };

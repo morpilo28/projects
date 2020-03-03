@@ -3,6 +3,7 @@ import { UserService } from 'src/app/services/user.service';
 import { CourseService } from 'src/app/services/course.service';
 import { CourseModel } from 'src/app/models/course-model';
 import { StudentsService } from 'src/app/services/students.service';
+import { StudentModel } from 'src/app/models/student-model';
 
 @Component({
   selector: 'app-school',
@@ -10,23 +11,29 @@ import { StudentsService } from 'src/app/services/students.service';
   styleUrls: ['./school.component.css']
 })
 export class SchoolComponent implements OnInit {
-  private listTitle: string[] = ['courses', 'students'];
-  private keys: string[] = ['name', 'phone'];
   private coursesList: CourseModel[] = [];
-  private studentsList: any[] = [];
-  constructor(private userService: UserService, private courseService: CourseService, private studentsService: StudentsService) { }
+  private studentsList: StudentModel[] = [];
+  private studentsListKeys = [];
+  private coursesListKeys = [];
+  private courseAndStudentCount: { coursesCount: number, studentsCount: number } = { coursesCount: 0, studentsCount: 0 };
+
+  constructor(private courseService: CourseService, private studentsService: StudentsService) { }
 
   ngOnInit() {
     this.courseService.getAllCourses().subscribe(
       res => {
         this.coursesList = res;
-        console.log(this.coursesList);
+        this.coursesListKeys = Object.keys(res[0]);
+        this.courseAndStudentCount.coursesCount = res.length;
       },
       err => console.log(err));
     this.studentsService.getAllStudents().subscribe(
-      res => this.studentsList = res,
+      res => {
+        this.studentsList = res;
+        this.studentsListKeys = Object.keys(res[0]);
+        this.courseAndStudentCount.studentsCount = res.length;
+      },
       err => console.log(err)
     )
   }
-
 }
