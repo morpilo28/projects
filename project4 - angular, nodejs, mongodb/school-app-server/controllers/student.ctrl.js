@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const studentBl = require('../business-logic/student-bl');
+const courseBl = require('../business-logic/course-bl');
 
 router.get('/', (req, res) => {
     //get('administrator').then(res => console.log(res)); // from bl
@@ -11,6 +12,19 @@ router.get('/', (req, res) => {
             return res.status(500).send(e);
         } else {
             return res.send(data);
+        }
+    })
+});
+
+router.get('/:id', (req, res) => {
+    //get('administrator').then(res => console.log(res)); // from bl
+    const id = req.params.id;
+    studentBl.getOne(id, (e, singleStudent) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            return res.send(singleStudent);
         }
     })
 });

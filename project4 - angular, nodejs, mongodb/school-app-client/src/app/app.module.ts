@@ -12,6 +12,7 @@ import { AdministrationComponent } from './components/administration/administrat
 import { TokenInterceptor } from './interceptors/token.Interceptor';
 import { MainContainerComponent } from './components/main-container/main-container.component';
 import { ListComponent } from './components/list/list.component';
+import { MoreInfoComponent } from './components/more-info/more-info.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { ListComponent } from './components/list/list.component';
     AdministrationComponent,
     MainContainerComponent,
     ListComponent,
+    MoreInfoComponent,
   ],
   imports: [
     BrowserModule,

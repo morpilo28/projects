@@ -15,4 +15,17 @@ router.get('/', (req, res) => {
     })
 });
 
+router.get('/:id', (req, res) => {
+    //get('administrator').then(res => console.log(res)); // from bl
+    const id = req.params.id;
+    courseBl.getOne(id, (e, singleCourse) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            return res.send(singleCourse);
+        }
+    })
+});
+
 module.exports = router;

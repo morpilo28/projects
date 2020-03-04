@@ -7,16 +7,24 @@ const dal = require('../dal');
 const usersCollection = 'administrator';
 
 router.get('/', (req, res) => {
-    //get('administrator').then(res => console.log(res)); // from bl
-    userBl.get((e,allUsers)=>{
-        if(e){
+    userBl.get((e, allUsers) => {
+        if (e) {
             console.log(e);
             return res.status(500).send();
-        }else{
-            allUsers.map((usrObj)=>{
-                delete usrObj['password']; 
-            })
+        } else {
             return res.send(allUsers);
+        }
+    })
+});
+
+router.get('/:id', (req, res) => {
+    const id = req.params.id;
+    userBl.getOne(id, (e, singleUser) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            return res.send(singleUser);
         }
     })
 });
@@ -33,11 +41,11 @@ router.post('/login', (req, res) => {
             return res.status(500).send(e);
         } else {
             const token = jwt.sign({
-                userName:userToValidate.name
-            },SECRET_KEY_FOR_JWT,
-            {
-                expiresIn: '365d'  
-            });
+                userName: userToValidate.name
+            }, SECRET_KEY_FOR_JWT,
+                {
+                    expiresIn: '365d'
+                });
 
             const resObj = {
                 name: data.name,
@@ -50,12 +58,40 @@ router.post('/login', (req, res) => {
     });
 });
 
+router.post('/register', (req, res) => {
+    const userToAdd = req.body;
+    userBl.insertOne(userToAdd, (e, data) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            return res.send(data);
+        }
+    });
+})
+
 router.put('/', (req, res) => {
+    const userToUpdate = req.body;
+    userBl.updateOne(userToUpdate, (e, data) => {
+        if (e) {
+            return res.status(500).send();
+        } else {
+            return res.send();
+        }
+    })
     res.send();
 });
 
 router.delete('/', (req, res) => {
-    res.send();
+    const userToDeleteId = req.body;
+    userBl.deleteOne(userToDeleteId, (e, data) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            return res.send(data);
+        }
+    })
 });
 
 module.exports = router;

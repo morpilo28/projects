@@ -12,10 +12,9 @@ import { StudentModel } from 'src/app/models/student-model';
 export class SchoolComponent implements OnInit {
   private coursesList: CourseModel[] = [];
   private studentsList: StudentModel[] = [];
-  private studentsListKeys = [];
-  private coursesListKeys = [];
   private courseAndStudentCount: { coursesCount: number, studentsCount: number } = { coursesCount: 0, studentsCount: 0 };
-  private _mainContainerFilter;
+  private _mainContainerFilter = { title: '', action: '' };
+  private singleItemToEdit;
 
   constructor(private courseService: CourseService, private studentsService: StudentsService) { }
 
@@ -23,14 +22,12 @@ export class SchoolComponent implements OnInit {
     this.courseService.getAllCourses().subscribe(
       res => {
         this.coursesList = res;
-        this.coursesListKeys = Object.keys(res[0]);
         this.courseAndStudentCount.coursesCount = res.length;
       },
       err => console.log(err));
     this.studentsService.getAllStudents().subscribe(
       res => {
         this.studentsList = res;
-        this.studentsListKeys = Object.keys(res[0]);
         this.courseAndStudentCount.studentsCount = res.length;
       },
       err => console.log(err)
@@ -38,6 +35,25 @@ export class SchoolComponent implements OnInit {
   }
 
   filterForMainContainer(value) {
+    if (value.action === 'add') {
+      this.singleItemToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', sumStudentsInCourse: null, courses: [] }
+      this.coursesList.forEach(course => {
+        this.singleItemToEdit.courses.push({
+          id: course._id,
+          name: course.name
+        })
+      });
+    }
     this._mainContainerFilter = value;
+  }
+
+  onPickedListItem(value) {
+    this.singleItemToEdit = value;
+  }
+
+  onEdit(value) {
+    this.singleItemToEdit = value.objToEdit;
+    this._mainContainerFilter.action = value.mainContainerFilter.action;
+    this._mainContainerFilter.title = value.mainContainerFilter.title;
   }
 }

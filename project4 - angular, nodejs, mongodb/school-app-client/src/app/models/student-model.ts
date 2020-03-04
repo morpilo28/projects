@@ -4,4 +4,5 @@ export interface StudentModel {
     phone:string;
     email:string;
     image:string;
+    courses?:string[];
 }

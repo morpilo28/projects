@@ -22,15 +22,14 @@ function get(collection) {
 }
 
 //getOne('administrator', "5e57cf70b97e27183cd46a6c").then(res => console.log(res)); // from bl 
-function getOne(collection, filterKeys, filterValue) {
+function getOne(collection, filterValue) {
     return new Promise(async (resolve, reject) => {
         const client = createNewMongoClient();
         try {
             await connectToMongo(client);
             const db = getDb(client);
-            
-            const singleDocument = await db.collection(collection).findOne({ filterKey: filterValue });
-
+            filterValue = new ObjectId(filterValue); 
+            const singleDocument = await db.collection(collection).findOne({ _id: filterValue });
             resolve(singleDocument);
             closeMongoConnection(client);
         } catch (ex) {

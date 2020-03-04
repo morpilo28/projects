@@ -19,4 +19,9 @@ export class StudentsService {
     }));
   }
 
+  getSingleStudent(id): Observable<StudentModel> {
+    return this.httpClient.get<StudentModel>(`${environment.serverUrl}/student/${id}`);
+  }
+  
+
 }

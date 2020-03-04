@@ -1,8 +1,10 @@
 export interface UserModel {
     _id?: string;
     name: string;
+    role?: string;
+    phone?: string;
+    email?:string;
     password?: string;
     token?: string;
-    role?:string;
-    image?:string;
+    image?: string;
 }

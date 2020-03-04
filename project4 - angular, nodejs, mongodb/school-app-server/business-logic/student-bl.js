@@ -7,16 +7,26 @@
 //update('administrator', { "_id": "5e57db8de8e843269831a5a6", "name": "solki", "role": "bitch" }).then(res => console.log(res)); // from bl 
 //deleteDocument('administrator', "5e57f0dcd50ad031e09207f4").then(res => console.log("id dDeleted: "+ res)); // from bl 
 
-const courseCollection = 'student';
+const collection = 'student';
 const dal = require('../dal');
 
 function get(cb) {
-    dal.get(courseCollection).then(
+    dal.get(collection).then(
         res => cb(null, res),
+        err => cb(err)
+    )
+}
+
+function getOne(id, cb) {
+    dal.getOne(collection, id).then(
+        student => {
+            cb(null, student);
+        },
         err => cb(err)
     )
 }
 
 module.exports = {
     get: get,
+    getOne: getOne,
 }

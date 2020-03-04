@@ -19,4 +19,8 @@ export class CourseService {
     }));
   }
 
+  getSingleCourses(id): Observable<CourseModel> {
+    return this.httpClient.get<CourseModel>(`${environment.serverUrl}/course/${id}`);
+  }
+
 }

@@ -1,0 +1,36 @@
+<span>{{dataToEdit.name}}</span> <button (click)="onEdit()">edit</button>
+<hr>
+<div>
+    <img class='floatLeft'
+        src='https://github.com/morpilo28/projects/blob/master/project3%20-%20vacations/client/styles/images/ireland.jpg?raw=true'
+        [alt]='dataToEdit.image' width='50' height='50' />
+    <ng-container class="floatLeft">
+        <span>{{dataToEdit.name}}</span>
+        <span *ngIf="mainContainerFilter.title === 'administrators'">, {{dataToEdit.role}}</span>
+        <span *ngIf="mainContainerFilter.title === 'courses'">, {{dataToEdit.sumStudentsInCourse}}</span><br>
+        <span *ngIf="mainContainerFilter.title === 'students'">, {{dataToEdit.sumCoursesOfStudent}}</span><br>
+        <ng-container *ngIf="mainContainerFilter.title !== 'courses'">
+            <span>{{dataToEdit.phone}}</span><br>
+            <span>{{dataToEdit.email}}</span><br>
+        </ng-container>
+        <div *ngIf="mainContainerFilter.title === 'courses'">{{dataToEdit.description}}</div>
+    </ng-container>
+    <div *ngIf="mainContainerFilter.title !== 'administrators'">
+        <ng-container *ngFor = "let item of dataToEdit.courses">
+            <img class='floatLeft'
+                src='https://github.com/morpilo28/projects/blob/master/project3%20-%20vacations/client/styles/images/ireland.jpg?raw=true'
+                [alt]='dataToEdit.image' width='50' height='50' />
+            <ng-container class="floatLeft">
+                <span>{{item.name}}</span>
+            </ng-container><br><br>
+        </ng-container>
+    </div>
+</div>
+
+<!-- 
+
+
+      this.dataToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', sumStudentsInCourse: null, courses: [] }
+
+
+ -->

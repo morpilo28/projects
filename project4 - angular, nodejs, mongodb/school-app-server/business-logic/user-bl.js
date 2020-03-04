@@ -7,18 +7,34 @@
 
 "use strict";
 const ObjectId = require('mongodb').ObjectId;
-const usersCollection = 'administrator';
+const collection = 'administrator';
 const dal = require('../dal');
 
 function get(cb) {
-    dal.get(usersCollection).then(data => {
+    dal.get(collection).then(data => {
         const allUsers = data;
-            cb(null, allUsers);
+        allUsers.map((usrObj) => {
+            delete usrObj['password'];
+        });
+        cb(null, allUsers);
     }).catch(e => cb("can't get user's list"));
 }
 
+function getOne(id, cb) {
+    dal.getOne(collection, id).then(
+        user => {
+            if (user) {
+                delete user['password'];
+            }
+
+            cb(null, user);
+        },
+        err => cb(err)
+    )
+}
+
 function isUserExist(userToValidate, cb) {
-    dal.get(usersCollection).then(data => {
+    dal.get(collection).then(data => {
         const allUsers = data;
         let singleUser = allUsers.filter((obj) => obj.name === userToValidate.name && obj.password === userToValidate.password);
         if (singleUser.length === 0) {
@@ -28,26 +44,47 @@ function isUserExist(userToValidate, cb) {
         } else {
             cb(null, singleUser[0]);
         }
-    }).catch(e => console.log("can't get user's list"));
+    }).catch(e => cb("can't get user's list"));
 }
 
+//insert('administrator', { "name": "oz", "role": "sales" }).then(res => console.log(res)); // from bl 
+function insertOne(userToAdd, cb) {
+    dal.insert(collection, userToAdd).then(
+        res => {
+            console.log(res);
+            cb(null, res);
+        },
+        err => cb(err)
+    )
+}
 
-function getUser(user, cb) {
-    //getOne('administrator', "5e57cf70b97e27183cd46a6c").then(res => console.log(res)); // from bl 
-    /*     const filterByKeys = [];
-        if(user.id){
-            user.id = new ObjectId(user.id); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
-            filterByKeys = ['_id'];
-        }else{
-            filterByKeys = ['name', 'password'];
-        } 
+//update('administrator', { "_id": "5e57db8de8e843269831a5a6", "name": "solki", "role": "bitch" }).then(res => console.log(res)); // from bl 
+function updateOne(userToUpdate, cb) {
+    dal.update(collection, userToUpdate).then(
+        res => {
+            console.log(res);
+            cb(null, res);
+        },
+        err => cb(err)
+    )
+}
 
-    filterByKeys = ['name', 'password'];
-    dal.getOne(usersCollection, filterByKeys, user); 
-    */
+//deleteDocument('administrator', "5e57f0dcd50ad031e09207f4").then(res => console.log("id dDeleted: "+ res)); // from bl 
+function deleteOne(userToDeleteId, cb) {
+    dal.deleteDocument(collection, userToDeleteId).then(
+        res => {
+            console.log(res);
+            cb(null, res);
+        },
+        err => cb(err)
+    )
 }
 
 module.exports = {
     isUserExist: isUserExist,
-    get:get,
+    get: get,
+    getOne: getOne,
+    insertOne: insertOne,
+    updateOne: updateOne,
+    deleteOne: deleteOne,
 };

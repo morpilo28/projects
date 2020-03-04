@@ -22,10 +22,10 @@ export class ManagersOnlyGuard implements CanActivate {
         if (res.role === 'sales') {
           this.router.navigate(['/school']);
           this.isAManager = false;
-          console.log('is not a manager');
+          console.log('not a manager');
         } else {
-          console.log('is a manager');
           this.isAManager = true;
+          console.log('a manager');
         }
       } 
     });

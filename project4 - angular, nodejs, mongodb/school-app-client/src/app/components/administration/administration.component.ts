@@ -10,7 +10,8 @@ import { UserService } from 'src/app/services/user.service';
 export class AdministrationComponent implements OnInit {
   private usersList: UserModel[] = [];
   private usersListKeys = [];
-  private _mainContainerFilter;
+  private _mainContainerFilter = { title: '', action: '' };
+  private singleItemToEdit;
 
   constructor(private userService: UserService) { }
 
@@ -19,13 +20,24 @@ export class AdministrationComponent implements OnInit {
       res => {
         this.usersList = res;
         this.usersListKeys = Object.keys(res[0]);
-        console.log(res);
       },
       err => console.log(err));
   }
-
-
+  
   filterForMainContainer(value) {
+    if (value.action === 'add') {
+      this.singleItemToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', sumStudentsInCourse: null, courses: [] }
+    }
     this._mainContainerFilter = value;
+  }
+
+  onPickedListItem(value) {
+    this.singleItemToEdit = value;
+  }
+
+  onEdit(value) {
+    this.singleItemToEdit = value.objToEdit;
+    this._mainContainerFilter.action = value.mainContainerFilter.action;
+    this._mainContainerFilter.title = value.mainContainerFilter.title;
   }
 }

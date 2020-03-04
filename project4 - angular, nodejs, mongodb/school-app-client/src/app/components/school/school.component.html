@@ -1,3 +1,10 @@
-<app-list class="courses" title='courses' [list]='coursesList' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
-<app-list class="students" title='students' [list]='studentsList' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
-<app-main-container class="main" [courseAndStudentCount] = 'courseAndStudentCount' [mainContainerFilter] = '_mainContainerFilter'></app-main-container>
+<app-list class="courses" title='courses' [list]='coursesList' (mainContainerFilter)='filterForMainContainer($event)' (listItemData)="onPickedListItem($event)"></app-list>
+<app-list class="students" title='students' [list]='studentsList' (mainContainerFilter)='filterForMainContainer($event)' (listItemData)="onPickedListItem($event)"></app-list>
+<!-- only on start -->
+<app-main-container class="main" *ngIf="!_mainContainerFilter.action" [courseAndStudentCount] = 'courseAndStudentCount'></app-main-container>
+<!-- only on add -->
+<app-main-container *ngIf="_mainContainerFilter.action === 'add'" class="main" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit'></app-main-container>
+<!-- only on more info -->
+<app-more-info class="main" *ngIf="_mainContainerFilter.action === 'moreInfo'" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit' (onEditData)="onEdit($event)"></app-more-info>
+<!-- only on edit -->
+<app-main-container *ngIf="_mainContainerFilter.action === 'edit'" class="main" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit'></app-main-container>

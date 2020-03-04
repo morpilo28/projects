@@ -44,5 +44,10 @@ export class UserService {
       return res;
     }));
   }
+
+  getSingleUser(id): Observable<UserModel> {
+    return this.httpClient.get<UserModel>(`${environment.serverUrl}/user/${id}`);
+  }
+
 }
 
