@@ -7,6 +7,16 @@ import { UserService } from './services/user.service';
   styleUrls: ['./app.component.css']
 })
 
+/* 
+TODO: edit,
+TODO: delete,
+TODO: add password input on administrator adding and encrypt password
+TODO: validate user/course/student does not exist before adding/editing,
+TODO: add image from computer folder and save it to project file
+TODO: check for duplicate code and try to make the project generic
+TODO: design
+*/
+
 export class AppComponent implements OnInit {
   private isAllowed: boolean;
   title = 'school-app';
