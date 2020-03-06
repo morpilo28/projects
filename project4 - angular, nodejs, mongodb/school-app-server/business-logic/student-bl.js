@@ -12,40 +12,49 @@ const courseCollection = 'course';
 const dal = require('../dal');
 
 function get(cb) {
-    dal.get(studentCollection).then(
-        res => cb(null, res),
-        err => cb(err)
-    )
+    dal.get(studentCollection, (e, d) => {
+        if (e) {
+            console.log(e);
+            cb(e);
+        } else {
+            cb(null, d);
+        }
+    });
 }
 
 function getOne(id, cb) {
-    dal.getOne(studentCollection, id).then(
-        student => {
+    dal.getOne(studentCollection, id, (e, student) => {
+        if (e) {
+            console.log("can't get student");
+        } else {
             cb(null, student);
-        },
-        err => cb(err)
-    )
+        }
+    });
 }
 
 function insertOne(studentToAdd, cb) {
-    dal.insert(studentCollection, studentToAdd).then(
-        res => {
-            const studentToAddToCourse = {...studentToAdd};
-             delete studentToAddToCourse['courses'];
-             console.log(studentToAddToCourse);
+    dal.insert(studentCollection, studentToAdd, (e, studentInserted) => {
+        if (e) {
+            console.log("can't insert student");
+        } else {
+            const studentToAddToCourse = { ...studentToAdd };
+            delete studentToAddToCourse['courses'];
+            console.log(studentToAddToCourse);
             for (let i = 0; i < studentToAdd.courses.length; i++) {
                 if (studentToAdd.courses[i].isChecked) {
-                    //pushToArray('course', { _id: "5e57cf59b97e27183cd46a6b", student: { name: "a", _id: "123" } }).then(res => console.log(res)); // from bl 
-                    dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse).then(singleCourse => {
-                        console.log('check');
-                        console.log(singleCourse);
-                        cb(null, res);
-                    }); // from bl  
+                    dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse, (e, singleCourse) => {
+                        if (e) {
+                            cb("can't insert student into his checked courses");
+                        } else {
+                            console.log('check');
+                            console.log(singleCourse);
+                            cb(null, studentInserted);
+                        }
+                    });
                 }
             }
-        },
-        err => cb(err)
-    )
+        }
+    });
 }
 
 module.exports = {

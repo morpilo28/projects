@@ -11,28 +11,33 @@ const collection = 'course';
 const dal = require('../dal');
 
 function get(cb) {
-    dal.get(collection).then(
-        res => cb(null, res),
-        err => cb(err)
-    )
+    dal.get(collection, (e, allCourses) => {
+        if (e) {
+            cb(e);
+        } else {
+            cb(null, allCourses);
+        }
+    });
 }
 
 function getOne(id, cb) {
-    dal.getOne(collection, id).then(
-        course => {
+    dal.getOne(collection, id, (e, course) => {
+        if (e) {
+            cb("can't get course")
+        } else {
             cb(null, course);
-        },
-        err => cb(err)
-    )
+        }
+    });
 }
 
 function insertOne(courseToAdd, cb) {
-    dal.insert(collection, courseToAdd).then(
-        res => {
-            cb(null, res);
-        },
-        err => cb(err)
-    )
+    dal.insert(collection, courseToAdd, (e, courseInserted) => {
+        if (e) {
+            cb("can't insert course")
+        } else {
+            cb(null, courseInserted);
+        }
+    })
 }
 
 module.exports = {

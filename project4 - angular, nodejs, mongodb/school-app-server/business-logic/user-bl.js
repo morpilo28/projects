@@ -11,72 +11,80 @@ const collection = 'administrator';
 const dal = require('../dal');
 
 function get(cb) {
-    dal.get(collection).then(data => {
-        const allUsers = data;
-        allUsers.map((usrObj) => {
-            delete usrObj['password'];
-        });
-        cb(null, allUsers);
-    }).catch(e => cb("can't get user's list"));
+    dal.get(collection, (e, allUsers) => {
+        if (e) {
+            cb("can't get user's list");
+        } else {
+            allUsers.map((usrObj) => {
+                delete usrObj['password'];
+            });
+            cb(null, allUsers);
+        }
+    });
 }
 
 function getOne(id, cb) {
-    dal.getOne(collection, id).then(
-        user => {
+    dal.getOne(collection, id, (e, user) => {
+        if (e) {
+            cb("can't get user");
+        } else {
             if (user) {
                 delete user['password'];
             }
-
             cb(null, user);
-        },
-        err => cb(err)
-    )
+        }
+    })
 }
 
 function isUserExist(userToValidate, cb) {
-    dal.get(collection).then(data => {
-        const allUsers = data;
-        let singleUser = allUsers.filter((obj) => obj.name === userToValidate.name && obj.password === userToValidate.password);
-        if (singleUser.length === 0) {
-            cb('no user has been found');
-        } else if (singleUser.length > 1) {
-            console.log('there is more than one user under the same name');
+    dal.get(collection, (e, allUsers) => {
+        if (e) {
+            cb("can't get user's list");
         } else {
-            cb(null, singleUser[0]);
+            let singleUser = allUsers.filter((obj) => obj.name === userToValidate.name && obj.password === userToValidate.password);
+            if (singleUser.length === 0) {
+                cb('no user has been found');
+            } else if (singleUser.length > 1) {
+                console.log('there is more than one user under the same name');
+            } else {
+                cb(null, singleUser[0]);
+            }
         }
-    }).catch(e => cb("can't get user's list"));
+    });
 }
 
-//insert('administrator', { "name": "oz", "role": "sales" }).then(res => console.log(res)); // from bl 
 function insertOne(userToAdd, cb) {
-    dal.insert(collection, userToAdd).then(
-        res => {
-            cb(null, res);
-        },
-        err => cb(err)
-    )
+    dal.insert(collection, userToAdd, (e, userInserted) => {
+        if (e) {
+            cb("can't insert user");
+        } else {
+            cb(null, userInserted);
+        }
+    })
 }
 
-//update('administrator', { "_id": "5e57db8de8e843269831a5a6", "name": "solki", "role": "bitch" }).then(res => console.log(res)); // from bl 
+//TODO: check if works;
 function updateOne(userToUpdate, cb) {
-    dal.update(collection, userToUpdate).then(
-        res => {
-            console.log(res);
-            cb(null, res);
-        },
-        err => cb(err)
-    )
+    dal.update(collection, userToUpdate, (e, userUpdated) => {
+        if (e) {
+            console.log(e);
+            cb(e);
+        } else {
+            cb(null, userToUpdate);
+        }
+    });
 }
 
-//deleteDocument('administrator', "5e57f0dcd50ad031e09207f4").then(res => console.log("id dDeleted: "+ res)); // from bl 
+//TODO: check if works;
 function deleteOne(userToDeleteId, cb) {
-    dal.deleteDocument(collection, userToDeleteId).then(
-        res => {
-            console.log(res);
-            cb(null, res);
-        },
-        err => cb(err)
-    )
+    dal.deleteDocument(collection, userToDeleteId, (e, userDeletedId) => {
+        if (e) {
+            console.log(e);
+            cb(e);
+        } else {
+            cb(null, userDeletedId);
+        }
+    });
 }
 
 module.exports = {

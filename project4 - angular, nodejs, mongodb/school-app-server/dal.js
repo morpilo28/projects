@@ -3,126 +3,152 @@
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/';
 const ObjectId = require('mongodb').ObjectId;
+const DATABASE = 'school'
 
-//get('administrator').then(res => console.log(res)); // from bl
-function get(collection) {
-    return new Promise(async (resolve, reject) => {
-        const client = createNewMongoClient();
-        try {
-            await connectToMongo(client);
-            const db = getDb(client);
-            const myCollection = db.collection(collection).find();
-
-            resolve(await myCollection.toArray());
-            closeMongoConnection(client);
-        } catch (ex) {
-            reject(ex);
+function get(collection, cb) {
+    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
+        if (e) {
+            console.log('problem connecting to mongoDB');
+            cb('problem connecting to mongoDB');
+        } else {
+            const DB = getDb(client);
+            DB.collection(collection).find().toArray((e, d) => {
+                if (e) {
+                    console.log('cant get data from collection');
+                    cb('cant get data from collection');
+                } else {
+                    cb(null, d);
+                    closeMongoConnection(client);
+                }
+            })
         }
     });
 }
 
-//getOne('administrator', "5e57cf70b97e27183cd46a6c").then(res => console.log(res)); // from bl 
-function getOne(collection, filterValue) {
-    return new Promise(async (resolve, reject) => {
-        const client = createNewMongoClient();
-        try {
-            await connectToMongo(client);
-            const db = getDb(client);
+function getOne(collection, filterValue, cb) {
+    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
+        if (e) {
+            console.log('problem connecting to mongoDB');
+            cb('problem connecting to mongoDB');
+        } else {
+            const DB = getDb(client);
             filterValue = new ObjectId(filterValue);
-            const singleDocument = await db.collection(collection).findOne({ _id: filterValue });
-            resolve(singleDocument);
-            closeMongoConnection(client);
-        } catch (ex) {
-            reject(ex);
-        }
-    });
-}
-
-//insert('administrator', { "name": "oz", "role": "sales" }).then(res => console.log(res)); // from bl 
-function insert(collection, documentToAdd) {
-    return new Promise(async (resolve, reject) => {
-        const client = createNewMongoClient();
-        try {
-            await connectToMongo(client);
-            const db = getDb(client);
-
-            db.collection(collection).insertOne(documentToAdd, (e, insertedDocument) => {
-                resolve(insertedDocument.ops[0]);
-                closeMongoConnection(client);
+            DB.collection(collection).findOne({ _id: filterValue }, (e, d) => {
+                if (e) {
+                    console.log('cant get data from collection');
+                    cb('cant get data from collection');
+                } else {
+                    cb(null, d);
+                    closeMongoConnection(client);
+                }
             });
-        } catch (ex) {
-            reject(ex);
         }
     });
 }
 
-//update('administrator', { "_id": "5e57db8de8e843269831a5a6", "name": "solki", "role": "bitch" }).then(res => console.log(res)); // from bl 
-function update(collection, documentToUpdate) {
-    return new Promise(async (resolve, reject) => {
-        const client = createNewMongoClient();
-        try {
-            await connectToMongo(client);
+function insert(collection, documentToAdd, cb) {
+    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
+        if (e) {
+            console.log('problem connecting to mongoDB');
+            cb('problem connecting to mongoDB');
+        } else {
+            const DB = getDb(client);
+            DB.collection(collection).insertOne(documentToAdd, (e, insertedDocument) => {
+                if (e) {
+                    console.log('cant get data from collection');
+                    cb('cant get data from collection');
+                } else {
+                    //console.log(insertedDocument.ops[0])
+                    cb(null, insertedDocument.ops[0]);
+                    closeMongoConnection(client);
+                }
+            });
+        }
+    });
+}
 
-            const db = getDb(client);
+function pushToArray(collection, id, objToPush, cb) {
+    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
+        if (e) {
+            console.log('problem connecting to mongoDB');
+            cb('problem connecting to mongoDB');
+        } else {
+            const DB = getDb(client);
+            id = new ObjectId(id);
+            DB.collection(collection).updateOne({ _id: id }, { $push: { courseStudents: objToPush } }, (e, res) => {
+                if (res) {
+                    console.log("can't update");
+                    //cb("can't update");
+                } else {
+                    DB.collection(collection).findOne({ _id: id }, (e, d) => {
+                        if (e) {
+                            cb("can't get updated document");
+                            console.log("can't get updated document");
+                        } else {
+                            cb(null, d);
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+
+//TODO: check if works;
+function update(collection, documentToUpdate, cb) {
+    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
+        if (e) {
+            console.log('problem connecting to mongoDB');
+            cb('problem connecting to mongoDB');
+        } else {
+            const DB = getDb(client);
             documentToUpdate._id = new ObjectId(documentToUpdate._id); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
             //maybe use replaceOne() instead of updateOne
-            db.collection(collection).updateOne({ _id: documentToUpdate._id }, { $set: documentToUpdate }, async (e, res) => {
-                const updatedDocument = await db.collection(collection).findOne({ _id: documentToUpdate._id });
-                resolve(updatedDocument);
-                closeMongoConnection(client);
+            DB.collection(collection).updateOne({ _id: documentToUpdate._id }, { $set: documentToUpdate }, (e, res) => {
+                if (res) {
+                    console.log("can't update document");
+                    cb("can't update document");
+                } else {
+                    DB.collection(collection).findOne({ _id: documentToUpdate._id }, (e, d) => {
+                        if (e) {
+                            console.log("can't find updated document");
+                            cb("can't find updated document");
+                        } else {
+                            cb(null, d);
+                            closeMongoConnection(client);
+                        }
+                    });
+                }
             });
-        } catch (ex) {
-            reject(ex);
         }
     });
 }
 
-//deleteDocument('administrator', "5e57f0dcd50ad031e09207f4").then(res => console.log("id dDeleted: "+ res)); // from bl 
-function deleteDocument(collection, documentIdToDelete) {
-    return new Promise(async (resolve, reject) => {
-        const client = createNewMongoClient();
-        try {
-            await connectToMongo(client);
-            const db = getDb(client);
-
+//TODO: check if works;
+function deleteDocument(collection, documentIdToDelete, cb) {
+    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
+        if (e) {
+            console.log('problem connecting to mongoDB');
+            cb('problem connecting to mongoDB');
+        } else {
+            const DB = getDb(client);
             documentIdToDelete = new ObjectId(documentIdToDelete); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
-
-            //maybe use replaceOne() instead of updateOne
-            await db.collection(collection).deleteOne({ _id: documentIdToDelete });
-            resolve(documentIdToDelete);
-            closeMongoConnection(client);
-        } catch (ex) {
-            reject(ex);
-        }
-    });
-}
-
-//pushToArray('course', "5e57cf59b97e27183cd46a6b", { name: "a", _id: "123" }).then(res => console.log(res)); // from bl 
-function pushToArray(collection, id, objToPush) {
-    return new Promise(async (resolve, reject) => {
-        const client = createNewMongoClient();
-        try {
-            await connectToMongo(client);
-
-            const db = getDb(client);
-            id = new ObjectId(id); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
-            //maybe use replaceOne() instead of updateOne
-            db.collection(collection).updateOne({ _id: id }, { $push: { courseStudents: objToPush } }, async (e, res) => {
-                const updatedDocument = await db.collection(collection).findOne({ _id: id});
-                resolve(updatedDocument);
-                closeMongoConnection(client);
+            DB.collection(collection).deleteOne({ _id: documentIdToDelete }, (e, d) => {
+                if (e) {
+                    console.log('cant delete from collection');
+                    cb('cant delete from collection');
+                } else {
+                    console.log(d);
+                    cb(null, documentIdToDelete);
+                    closeMongoConnection(client);
+                }
             });
-        } catch (ex) {
-            reject(ex);
         }
     });
 }
-function getDb(client) {
-    return client.db('school');
-}
 
-async function connectToMongo(client) {
-    await client.connect().then(() => console.log('DB Connected!')).catch(err => console.log('error'));
+function getDb(client) {
+    return client.db(DATABASE);
 }
 
 function closeMongoConnection(client) {
@@ -130,10 +156,10 @@ function closeMongoConnection(client) {
 }
 
 function createNewMongoClient() {
-    return new MongoClient(url, {
+    return {
         useNewUrlParser: true,
         useUnifiedTopology: true
-    });
+    }
 }
 
 module.exports = {
@@ -142,5 +168,6 @@ module.exports = {
     insert: insert,
     update: update,
     deleteDocument: deleteDocument,
-    pushToArray: pushToArray
+    pushToArray: pushToArray,
+
 };
