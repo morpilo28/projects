@@ -4,7 +4,6 @@ const userBl = require('../business-logic/user-bl');
 const SECRET_KEY_FOR_JWT = '687d6f87sd6f87sd6f78sd6f87sd';
 const jwt = require('jsonwebtoken');
 const dal = require('../dal');
-const usersCollection = 'administrator';
 
 router.get('/', (req, res) => {
     userBl.get((e, allUsers) => {
@@ -58,6 +57,7 @@ router.post('/login', (req, res) => {
     });
 });
 
+//TODO: check if i used it. if not use the regular post
 router.post('/register', (req, res) => {
     const userToAdd = req.body;
     userBl.insertOne(userToAdd, (e, data) => {
@@ -82,18 +82,19 @@ router.post('/', (req, res) => {
     });
 })
 
+//check if it works
 router.put('/', (req, res) => {
     const userToUpdate = req.body;
     userBl.updateOne(userToUpdate, (e, data) => {
         if (e) {
             return res.status(500).send();
         } else {
-            return res.send();
+            return res.send(data);
         }
     })
-    res.send();
 });
 
+//check if it works
 router.delete('/', (req, res) => {
     const userToDeleteId = req.body;
     userBl.deleteOne(userToDeleteId, (e, data) => {

@@ -57,8 +57,34 @@ function insertOne(studentToAdd, cb) {
     });
 }
 
+//TODO: check if works;
+function updateOne(studentToUpdate, cb) {
+    dal.update(collection, studentToUpdate, (e, studentUpdated) => {
+        if (e) {
+            console.log(e);
+            cb(e);
+        } else {
+            cb(null, studentToUpdate);
+        }
+    });
+}
+
+//TODO: check if works;
+function deleteOne(studentToDeleteId, cb) {
+    dal.deleteDocument(collection, studentToDeleteId, (e, studentDeletedId) => {
+        if (e) {
+            console.log(e);
+            cb(e);
+        } else {
+            cb(null, studentDeletedId);
+        }
+    });
+}
+
 module.exports = {
     get: get,
     getOne: getOne,
     insertOne: insertOne,
+    updateOne: updateOne,
+    deleteOne: deleteOne,
 }

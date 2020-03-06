@@ -5,7 +5,6 @@ const studentBl = require('../business-logic/student-bl');
 const courseBl = require('../business-logic/course-bl');
 
 router.get('/', (req, res) => {
-    //get('administrator').then(res => console.log(res)); // from bl
     studentBl.get((e, data) => {
         if (e) {
             console.log(e);
@@ -17,7 +16,6 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    //get('administrator').then(res => console.log(res)); // from bl
     const id = req.params.id;
     studentBl.getOne(id, (e, singleStudent) => {
         if (e) {
@@ -36,10 +34,34 @@ router.post('/', (req, res) => {
             console.log(e);
             return res.status(500).send(e);
         } else {
-            console.log(data);
-            //return res.send(data);
+            return res.send(data);
         }
     });
 })
+
+//check if it works
+router.put('/', (req, res) => {
+    const studentToUpdate = req.body;
+    studentBl.updateOne(studentToUpdate, (e, data) => {
+        if (e) {
+            return res.status(500).send();
+        } else {
+            return res.send(data);
+        }
+    })
+});
+
+//check if it works
+router.delete('/', (req, res) => {
+    const studentToDeleteId = req.body;
+    studentBl.deleteOne(studentToDeleteId, (e, data) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            return res.send(data);
+        }
+    })
+});
 
 module.exports = router;

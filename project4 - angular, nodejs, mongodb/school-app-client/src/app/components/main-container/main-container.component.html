@@ -18,8 +18,10 @@
             [value]="dataToEdit.role" />
         <br></label>
     <label>image: <input [(ngModel)]="dataToAdd.image" [value]="dataToEdit.image" /> <br></label>
-    <p *ngIf="mainContainerFilter.title === 'courses'">total {{courseStudentsOrStudentCourses.length}} students taking this
+    <p *ngIf="mainContainerFilter.title === 'courses' && mainContainerFilter.action !== 'add'">total {{courseStudentsOrStudentCourses.length}} students taking this
         course <br></p>
+        <!-- TODO: the list needs to come from the list array and the dataToEdit.courses will determine which boxes will be checked  -->
+        <!-- TODO: or - once a course is added, add it to all students courses array with the checked key set to false  -->
     <label *ngIf="mainContainerFilter.title === 'students'">courses: 
         <ng-container *ngFor="let course of dataToEdit.courses">
             <input type="checkbox" [value]='course.name' [id]='course.id' [checked]="course.isChecked"

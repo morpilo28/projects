@@ -40,8 +40,35 @@ function insertOne(courseToAdd, cb) {
     })
 }
 
+
+//TODO: check if works;
+function updateOne(courseToUpdate, cb) {
+    dal.update(collection, courseToUpdate, (e, courseUpdated) => {
+        if (e) {
+            console.log(e);
+            cb(e);
+        } else {
+            cb(null, courseToUpdate);
+        }
+    });
+}
+
+//TODO: check if works;
+function deleteOne(courseToDeleteId, cb) {
+    dal.deleteDocument(collection, courseToDeleteId, (e, courseDeletedId) => {
+        if (e) {
+            console.log(e);
+            cb(e);
+        } else {
+            cb(null, courseDeletedId);
+        }
+    });
+}
+
 module.exports = {
     get: get,
     getOne: getOne,
     insertOne: insertOne,
+    updateOne: updateOne,
+    deleteOne: deleteOne,
 }
