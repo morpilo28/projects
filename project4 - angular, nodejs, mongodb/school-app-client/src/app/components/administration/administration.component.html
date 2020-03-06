@@ -1,4 +1,7 @@
-<app-list title='administrators' [list]='usersList' (mainContainerFilter)='filterForMainContainer($event)' (listItemData)="onPickedListItem($event)"></app-list>
+<!-- only on start -->
+<app-main-container class="main" *ngIf="!_mainContainerFilter.action" [administratorsCount] = 'administratorsCount'></app-main-container>
+<app-list class="administrators" title='administrators' [list]='usersList' (mainContainerFilter)='filterForMainContainer($event)' (listItemData)="onPickedListItem($event)"></app-list>
+
 <!-- only on add -->
 <app-main-container *ngIf="_mainContainerFilter.action === 'add'" class="main" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit'></app-main-container>
 

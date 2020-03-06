@@ -49,5 +49,9 @@ export class UserService {
     return this.httpClient.get<UserModel>(`${environment.serverUrl}/user/${id}`);
   }
 
+  addSingleUser(userToAdd): Observable<UserModel> {
+    return this.httpClient.post<UserModel>(`${environment.serverUrl}/user`, userToAdd);
+  }
+
 }
 

@@ -1,8 +1,10 @@
+import { CourseModel } from './course-model';
+
 export interface StudentModel {
-    _id:string;
+    _id?:string;
     name:string;
     phone:string;
     email:string;
     image:string;
-    courses?:string[];
+    courses?:CourseModel[];
 }

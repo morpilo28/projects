@@ -9,8 +9,8 @@ import { StudentsService } from 'src/app/services/students.service';
   styleUrls: ['./list.component.css']
 })
 export class ListComponent implements OnInit {
+  private currentUserRole: string;
   @Input() title;
-  private role;
   @Input() list;
   @Output() mainContainerFilter: EventEmitter<any> = new EventEmitter<any>();
   @Output() listItemData: EventEmitter<any> = new EventEmitter<any>();
@@ -18,6 +18,9 @@ export class ListComponent implements OnInit {
   constructor(private userService: UserService, private studentsService: StudentsService, private courseService: CourseService) { }
 
   ngOnInit() {
+    this.userService.getCurrentUser().subscribe(res => {
+      this.currentUserRole = res ? res.role : '';
+    });
   }
 
   onAction(title, action) {

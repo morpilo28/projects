@@ -22,6 +22,9 @@ export class StudentsService {
   getSingleStudent(id): Observable<StudentModel> {
     return this.httpClient.get<StudentModel>(`${environment.serverUrl}/student/${id}`);
   }
-  
+
+  addSingleStudent(studentToAdd): Observable<StudentModel> {
+    return this.httpClient.post<StudentModel>(`${environment.serverUrl}/student`, studentToAdd);
+  }
 
 }

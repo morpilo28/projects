@@ -1,30 +1,30 @@
 <h2 *ngIf='courseAndStudentCount && !mainContainerFilter'>Total of {{courseAndStudentCount.coursesCount}} courses and
     {{courseAndStudentCount.studentsCount}} students</h2>
+<h2 *ngIf='administratorsCount && !mainContainerFilter'>Total of {{administratorsCount}} managers</h2>
 <div *ngIf='mainContainerFilter'>
-    <form #formData>
-        <button (click)='save(formData)'>Save</button>
-        <button *ngIf="mainContainerFilter.action === 'edit'" (click)='delete()'>Delete</button><br>
-        <input hidden [id]='dataToEdit._id'/>
-        <label>name: <input [value]="dataToEdit.name" [name]="dataToEdit.name" /><br></label>
-        <label *ngIf="mainContainerFilter.title === 'courses'">description: <textarea
-                [value]="dataToEdit.description"></textarea><br></label>
-        <ng-container *ngIf="mainContainerFilter.title !== 'courses'">
-            <label>phone:
-                <input [value]="dataToEdit.phone" /><br></label>
-            <label>email:
-                <input [value]="dataToEdit.email" /><br></label>
+    <button (click)="save()">Save</button>
+    <button *ngIf="((currentUser.name !== dataToEdit.name) && (mainContainerFilter.action === 'edit')) || (currentUser.role === 'owner')" (click)='delete(dataToEdit_id)'>Delete</button><br>
+    <input [(ngModel)]="dataToAdd.id" hidden [id]='dataToEdit._id' />
+    <label>name: <input [value]="dataToEdit.name" [(ngModel)]="dataToAdd.name" /><br></label>
+    <label *ngIf="mainContainerFilter.title === 'courses'">description: <textarea [(ngModel)]="dataToAdd.description"
+            [value]="dataToEdit.description"></textarea><br></label>
+    <ng-container *ngIf="mainContainerFilter.title !== 'courses'">
+        <label>phone:
+            <input [(ngModel)]="dataToAdd.phone" [value]="dataToEdit.phone" /><br></label>
+        <label>email:
+            <input [(ngModel)]="dataToAdd.email" [value]="dataToEdit.email" /><br></label>
+    </ng-container>
+    <label *ngIf="mainContainerFilter.title === 'administrators' && currentUser.role === 'owner'">role: <input [(ngModel)]="dataToAdd.role"
+            [value]="dataToEdit.role" />
+        <br></label>
+    <label>image: <input [(ngModel)]="dataToAdd.image" [value]="dataToEdit.image" /> <br></label>
+    <p *ngIf="mainContainerFilter.title === 'courses'">total {{courseStudentsOrStudentCourses.length}} students taking this
+        course <br></p>
+    <label *ngIf="mainContainerFilter.title === 'students'">courses: 
+        <ng-container *ngFor="let course of dataToEdit.courses">
+            <input type="checkbox" [value]='course.name' [id]='course.id' [checked]="course.isChecked"
+                (click)='onClickedCourseBox($event.target)' />
+            <label [for]='course.id'>{{course.name}}</label>
         </ng-container>
-        <label *ngIf="mainContainerFilter.title === 'administrators'">role: <input [value]="dataToEdit.role" />
-            <br></label>
-        <label>image: <input [value]="dataToEdit.image" /> <br></label>
-        <p *ngIf="mainContainerFilter.title === 'courses'">total {{dataToEdit.sumStudentsInCourse}} students taking this
-            course <br></p>
-        <label *ngIf="mainContainerFilter.title === 'students'">courses:
-            <ng-container *ngFor="let course of dataToEdit.courses">
-                <input type="radio" value='course.name' [id]='course.id'
-                    [checked]="mainContainerFilter.action === 'edit'" />
-                <label [for]='course.id'>{{course.name}}</label>
-            </ng-container>
-        </label>
-    </form>
+    </label>
 </div>

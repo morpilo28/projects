@@ -28,4 +28,17 @@ router.get('/:id', (req, res) => {
     })
 });
 
+router.post('/', (req, res) => {
+    const courseToAdd = req.body;
+    courseBl.insertOne(courseToAdd, (e, data) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            console.log(data);
+            //return res.send(data);
+        }
+    });
+})
+
 module.exports = router;

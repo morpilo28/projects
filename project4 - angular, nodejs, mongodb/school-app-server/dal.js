@@ -28,7 +28,7 @@ function getOne(collection, filterValue) {
         try {
             await connectToMongo(client);
             const db = getDb(client);
-            filterValue = new ObjectId(filterValue); 
+            filterValue = new ObjectId(filterValue);
             const singleDocument = await db.collection(collection).findOne({ _id: filterValue });
             resolve(singleDocument);
             closeMongoConnection(client);
@@ -97,6 +97,26 @@ function deleteDocument(collection, documentIdToDelete) {
     });
 }
 
+//pushToArray('course', "5e57cf59b97e27183cd46a6b", { name: "a", _id: "123" }).then(res => console.log(res)); // from bl 
+function pushToArray(collection, id, objToPush) {
+    return new Promise(async (resolve, reject) => {
+        const client = createNewMongoClient();
+        try {
+            await connectToMongo(client);
+
+            const db = getDb(client);
+            id = new ObjectId(id); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
+            //maybe use replaceOne() instead of updateOne
+            db.collection(collection).updateOne({ _id: id }, { $push: { courseStudents: objToPush } }, async (e, res) => {
+                const updatedDocument = await db.collection(collection).findOne({ _id: id});
+                resolve(updatedDocument);
+                closeMongoConnection(client);
+            });
+        } catch (ex) {
+            reject(ex);
+        }
+    });
+}
 function getDb(client) {
     return client.db('school');
 }
@@ -121,5 +141,6 @@ module.exports = {
     getOne: getOne,
     insert: insert,
     update: update,
-    deleteDocument: deleteDocument
+    deleteDocument: deleteDocument,
+    pushToArray: pushToArray
 };

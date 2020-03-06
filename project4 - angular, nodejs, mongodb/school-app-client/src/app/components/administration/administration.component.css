@@ -4,3 +4,11 @@
     height: 500px;
     float: right;
 }
+
+.administrators {
+    width: 20%;
+    height: 500px;
+    float: left;
+    margin: 0 10px 0 10px;
+    background-color: green;
+}

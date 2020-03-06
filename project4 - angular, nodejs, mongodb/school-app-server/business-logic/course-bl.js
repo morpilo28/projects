@@ -26,7 +26,17 @@ function getOne(id, cb) {
     )
 }
 
+function insertOne(courseToAdd, cb) {
+    dal.insert(collection, courseToAdd).then(
+        res => {
+            cb(null, res);
+        },
+        err => cb(err)
+    )
+}
+
 module.exports = {
     get: get,
     getOne: getOne,
+    insertOne: insertOne,
 }

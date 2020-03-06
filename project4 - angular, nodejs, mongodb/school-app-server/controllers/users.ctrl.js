@@ -70,6 +70,18 @@ router.post('/register', (req, res) => {
     });
 })
 
+router.post('/', (req, res) => {
+    const userToAdd = req.body;
+    userBl.insertOne(userToAdd, (e, data) => {
+        if (e) {
+            console.log(e);
+            return res.status(500).send(e);
+        } else {
+            return res.send(data);
+        }
+    });
+})
+
 router.put('/', (req, res) => {
     const userToUpdate = req.body;
     userBl.updateOne(userToUpdate, (e, data) => {

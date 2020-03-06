@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-more-info',
@@ -7,20 +8,20 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class MoreInfoComponent implements OnInit {
   @Input() dataToEdit;
+  @Input() courseStudentsOrStudentCourses;
   @Input() mainContainerFilter;
   @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
+  private array = [];
+  private currentUserRole: string;
 
-  constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit() {
-    if (!this.dataToEdit) {
-      this.dataToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', sumStudentsInCourse: null, courses: [] }
-    }
+    this.dataToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', courseStudents: [], courses: [] };
+    this.userService.getCurrentUser().subscribe(res => this.currentUserRole = res ? res.role : '');
   }
 
   onEdit() {
-    console.log(this.dataToEdit);
-    console.log(this.mainContainerFilter);
     this.onEditData.emit({
       objToEdit: this.dataToEdit,
       mainContainerFilter: {
@@ -29,4 +30,13 @@ export class MoreInfoComponent implements OnInit {
       }
     });
   }
+
+  isExist(isNotUndefined) {
+    if (typeof isNotUndefined === 'undefined') {
+      return true;
+    }else{
+      return false;
+    }
+  }
+
 }

@@ -23,4 +23,7 @@ export class CourseService {
     return this.httpClient.get<CourseModel>(`${environment.serverUrl}/course/${id}`);
   }
 
+  addSingleCourse(courseToAdd): Observable<CourseModel> {
+    return this.httpClient.post<CourseModel>(`${environment.serverUrl}/course`, courseToAdd);
+  }
 }

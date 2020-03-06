@@ -15,6 +15,7 @@ export class SchoolComponent implements OnInit {
   private courseAndStudentCount: { coursesCount: number, studentsCount: number } = { coursesCount: 0, studentsCount: 0 };
   private _mainContainerFilter = { title: '', action: '' };
   private singleItemToEdit;
+  private courseStudentsOrStudentCourses;
 
   constructor(private courseService: CourseService, private studentsService: StudentsService) { }
 
@@ -36,7 +37,7 @@ export class SchoolComponent implements OnInit {
 
   filterForMainContainer(value) {
     if (value.action === 'add') {
-      this.singleItemToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', sumStudentsInCourse: null, courses: [] }
+      this.singleItemToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', courseStudents: [], courses: [] }
       this.coursesList.forEach(course => {
         this.singleItemToEdit.courses.push({
           id: course._id,
@@ -49,6 +50,13 @@ export class SchoolComponent implements OnInit {
 
   onPickedListItem(value) {
     this.singleItemToEdit = value;
+    if (value.courses) {
+      this.courseStudentsOrStudentCourses = value.courses;
+    } else if (value.courseStudents) {
+      this.courseStudentsOrStudentCourses = value.courseStudents;
+    }else{
+      console.log('no value');
+    }
   }
 
   onEdit(value) {

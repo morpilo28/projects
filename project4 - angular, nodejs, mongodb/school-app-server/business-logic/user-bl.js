@@ -51,7 +51,6 @@ function isUserExist(userToValidate, cb) {
 function insertOne(userToAdd, cb) {
     dal.insert(collection, userToAdd).then(
         res => {
-            console.log(res);
             cb(null, res);
         },
         err => cb(err)

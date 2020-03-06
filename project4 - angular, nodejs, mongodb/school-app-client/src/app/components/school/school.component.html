@@ -5,6 +5,6 @@
 <!-- only on add -->
 <app-main-container *ngIf="_mainContainerFilter.action === 'add'" class="main" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit'></app-main-container>
 <!-- only on more info -->
-<app-more-info class="main" *ngIf="_mainContainerFilter.action === 'moreInfo'" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit' (onEditData)="onEdit($event)"></app-more-info>
+<app-more-info class="main" *ngIf="_mainContainerFilter.action === 'moreInfo'" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit' [courseStudentsOrStudentCourses]='courseStudentsOrStudentCourses' (onEditData)="onEdit($event)"></app-more-info>
 <!-- only on edit -->
-<app-main-container *ngIf="_mainContainerFilter.action === 'edit'" class="main" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit'></app-main-container>
+<app-main-container *ngIf="_mainContainerFilter.action === 'edit'" class="main" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit' [courseStudentsOrStudentCourses]='courseStudentsOrStudentCourses'></app-main-container>
