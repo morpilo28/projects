@@ -95,8 +95,8 @@ router.put('/', (req, res) => {
 });
 
 //check if it works
-router.delete('/', (req, res) => {
-    const userToDeleteId = req.body;
+router.delete('/:id', (req, res) => {
+    const userToDeleteId = req.params.id;
     userBl.deleteOne(userToDeleteId, (e, data) => {
         if (e) {
             console.log(e);

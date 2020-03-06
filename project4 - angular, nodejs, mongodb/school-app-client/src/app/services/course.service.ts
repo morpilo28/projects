@@ -26,4 +26,9 @@ export class CourseService {
   addSingleCourse(courseToAdd): Observable<CourseModel> {
     return this.httpClient.post<CourseModel>(`${environment.serverUrl}/course`, courseToAdd);
   }
+
+  deleteCourse(courseId): Observable<CourseModel> {
+    //TODO: ask yaakov why can't I use delete
+    return this.httpClient.delete<CourseModel>(`${environment.serverUrl}/course/${courseId}`);
+  }
 }

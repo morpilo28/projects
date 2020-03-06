@@ -138,7 +138,6 @@ function deleteDocument(collection, documentIdToDelete, cb) {
                     console.log('cant delete from collection');
                     cb('cant delete from collection');
                 } else {
-                    console.log(d);
                     cb(null, documentIdToDelete);
                     closeMongoConnection(client);
                 }

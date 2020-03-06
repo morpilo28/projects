@@ -51,8 +51,8 @@ router.put('/', (req, res) => {
 });
 
 //check if it works
-router.delete('/', (req, res) => {
-    const courseToDeleteId = req.body;
+router.delete('/:id', (req, res) => {
+    const courseToDeleteId = req.params.id;
     courseBl.deleteOne(courseToDeleteId, (e, data) => {
         if (e) {
             console.log(e);

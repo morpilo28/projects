@@ -26,5 +26,10 @@ export class StudentsService {
   addSingleStudent(studentToAdd): Observable<StudentModel> {
     return this.httpClient.post<StudentModel>(`${environment.serverUrl}/student`, studentToAdd);
   }
+  
+  deleteStudent(studentId): Observable<StudentModel> {
+    //TODO: ask yaakov why can't I use delete
+    return this.httpClient.delete<StudentModel>(`${environment.serverUrl}/student/${studentId}`);
+  }
 
 }

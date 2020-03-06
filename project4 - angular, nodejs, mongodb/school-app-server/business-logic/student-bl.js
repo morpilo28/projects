@@ -59,7 +59,7 @@ function insertOne(studentToAdd, cb) {
 
 //TODO: check if works;
 function updateOne(studentToUpdate, cb) {
-    dal.update(collection, studentToUpdate, (e, studentUpdated) => {
+    dal.update(studentCollection, studentToUpdate, (e, studentUpdated) => {
         if (e) {
             console.log(e);
             cb(e);
@@ -71,7 +71,7 @@ function updateOne(studentToUpdate, cb) {
 
 //TODO: check if works;
 function deleteOne(studentToDeleteId, cb) {
-    dal.deleteDocument(collection, studentToDeleteId, (e, studentDeletedId) => {
+    dal.deleteDocument(studentCollection, studentToDeleteId, (e, studentDeletedId) => {
         if (e) {
             console.log(e);
             cb(e);

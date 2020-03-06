@@ -4,6 +4,7 @@ import { CourseService } from 'src/app/services/course.service';
 import { UserService } from 'src/app/services/user.service';
 import { UserModel } from 'src/app/models/user-model';
 import { CourseModel } from 'src/app/models/course-model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-container',
@@ -20,7 +21,7 @@ export class MainContainerComponent implements OnInit {
   private currentUser: UserModel;
   private allCourses: CourseModel[];
 
-  constructor(private studentsService: StudentsService, private courseService: CourseService, private userService: UserService) {
+  constructor(private studentsService: StudentsService, private courseService: CourseService, private userService: UserService, private router: Router) {
     this.dataToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', sumStudentsInCourse: null, courses: [] }
   }
 
@@ -37,6 +38,7 @@ export class MainContainerComponent implements OnInit {
   }
 
   save() {
+    //TODO: on routing to same url check how to reload component
     switch (this.mainContainerFilter.title) {
       case "students":
         console.log('students');
@@ -54,7 +56,10 @@ export class MainContainerComponent implements OnInit {
           courses: this.allCourses
         };
         this.studentsService.addSingleStudent(this.dataToAdd).subscribe(
-          res => console.log(res),
+          res => {
+            console.log(res);
+            this.router.navigate(['/school']);
+          },
           err => console.log(err)
         );
         break;
@@ -67,7 +72,10 @@ export class MainContainerComponent implements OnInit {
           courseStudents: [],
         };
         this.courseService.addSingleCourse(this.dataToAdd).subscribe(
-          res => console.log(res),
+          res => {
+            console.log(res);
+            this.router.navigate(['/school']);
+          },
           err => console.log(err)
         );
         break;
@@ -81,7 +89,10 @@ export class MainContainerComponent implements OnInit {
           image: this.dataToAdd.image,
         };
         this.userService.addSingleUser(this.dataToAdd).subscribe(
-          res => console.log(res),
+          res => {
+            console.log(res);
+            this.router.navigate(['/administration']);
+          },
           err => console.log(err)
         );
         break
@@ -105,16 +116,42 @@ export class MainContainerComponent implements OnInit {
     })
   }
 
-  delete(id){
-  
+  delete(id) {
+    //TODO: on routing to same url check how to reload component
+    switch (this.mainContainerFilter.title) {
+      case "students":
+        this.studentsService.deleteStudent(id).subscribe(
+          res => {
+            console.log(res);
+            this.router.navigate(['/school']);
+          },
+          err => console.log(err)
+        );
+        break;
+      case "courses":
+        this.courseService.deleteCourse(id).subscribe(
+          res => {
+            console.log(res);
+            this.router.navigate(['/school']);
+          },
+          err => console.log(err)
+        );
+        break;
+      case "administrators":
+        this.userService.deleteUser(id).subscribe(
+          res => {
+            console.log(res);
+            this.router.navigate(['/administration']);
+          },
+          err => console.log(err)
+        );
+        break;
+    }
   }
-  
+
   createDataToAddObj(obj, key, value) {
     obj.key = value;
 
     return obj;
   }
-
-
-
 }

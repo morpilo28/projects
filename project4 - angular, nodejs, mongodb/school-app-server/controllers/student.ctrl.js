@@ -52,14 +52,16 @@ router.put('/', (req, res) => {
 });
 
 //check if it works
-router.delete('/', (req, res) => {
-    const studentToDeleteId = req.body;
+router.delete('/:id', (req, res) => {
+    const studentToDeleteId = req.params.id;
+    console.log(studentToDeleteId);
     studentBl.deleteOne(studentToDeleteId, (e, data) => {
         if (e) {
             console.log(e);
             return res.status(500).send(e);
         } else {
-            return res.send(data);
+            console.log(data);
+            //return res.send(data);
         }
     })
 });

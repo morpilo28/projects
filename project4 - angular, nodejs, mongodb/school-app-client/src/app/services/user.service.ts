@@ -53,5 +53,9 @@ export class UserService {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user`, userToAdd);
   }
 
+  deleteUser(userId): Observable<UserModel> {
+    //TODO: ask yaakov why can't I use delete
+    return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`);
+  }
 }
 
