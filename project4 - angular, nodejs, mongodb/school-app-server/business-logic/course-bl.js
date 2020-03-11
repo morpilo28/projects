@@ -40,15 +40,14 @@ function insertOne(courseToAdd, cb) {
     })
 }
 
-
 //TODO: check if works;
-function updateOne(courseToUpdate, cb) {
-    dal.update(collection, courseToUpdate, (e, courseUpdated) => {
+function updateOne(courseNewData, cb) {
+    dal.update(collection, courseNewData, (e, courseUpdated) => {
         if (e) {
             console.log(e);
             cb(e);
         } else {
-            cb(null, courseToUpdate);
+            cb(null, courseNewData);
         }
     });
 }

@@ -20,6 +20,7 @@ export class ManagersOnlyGuard implements CanActivate {
         this.isAManager = false;
       } else{
         if (res.role === 'sales') {
+          alert('Restricted Area!')
           this.router.navigate(['/school']);
           this.isAManager = false;
           console.log('not a manager');

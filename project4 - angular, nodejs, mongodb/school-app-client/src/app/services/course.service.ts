@@ -31,4 +31,13 @@ export class CourseService {
     //TODO: ask yaakov why can't I use delete
     return this.httpClient.delete<CourseModel>(`${environment.serverUrl}/course/${courseId}`);
   }
+
+  uploadCourseImg(imgFormData): Observable<any> {
+    return this.httpClient.post<any>(`${environment.serverUrl}/course/images`, imgFormData);
+  }
+
+
+  updateSingleCourse(newCourseData): Observable<CourseModel> {
+    return this.httpClient.put<CourseModel>(`${environment.serverUrl}/course`, newCourseData);
+  }
 }

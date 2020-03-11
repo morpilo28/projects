@@ -1,7 +1,28 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+const multer = require('multer');
 const courseBl = require('../business-logic/course-bl');
+
+var upload = multer({
+    storage: multer.diskStorage({
+        destination: function (req, file, callback) { callback(null, path.join(__dirname, '/../images/courseImages')); },
+        filename: function (req, file, callback) { callback(null, path.parse(file.originalname).name + '-' + Date.now() + path.extname(file.originalname)); }
+    }),
+    fileFilter: function (req, file, callback) { isFileTypeImg(file, callback) }
+}).single('imgFile');
+
+function isFileTypeImg(file, callback) {
+    const fileType = /jpeg|jpg|png|gif/;
+    const extName = fileType.test(path.extname(file.originalname).toLocaleLowerCase());
+    const mimeType = fileType.test(file.mimetype);
+    if (extName && mimeType) {
+        callback(null, true);
+    } else {
+        callback('file type not supported. image type only');
+    }
+}
 
 router.get('/', (req, res) => {
     courseBl.get((e, data) => {
@@ -40,8 +61,8 @@ router.post('/', (req, res) => {
 
 //check if it works
 router.put('/', (req, res) => {
-    const courseToUpdate = req.body;
-    courseBl.updateOne(courseToUpdate, (e, data) => {
+    const courseNewData = req.body;
+    courseBl.updateOne(courseNewData, (e, data) => {
         if (e) {
             return res.status(500).send();
         } else {
@@ -62,5 +83,17 @@ router.delete('/:id', (req, res) => {
         }
     })
 });
+
+router.post('/images', upload, (req, res) => {
+    upload(req, res, (e) => {
+        if (e) {
+            return res.status(500).end('problem with uploading img');
+        } else {
+            console.log('course image added: ' + req.file.filename);
+            const resObj = {fileName:req.file.filename}
+            return res.send(resObj);
+        }
+    })
+})
 
 module.exports = router;

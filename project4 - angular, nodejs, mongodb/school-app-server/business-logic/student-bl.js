@@ -39,15 +39,12 @@ function insertOne(studentToAdd, cb) {
         } else {
             const studentToAddToCourse = { ...studentToAdd };
             delete studentToAddToCourse['courses'];
-            console.log(studentToAddToCourse);
             for (let i = 0; i < studentToAdd.courses.length; i++) {
                 if (studentToAdd.courses[i].isChecked) {
                     dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse, (e, singleCourse) => {
                         if (e) {
                             cb("can't insert student into his checked courses");
                         } else {
-                            console.log('check');
-                            console.log(singleCourse);
                             cb(null, studentInserted);
                         }
                     });

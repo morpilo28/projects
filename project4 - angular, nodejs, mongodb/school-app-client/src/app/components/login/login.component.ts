@@ -1,3 +1,5 @@
+//TODO: change validation to email (maybe change it to either user name or email)
+
 import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/user-model';
 import { UserService } from 'src/app/services/user.service';

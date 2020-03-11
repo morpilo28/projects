@@ -1,28 +1,54 @@
 <h2 *ngIf='courseAndStudentCount && !mainContainerFilter'>Total of {{courseAndStudentCount.coursesCount}} courses and
     {{courseAndStudentCount.studentsCount}} students</h2>
+<!-- TODO: write how many sales/managers/owners there are in the total sum of the administrators-->
 <h2 *ngIf='administratorsCount && !mainContainerFilter'>Total of {{administratorsCount}} managers</h2>
 <div *ngIf='mainContainerFilter'>
+    <!-- add this condition to save btn =>  *ngIf="image"  -->
     <button (click)="save()">Save</button>
-    <button *ngIf="((currentUser.name !== dataToEdit.name) && (mainContainerFilter.action === 'edit')) || (currentUser.role === 'owner')" (click)='delete(dataToEdit._id)'>Delete</button><br>
-    <input [(ngModel)]="dataToAdd.id" hidden [id]='dataToEdit._id' />
-    <label>name: <input [value]="dataToEdit.name" [(ngModel)]="dataToAdd.name" /><br></label>
-    <label *ngIf="mainContainerFilter.title === 'courses'">description: <textarea [(ngModel)]="dataToAdd.description"
-            [value]="dataToEdit.description"></textarea><br></label>
-    <ng-container *ngIf="mainContainerFilter.title !== 'courses'">
+    <!-- 
+        TODO:add ngIf to delete btn
+        ngIf="mainContainerFilter.action !== actions.add || ((currentUser.name !== dataToEdit.name) && (mainContainerFilter.action === actions.edit)) || (currentUser.role === roles.owner)" -->
+    <button
+        *ngIf="mainContainerFilter.action !== actions.add"
+        (click)='delete(dataToEdit._id)'>Delete</button><br>
+    <input [(ngModel)]="newData.id" hidden [id]='dataToEdit._id' />
+    <label>name: <input [value]="dataToEdit.name" [(ngModel)]="newData.name" /><br></label>
+    <label
+        *ngIf="mainContainerFilter.action === actions.add && mainContainerFilter.title === titles.administrators">password:
+        <input [(ngModel)]="newData.password" /><br></label>
+    <label *ngIf="mainContainerFilter.title === titles.courses">description: <textarea 
+            [(ngModel)]="newData.description" [value]="dataToEdit.description"></textarea><br></label>
+    <ng-container *ngIf="mainContainerFilter.title !== titles.courses">
         <label>phone:
-            <input [(ngModel)]="dataToAdd.phone" [value]="dataToEdit.phone" /><br></label>
+            <input [(ngModel)]="newData.phone" [value]="dataToEdit.phone" /><br></label>
         <label>email:
-            <input [(ngModel)]="dataToAdd.email" [value]="dataToEdit.email" /><br></label>
+            <input [(ngModel)]="newData.email" [value]="dataToEdit.email" /><br></label>
     </ng-container>
-    <label *ngIf="mainContainerFilter.title === 'administrators' && currentUser.role === 'owner'">role: <input [(ngModel)]="dataToAdd.role"
-            [value]="dataToEdit.role" />
-        <br></label>
-    <label>image: <input [(ngModel)]="dataToAdd.image" [value]="dataToEdit.image" /> <br></label>
-    <p *ngIf="mainContainerFilter.title === 'courses' && mainContainerFilter.action !== 'add'">total {{courseStudentsOrStudentCourses.length}} students taking this
+
+    <label *ngIf="mainContainerFilter.title === titles.administrators && currentUser.role !== roles.sales">Choose a
+        role:
+        <select id="role" (change)="onSelectedRole($event.target.value)">
+            <option [selected]="mainContainerFilter.action === actions.add" disabled></option>
+            <option [selected]="dataToEdit.role == roles.sales" [value]=roles.sales>sales</option>
+            <option *ngIf="currentUser.role === roles.owner" [selected]="dataToEdit.role === roles.manager" [value]=roles.manager>manager</option>
+        </select>
+        <br>
+    </label>
+  
+
+    <label>image: 
+        <input #fileInput  type="file" id='addedImage' required style="display:none" (change)="onPickedImg(imgBtn, fileInput)"/><br><br>
+        <button #imgBtn id="imgPick" style="cursor:pointer" (click)="onChoosingImage(fileInput)">Choose an Image</button> 
+        <div *ngIf="image">
+            <img [src]="baseUserImgUrl+imgFolder+image" [alt]="image" width="50" height="50"/>
+        </div> <br></label>
+
+    <p *ngIf="mainContainerFilter.title === titles.courses && mainContainerFilter.action !== actions.add">total
+        {{courseStudentsOrStudentCourses.length}} students taking this
         course <br></p>
-        <!-- TODO: the list needs to come from the list array and the dataToEdit.courses will determine which boxes will be checked  -->
-        <!-- TODO: or - once a course is added, add it to all students courses array with the checked key set to false  -->
-    <label *ngIf="mainContainerFilter.title === 'students'">courses: 
+    <!-- TODO: the list needs to come from the list array and the dataToEdit.courses will determine which boxes will be checked  -->
+    <!-- TODO: or - once a course is added, add it to all students courses array with the checked key set to false  -->
+    <label *ngIf="mainContainerFilter.title === titles.students">courses:
         <ng-container *ngFor="let course of dataToEdit.courses">
             <input type="checkbox" [value]='course.name' [id]='course.id' [checked]="course.isChecked"
                 (click)='onClickedCourseBox($event.target)' />

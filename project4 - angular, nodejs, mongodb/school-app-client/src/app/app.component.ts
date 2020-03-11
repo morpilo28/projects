@@ -12,6 +12,7 @@ TODO: edit,
 TODO: delete,
 TODO: add password input on administrator adding and encrypt password
 TODO: validate user/course/student does not exist before adding/editing,
+TODO: make all inputs required
 TODO: add image from computer folder and save it to project file
 TODO: check for duplicate code and try to make the project generic
 TODO: design

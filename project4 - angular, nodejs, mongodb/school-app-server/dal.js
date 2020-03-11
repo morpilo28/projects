@@ -58,7 +58,6 @@ function insert(collection, documentToAdd, cb) {
                     console.log('cant get data from collection');
                     cb('cant get data from collection');
                 } else {
-                    //console.log(insertedDocument.ops[0])
                     cb(null, insertedDocument.ops[0]);
                     closeMongoConnection(client);
                 }
@@ -76,9 +75,9 @@ function pushToArray(collection, id, objToPush, cb) {
             const DB = getDb(client);
             id = new ObjectId(id);
             DB.collection(collection).updateOne({ _id: id }, { $push: { courseStudents: objToPush } }, (e, res) => {
-                if (res) {
-                    console.log("can't update");
-                    //cb("can't update");
+                if (e) {
+                    console.log("can't update on push to array func");
+                    cb("can't update on push to array func");
                 } else {
                     DB.collection(collection).findOne({ _id: id }, (e, d) => {
                         if (e) {
@@ -95,21 +94,20 @@ function pushToArray(collection, id, objToPush, cb) {
 }
 
 //TODO: check if works;
-function update(collection, documentToUpdate, cb) {
+function update(collection, documentNewDataToUpdate, cb) {
     MongoClient.connect(url, createNewMongoClient(), (e, client) => {
         if (e) {
             console.log('problem connecting to mongoDB');
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
-            documentToUpdate._id = new ObjectId(documentToUpdate._id); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
-            //maybe use replaceOne() instead of updateOne
-            DB.collection(collection).updateOne({ _id: documentToUpdate._id }, { $set: documentToUpdate }, (e, res) => {
-                if (res) {
+            documentNewDataToUpdate._id = new ObjectId(documentNewDataToUpdate._id); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
+            DB.collection(collection).updateOne({ _id: documentNewDataToUpdate._id }, { $set: documentNewDataToUpdate }, (e, res) => {
+                if (e) {
                     console.log("can't update document");
                     cb("can't update document");
                 } else {
-                    DB.collection(collection).findOne({ _id: documentToUpdate._id }, (e, d) => {
+                    DB.collection(collection).findOne({ _id: documentNewDataToUpdate._id }, (e, d) => {
                         if (e) {
                             console.log("can't find updated document");
                             cb("can't find updated document");

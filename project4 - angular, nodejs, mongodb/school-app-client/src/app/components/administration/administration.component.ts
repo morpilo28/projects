@@ -11,7 +11,7 @@ import { UserService } from 'src/app/services/user.service';
 export class AdministrationComponent implements OnInit {
   private usersList: UserModel[] = [];
   private usersListKeys = [];
-  private _mainContainerFilter = { title: '', action: '' };
+  private _mainContainerFilter = { title: null, action: null };
   private singleItemToEdit;
   private administratorsCount: number = 0;
 
@@ -29,7 +29,7 @@ export class AdministrationComponent implements OnInit {
 
   filterForMainContainer(value) {
     if (value.action === 'add') {
-      this.singleItemToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', sumStudentsInCourse: null, courses: [] }
+      this.singleItemToEdit = { name: null, description: null, phone: null, email: null, role: null, image: null, sumStudentsInCourse: null, courses: [] }
     }
     this._mainContainerFilter = value;
   }

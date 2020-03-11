@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-more-info',
@@ -13,12 +14,15 @@ export class MoreInfoComponent implements OnInit {
   @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
   private array = [];
   private currentUserRole: string;
+  private imgFolder;
+  private baseUserImgUrl = (`${environment.serverUrl}/images/`);
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   ngOnInit() {
-    this.dataToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', courseStudents: [], courses: [] };
+    this.dataToEdit = { name: null, description: null, phone: null, email: null, role: null, image: null, courseStudents: [], courses: [] };
     this.userService.getCurrentUser().subscribe(res => this.currentUserRole = res ? res.role : '');
+    this.imgFolder = this.getImgFolderName();
   }
 
   onEdit() {
@@ -39,4 +43,14 @@ export class MoreInfoComponent implements OnInit {
     }
   }
 
+  getImgFolderName() {
+    switch (this.mainContainerFilter.title) {
+      case 'administrators':
+        return 'userImages/';
+      case 'students':
+        return 'studentImages/';
+      case 'courses':
+        return 'courseImages/';
+    }
+  }
 }

@@ -2,19 +2,20 @@
     <span> {{title}} </span> <span (click)="onAction(title, 'add')">+</span>
 </h6>
 <div class='listContainer'>
-    <ng-container class="itemContainer" *ngFor="let item of list">
-        <ng-container *ngIf="((title === 'administrators') && ((currentUserRole === 'manager' && item.role !== 'owner') || (currentUserRole === 'owner'))) || (title !== 'administrators')">
-            <div [id]='item._id' (click)="onItemClicked(title, item._id); onAction(title, 'moreInfo')">
-                <!-- needs to change image src -->
-                <img class='floatLeft'
-                    src='https://github.com/morpilo28/projects/blob/master/project3%20-%20vacations/client/styles/images/ireland.jpg?raw=true'
-                    [alt]='item.images' width='50' height='50' />
-                <ng-container class="floatLeft">
-                    <span>{{item.name}}</span> <span *ngIf="title === 'administrator'">, {{item.role}}</span><br>
-                    <span *ngIf="title !== 'courses'">{{item.phone}}</span><br>
-                    <span *ngIf="title === 'administrator'">{{item.email}}</span><br>
-                </ng-container>
-            </div>
+    <ng-container *ngIf="lista">
+        <ng-container class="itemContainer" *ngFor="let item of lista">
+            <ng-container
+                *ngIf="((title === 'administrators') && ((currentUserRole === 'manager' && item.role !== 'owner') || (currentUserRole === 'owner'))) || (title !== 'administrators')">
+                <div [id]='item._id' (click)="onItemClicked(title, item._id); onAction(title, 'moreInfo')">
+                    <img class='floatLeft' [src]='baseUserImgUrl+imgFolder+"/"+item.image' [alt]='item.image' width='50'
+                        height='50' />
+                    <ng-container class="floatLeft">
+                        <span>{{item.name}}</span> <span *ngIf="title === 'administrator'">, {{item.role}}</span><br>
+                        <span *ngIf="title !== 'courses'">{{item.phone}}</span><br>
+                        <span *ngIf="title === 'administrator'">{{item.email}}</span><br>
+                    </ng-container>
+                </div>
+            </ng-container>
         </ng-container>
     </ng-container>
 </div>

@@ -13,9 +13,10 @@ export class SchoolComponent implements OnInit {
   private coursesList: CourseModel[] = [];
   private studentsList: StudentModel[] = [];
   private courseAndStudentCount: { coursesCount: number, studentsCount: number } = { coursesCount: 0, studentsCount: 0 };
-  private _mainContainerFilter = { title: '', action: '' };
+  private _mainContainerFilter = { title: null, action: null };
   private singleItemToEdit;
   private courseStudentsOrStudentCourses;
+  
 
   constructor(private courseService: CourseService, private studentsService: StudentsService) { }
 
@@ -37,7 +38,7 @@ export class SchoolComponent implements OnInit {
 
   filterForMainContainer(value) {
     if (value.action === 'add') {
-      this.singleItemToEdit = { name: '', description: '', phone: '', email: '', role: '', image: '', courseStudents: [], courses: [] }
+      this.singleItemToEdit = { name: null, description: null, phone: null, email: null, role: null, image: null, courseStudents: [], courses: [] }
       this.coursesList.forEach(course => {
         this.singleItemToEdit.courses.push({
           id: course._id,

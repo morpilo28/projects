@@ -12,11 +12,14 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class UserService {
 
   private currentUser: BehaviorSubject<UserModel>;
+  private usersList: BehaviorSubject<UserModel[]>;
 
   constructor(private httpClient: HttpClient) {
     this.currentUser = new BehaviorSubject<UserModel>(null);
+    this.usersList = new BehaviorSubject<UserModel[]>(null);
   }
 
+  //TODO: maybe validation needs to happened on email and password and not user name and password
   userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
       userLogged => {
@@ -34,6 +37,10 @@ export class UserService {
     return this.currentUser;
   }
 
+  getUsersList(): BehaviorSubject<UserModel[]> {
+    return this.usersList;
+  }
+
   clearLocalStorage() {
     window.localStorage.clear();
     this.currentUser.next(null);
@@ -41,6 +48,7 @@ export class UserService {
 
   getAllUsers(): Observable<UserModel[]> {
     return this.httpClient.get<UserModel[]>(`${environment.serverUrl}/user`).pipe(map(res => {
+      this.usersList.next(res);
       return res;
     }));
   }
@@ -50,12 +58,28 @@ export class UserService {
   }
 
   addSingleUser(userToAdd): Observable<UserModel> {
-    return this.httpClient.post<UserModel>(`${environment.serverUrl}/user`, userToAdd);
+    return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/register`, userToAdd).pipe(map(res => {
+      this.getAllUsers().subscribe(res => this.usersList.next(res));
+      return res;
+    }));
   }
 
   deleteUser(userId): Observable<UserModel> {
-    //TODO: ask yaakov why can't I use delete
-    return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`);
+    return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
+      this.getAllUsers().subscribe(res => this.usersList.next(res));
+      return res;
+    }));
+  }
+
+  uploadUserImg(imgFormData): Observable<any> {
+    return this.httpClient.post<any>(`${environment.serverUrl}/user/images`, imgFormData);
+  }
+
+  updateSingleUser(newUserData): Observable<UserModel> {
+    return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
+      this.getAllUsers().subscribe(res => this.usersList.next(res));
+      return res;
+    }));
   }
 }
 

@@ -9,6 +9,8 @@
 const ObjectId = require('mongodb').ObjectId;
 const collection = 'administrator';
 const dal = require('../dal');
+const SECRET_KEY_FOR_JWT = '687d6f87sd6f87sd6f78sd6f87sd';
+const jwt = require('jsonwebtoken');
 
 function get(cb) {
     dal.get(collection, (e, allUsers) => {
@@ -47,6 +49,13 @@ function isUserExist(userToValidate, cb) {
             } else if (singleUser.length > 1) {
                 console.log('there is more than one user under the same name');
             } else {
+                const token = getToken(userToValidate);
+                deleteObjProp(singleUser[0], 'password');
+                deleteObjProp(singleUser[0], '_id');
+                deleteObjProp(singleUser[0], 'phone');
+                deleteObjProp(singleUser[0], 'email');
+                singleUser[0]['token'] = token;
+
                 cb(null, singleUser[0]);
             }
         }
@@ -58,6 +67,7 @@ function insertOne(userToAdd, cb) {
         if (e) {
             cb("can't insert user");
         } else {
+            deleteObjProp(userInserted, 'password');
             cb(null, userInserted);
         }
     })
@@ -84,6 +94,19 @@ function deleteOne(userToDeleteId, cb) {
         } else {
             cb(null, userDeletedId);
         }
+    });
+}
+
+function deleteObjProp(obj, key) {
+    delete obj[key];
+}
+
+
+function getToken(userToValidate) {
+    return jwt.sign({
+        userName: userToValidate.name
+    }, SECRET_KEY_FOR_JWT, {
+        expiresIn: '365d'
     });
 }
 

@@ -1,12 +1,14 @@
 <span>{{dataToEdit.name}}</span>
+<ng-container *ngIf="currentUserRole !== dataToEdit.role">
 <button
     *ngIf="(currentUserRole === 'manager' && dataToEdit.role !== 'owner') || (currentUserRole === 'owner') || (currentUserRole === 'sales' && mainContainerFilter.title === 'students')"
     (click)="onEdit()">edit</button>
+</ng-container>
 <hr>
 <div>
-    <img class='floatLeft'
-        src='https://github.com/morpilo28/projects/blob/master/project3%20-%20vacations/client/styles/images/ireland.jpg?raw=true'
-        [alt]='dataToEdit.image' width='50' height='50' />
+    <img *ngIf="dataToEdit.image" class='floatLeft'
+        [src]='baseUserImgUrl+imgFolder+dataToEdit.image'
+        [alt]='baseUserImgUrl+imgFolder+dataToEdit.image' width='150' height='150' />
     <ng-container class="floatLeft">
         <span>{{dataToEdit.name}}</span>
         <span *ngIf="mainContainerFilter.title === 'administrators'">, {{dataToEdit.role}}</span>
@@ -22,37 +24,13 @@
        <ng-container *ngIf="courseStudentsOrStudentCourses">
             <ng-container *ngFor="let item of courseStudentsOrStudentCourses">
                 <ng-container *ngIf="(item.isChecked === true) || isExist(item.isChecked)">
-                    <img class='floatLeft'
-                        src='https://github.com/morpilo28/projects/blob/master/project3%20-%20vacations/client/styles/images/ireland.jpg?raw=true'
-                        [alt]='item.image' width='50' height='50' />
+                    <img *ngIf="mainContainerFilter.title === 'courses'" class='floatLeft' [src]="baseUserImgUrl+'studentImages/'+item.image" [alt]='item.image' width='50' height='50'/>
+                    <img *ngIf="mainContainerFilter.title === 'students'" class='floatLeft' [src]="baseUserImgUrl+'courseImages/'+item.image" [alt]='item.image' width='50' height='50'/>
                     <ng-container class="floatLeft">
                         <span>{{item.name}}</span>
                     </ng-container><br><br>
                 </ng-container>
             </ng-container>
         </ng-container>
-     <!--    <ng-container *ngIf="dataToEdit.courses">
-            <ng-container *ngFor="let item of dataToEdit.courses">
-                <ng-container *ngIf="item.isChecked">
-                    <img class='floatLeft'
-                        src='https://github.com/morpilo28/projects/blob/master/project3%20-%20vacations/client/styles/images/ireland.jpg?raw=true'
-                        [alt]='dataToEdit.image' width='50' height='50' />
-                    <ng-container class="floatLeft">
-                        <span>{{item.name}}</span>
-                    </ng-container><br><br>
-                </ng-container>
-            </ng-container>
-        </ng-container>
-
-        <ng-container *ngIf="dataToEdit.courseStudents">
-            <ng-container *ngFor="let item of dataToEdit.courseStudents">
-                    <img class='floatLeft'
-                        src='https://github.com/morpilo28/projects/blob/master/project3%20-%20vacations/client/styles/images/ireland.jpg?raw=true'
-                        [alt]='dataToEdit.image' width='50' height='50' />
-                    <ng-container class="floatLeft">
-                        <span>{{item.name}}</span>
-                    </ng-container><br><br>
-            </ng-container>
-        </ng-container> -->
     </div>
 </div>
