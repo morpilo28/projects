@@ -35,7 +35,6 @@
         <br>
     </label>
   
-
     <label>image: 
         <input #fileInput  type="file" id='addedImage' required style="display:none" (change)="onPickedImg(imgBtn, fileInput)"/><br><br>
         <button #imgBtn id="imgPick" style="cursor:pointer" (click)="onChoosingImage(fileInput)">Choose an Image</button> 
@@ -49,8 +48,8 @@
     <!-- TODO: the list needs to come from the list array and the dataToEdit.courses will determine which boxes will be checked  -->
     <!-- TODO: or - once a course is added, add it to all students courses array with the checked key set to false  -->
     <label *ngIf="mainContainerFilter.title === titles.students">courses:
-        <ng-container *ngFor="let course of dataToEdit.courses">
-            <input type="checkbox" [value]='course.name' [id]='course.id' [checked]="course.isChecked"
+        <ng-container *ngFor="let course of allCourses">
+            <input type="checkbox" [value]='course.name' [id]='course._id' [attr.data-img] = "course.image" [checked]="course.isChecked"
                 (click)='onClickedCourseBox($event.target)' />
             <label [for]='course.id'>{{course.name}}</label>
         </ng-container>

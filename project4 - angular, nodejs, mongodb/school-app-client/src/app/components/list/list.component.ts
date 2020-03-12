@@ -29,17 +29,31 @@ export class ListComponent implements OnInit {
 
     switch (this.title) {
       case 'administrators':
+        //console.log('administration');
       this.userService.getUsersList().subscribe(
         res=> {
-          console.log(res);
           this.lista = res
         },
           err=>console.log(err)
       );
         break
       case 'students':
+        //console.log('students');
+        this.studentsService.getStudentsList().subscribe(
+          res=> {
+            this.lista = res;
+          },
+            err=>console.log(err)
+        );
         break
       case 'courses':
+        //console.log('courses');
+        this.courseService.getCoursesList().subscribe(
+          res=>{
+            this.lista = res;
+          },
+          err=>console.log(err)
+        )
         break
     }
   }
@@ -61,11 +75,12 @@ export class ListComponent implements OnInit {
         break
       case 'students':
         this.studentsService.getSingleStudent(itemId).subscribe(itemData => {
+          console.log(itemData);
           this.listItemData.emit(itemData);
         });
         break
       case 'courses':
-        this.courseService.getSingleCourses(itemId).subscribe(itemData => {
+        this.courseService.getSingleCourse(itemId).subscribe(itemData => {
           this.listItemData.emit(itemData);
         });
         break

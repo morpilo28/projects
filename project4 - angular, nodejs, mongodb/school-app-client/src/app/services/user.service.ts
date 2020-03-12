@@ -1,4 +1,6 @@
 //TODO: make behavioral subject variables accessible only through observable variables
+//TODO: check if it is enough to write "this.usersList.next(res);" only on the get all users func
+
 import { Injectable } from '@angular/core';
 import { UserModel } from '../models/user-model';
 import { map } from 'rxjs/operators';
@@ -10,13 +12,28 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-
   private currentUser: BehaviorSubject<UserModel>;
+  private currentUserObservable: Observable<UserModel>
+
   private usersList: BehaviorSubject<UserModel[]>;
+  private usersListObservable: Observable<UserModel[]>;
 
   constructor(private httpClient: HttpClient) {
     this.currentUser = new BehaviorSubject<UserModel>(null);
+    this.currentUserObservable = new Observable((o) => {
+      this.currentUser.subscribe(res => {
+        o.next(res);
+      });
+      /* o.complete(); // when the observable doesnt have nothing to listen to */
+    });
+
     this.usersList = new BehaviorSubject<UserModel[]>(null);
+    this.usersListObservable = new Observable((o)=>{
+      this.usersList.subscribe(res=>{
+        o.next(res);
+      });
+      /* o.complete(); // when the observable doesnt have nothing to listen to */
+    });
   }
 
   //TODO: maybe validation needs to happened on email and password and not user name and password
@@ -33,12 +50,13 @@ export class UserService {
     this.currentUser.next(JSON.parse(window.localStorage.getItem('user')));
   }
 
-  getCurrentUser(): BehaviorSubject<UserModel> {
-    return this.currentUser;
+  getCurrentUser(): Observable<UserModel> {
+    return this.currentUserObservable;
   }
 
-  getUsersList(): BehaviorSubject<UserModel[]> {
-    return this.usersList;
+  getUsersList(): Observable<UserModel[]> {
+    this.updateUserList();
+    return this.usersListObservable;
   }
 
   clearLocalStorage() {
@@ -46,7 +64,7 @@ export class UserService {
     this.currentUser.next(null);
   }
 
-  getAllUsers(): Observable<UserModel[]> {
+  getAllUsersFromDb(): Observable<UserModel[]> {
     return this.httpClient.get<UserModel[]>(`${environment.serverUrl}/user`).pipe(map(res => {
       this.usersList.next(res);
       return res;
@@ -59,14 +77,21 @@ export class UserService {
 
   addSingleUser(userToAdd): Observable<UserModel> {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/register`, userToAdd).pipe(map(res => {
-      this.getAllUsers().subscribe(res => this.usersList.next(res));
+      this.updateUserList();
       return res;
     }));
   }
 
   deleteUser(userId): Observable<UserModel> {
     return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
-      this.getAllUsers().subscribe(res => this.usersList.next(res));
+      this.updateUserList();
+      return res;
+    }));
+  }
+
+  updateSingleUser(newUserData): Observable<UserModel> {
+    return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
+      this.updateUserList();
       return res;
     }));
   }
@@ -75,11 +100,8 @@ export class UserService {
     return this.httpClient.post<any>(`${environment.serverUrl}/user/images`, imgFormData);
   }
 
-  updateSingleUser(newUserData): Observable<UserModel> {
-    return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
-      this.getAllUsers().subscribe(res => this.usersList.next(res));
-      return res;
-    }));
+  private updateUserList() {
+    this.getAllUsersFromDb().subscribe();
   }
 }
 

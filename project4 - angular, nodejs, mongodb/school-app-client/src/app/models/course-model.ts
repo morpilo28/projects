@@ -6,4 +6,5 @@ export interface CourseModel {
     description?: string;
     image?: string;
     courseStudents?:StudentModel[];
+    isChecked?:boolean;
 }

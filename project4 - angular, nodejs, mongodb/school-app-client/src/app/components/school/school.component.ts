@@ -21,16 +21,20 @@ export class SchoolComponent implements OnInit {
   constructor(private courseService: CourseService, private studentsService: StudentsService) { }
 
   ngOnInit() {
-    this.courseService.getAllCourses().subscribe(
+    this.courseService.getCoursesList().subscribe(
       res => {
-        this.coursesList = res;
-        this.courseAndStudentCount.coursesCount = res.length;
+        if(res){
+          this.coursesList = res;
+          this.courseAndStudentCount.coursesCount = res.length;
+        }
       },
       err => console.log(err));
-    this.studentsService.getAllStudents().subscribe(
+    this.studentsService.getStudentsList().subscribe(
       res => {
-        this.studentsList = res;
-        this.courseAndStudentCount.studentsCount = res.length;
+        if(res){
+          this.studentsList = res;
+          this.courseAndStudentCount.studentsCount = res.length;
+        }
       },
       err => console.log(err)
     )
@@ -52,6 +56,7 @@ export class SchoolComponent implements OnInit {
   onPickedListItem(value) {
     this.singleItemToEdit = value;
     if (value.courses) {
+      console.log(value.courses);
       this.courseStudentsOrStudentCourses = value.courses;
     } else if (value.courseStudents) {
       this.courseStudentsOrStudentCourses = value.courseStudents;

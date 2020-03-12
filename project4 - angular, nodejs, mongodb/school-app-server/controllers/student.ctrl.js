@@ -50,6 +50,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
     const studentToAdd = req.body;
+    console.log(studentToAdd);
     studentBl.insertOne(studentToAdd, (e, data) => {
         if (e) {
             console.log(e);
@@ -82,7 +83,7 @@ router.delete('/:id', (req, res) => {
             return res.status(500).send(e);
         } else {
             console.log(data);
-            //return res.send(data);
+            return res.send(data);
         }
     })
 });

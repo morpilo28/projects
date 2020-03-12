@@ -18,11 +18,13 @@ export class AdministrationComponent implements OnInit {
   constructor(private userService: UserService) { }
 
   ngOnInit() {
-    this.userService.getAllUsers().subscribe(
+    this.userService.getAllUsersFromDb().subscribe(
       res => {
-        this.usersList = res;
-        this.usersListKeys = Object.keys(res[0]);
-        this.administratorsCount = this.usersList.length;
+        if(res){
+          this.usersList = res;
+          this.usersListKeys = Object.keys(res[0]);
+          this.administratorsCount = this.usersList.length;
+        }
       },
       err => console.log(err));
   }

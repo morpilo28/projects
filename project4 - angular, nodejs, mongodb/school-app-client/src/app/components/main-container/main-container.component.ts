@@ -28,21 +28,47 @@ export class MainContainerComponent implements OnInit {
   private image;
   private baseUserImgUrl = (`${environment.serverUrl}/images/`);
   private imgFolder;
+  private coursesChecked=[];
 
-  constructor(private studentsService: StudentsService, private courseService: CourseService, private userService: UserService, private router: Router) {
-  }
+  constructor(private studentsService: StudentsService, private courseService: CourseService, private userService: UserService, private router: Router) {}
 
   ngOnInit() {
+    this.coursesChecked=[];
     this.newData = { ...this.dataToEdit };
-    this.userService.getCurrentUser().subscribe(res => this.currentUser = res /* ? res : { name: '', role: '', image: '', token: '' } */);
-    this.courseService.getAllCourses().subscribe(res => {
-      console.log(res);
-      this.allCourses = res.map((course): CourseModel => {
-        delete course['description']; //TODO: maybe to keep it
-        course['isChecked'] = false;
-        return course;
-      });
+    this.userService.getCurrentUser().subscribe(res => this.currentUser = res);
+    this.courseService.getCoursesList().subscribe(res => {
+      if(res){
+        this.allCourses = res;
+        if (this.mainContainerFilter && this.mainContainerFilter.title === this.titles.students) {
+          this.isStudentEnrolledInCourse();
+        }
+      }
     });
+  }
+
+  private isStudentEnrolledInCourse() {
+    this.coursesChecked=[];
+      if (this.dataToEdit && this.mainContainerFilter.action === this.actions.edit) {
+        this.allCourses = this.allCourses.map((course) => {
+          for (let i = 0; i < this.dataToEdit.courses.length; i++) {
+            if (course._id === this.dataToEdit.courses[i]._id) {
+              course['isChecked'] = true;
+              this.coursesChecked.push({_id:course._id, name:course.name, image:course.image});
+              break;
+            }
+            else {
+              course['isChecked'] = false;
+            }
+          }
+          return course;
+        });
+      }
+      else if (this.mainContainerFilter.action === this.actions.add) {
+        this.allCourses = this.allCourses.map((course) => {
+          course['isChecked'] = false;
+          return course;
+        });
+      }
   }
 
   save() {
@@ -50,31 +76,26 @@ export class MainContainerComponent implements OnInit {
     //TODO: on save after adding - show in main container the sum of students and courses
     //TODO: on save after editing - show in main container the student edited info (after updating);
     //TODO: on routing to same url check how to reload component
-    if(this.mainContainerFilter.action === 'add'){
+    if(this.mainContainerFilter.action === this.actions.add){
       switch (this.mainContainerFilter.title) {
         case "students":
-          console.log('students');
-          this.allCourses = this.allCourses.map((course) => {
-            delete course['courseStudents'];
-            return course;
-          })
+          //console.log('students');
           this.newData = {
             name: this.newData.name,
             phone: this.newData.phone,
             email: this.newData.email,
             image: this.image,
-            courses: this.allCourses
+            courses: this.coursesChecked
           };
           this.studentsService.addSingleStudent(this.newData).subscribe(
             res => {
-              console.log(res);
-              this.refreshPage('/school');
+              //console.log(res);
             },
             err => console.log(err)
           );
           break;
         case "courses":
-          console.log('courses');
+          //console.log('courses');
           this.newData = {
             name: this.newData.name,
             description: this.newData.description,
@@ -83,14 +104,13 @@ export class MainContainerComponent implements OnInit {
           };
           this.courseService.addSingleCourse(this.newData).subscribe(
             res => {
-              console.log(res);
-              this.refreshPage('/school');
+              //console.log(res);
             },
             err => console.log(err)
           );
           break;
         case "administrators":
-          console.log('administrators');
+          //console.log('administrators');
           this.newData = {
             name: this.newData.name,
             password: this.newData.password,
@@ -108,32 +128,27 @@ export class MainContainerComponent implements OnInit {
           );
           break
       }
-    }else if(this.mainContainerFilter.action === 'edit'){
+    }else if(this.mainContainerFilter.action === this.actions.edit){
       switch (this.mainContainerFilter.title) {
         case "students":
-          console.log('students');
-          this.allCourses = this.allCourses.map((course) => {
-            delete course['courseStudents'];
-            return course;
-          })
+          //console.log('students');
           this.newData = {
             _id:this.dataToEdit._id,
             name: this.newData.name,
             phone: this.newData.phone,
             email: this.newData.email,
             image: this.image,
-            courses: this.allCourses
+            courses: this.coursesChecked
           };
           this.studentsService.updateSingleStudent(this.newData).subscribe(
             res => {
-              console.log(res);
-              this.refreshPage('/school');
+              //console.log(res);
             },
             err => console.log(err)
           );
           break;
         case "courses":
-          console.log('courses');
+          //console.log('courses');
           this.newData = {
             _id:this.dataToEdit._id,
             name: this.newData.name,
@@ -143,14 +158,13 @@ export class MainContainerComponent implements OnInit {
           };
           this.courseService.updateSingleCourse(this.newData).subscribe(
             res => {
-              console.log(res);
-              this.refreshPage('/school');
+              //console.log(res);
             },
             err => console.log(err)
           );
           break;
         case "administrators":
-          console.log('administrators');
+          //console.log('administrators');
           this.newData = {
             _id:this.dataToEdit._id,
             name: this.newData.name,
@@ -162,8 +176,7 @@ export class MainContainerComponent implements OnInit {
           };
           this.userService.updateSingleUser(this.newData).subscribe(
             res => {
-              console.log(res);
-              //this.refreshPage('/administration');
+              //console.log(res);
             },
             err => console.log(err)
           );
@@ -177,17 +190,30 @@ export class MainContainerComponent implements OnInit {
     const isChecked = event.checked;
     const courseId = event.id;
     const courseName = event.value;
-
-    this.allCourses = this.allCourses.map((course) => {
-      if (courseId === course._id) {
-        if (isChecked) {
-          course['isChecked'] = true;
-        } else {
-          course['isChecked'] = false;
-        }
+    const courseImage = event.dataset.img;
+    //if(this.mainContainerFilter.action === this.actions.add){
+      if (isChecked) {
+        this.coursesChecked.push({_id:courseId, name:courseName, image:courseImage});
+      }else{
+        this.coursesChecked.map((checkedCourse,i)=>{
+          if(checkedCourse._id === courseId){
+            this.coursesChecked.splice(i,1);
+          }
+        })
       }
-      return course;
-    })
+    /* }else if(this.mainContainerFilter.action === this.actions.add){
+      if (isChecked) {
+        this.coursesChecked.push({_id: courseId, name:courseName});
+      }else{
+        this.coursesChecked.map((checkedCourse,i)=>{
+          if(checkedCourse._id === courseId){
+            this.coursesChecked.splice(i,1);
+          }
+        })
+      }
+    } */
+
+        
   }
 
   delete(id) {
@@ -197,8 +223,7 @@ export class MainContainerComponent implements OnInit {
       case "students":
         this.studentsService.deleteStudent(id).subscribe(
           res => {
-            console.log(res);
-            this.refreshPage('/school');
+            //console.log(res);
           },
           err => console.log(err)
         );
@@ -206,8 +231,7 @@ export class MainContainerComponent implements OnInit {
       case "courses":
         this.courseService.deleteCourse(id).subscribe(
           res => {
-            console.log(res);
-            this.refreshPage('/school');
+            //console.log(res);
           },
           err => console.log(err)
         );
@@ -216,8 +240,7 @@ export class MainContainerComponent implements OnInit {
         if (confirm('Are you sure you want to delete this user?')) {
           this.userService.deleteUser(id).subscribe(
             res => {
-              console.log(res);
-              //this.refreshPage('/administration');
+              //console.log(res);
             },
             err => console.log(err)
           );
@@ -245,20 +268,17 @@ export class MainContainerComponent implements OnInit {
       switch (this.mainContainerFilter.title) {
         case "administrators":
           this.userService.uploadUserImg(formData).subscribe(res => {
-            this.image = res.fileName;
-            this.imgFolder = this.getImgFolderName();
+            this.setImgVariables(res);
           }, err => console.log(err));
           break;
         case "students":
           this.studentsService.uploadStudentImg(formData).subscribe(res => {
-            this.image = res.fileName;
-            this.imgFolder = this.getImgFolderName();
+            this.setImgVariables(res);
           }, err => console.log(err));
           break;
         case "courses":
           this.courseService.uploadCourseImg(formData).subscribe(res => {
-            this.image = res.fileName;
-            this.imgFolder = this.getImgFolderName();
+            this.setImgVariables(res);
           }, err => console.log(err));
           break;
       }
@@ -266,6 +286,11 @@ export class MainContainerComponent implements OnInit {
       imgBtn.innerHTML = 'Choose an Image';
       this.image = null;
     }
+  }
+
+  private setImgVariables(res: any) {
+    this.image = res.fileName;
+    this.imgFolder = this.getImgFolderName();
   }
 
   createFormData(imgFile) {
@@ -285,10 +310,10 @@ export class MainContainerComponent implements OnInit {
     }
   }
 
-  refreshPage(rootName){
+  /* refreshPage(rootName){
     console.log(rootName);
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>this.router.navigate([rootName]));
-  }
+  } */
 
 }
 

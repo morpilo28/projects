@@ -40,16 +40,17 @@ function insertOne(studentToAdd, cb) {
             const studentToAddToCourse = { ...studentToAdd };
             delete studentToAddToCourse['courses'];
             for (let i = 0; i < studentToAdd.courses.length; i++) {
-                if (studentToAdd.courses[i].isChecked) {
-                    dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse, (e, singleCourse) => {
-                        if (e) {
-                            cb("can't insert student into his checked courses");
-                        } else {
-                            cb(null, studentInserted);
-                        }
-                    });
-                }
+                //if (studentToAdd.courses[i].isChecked) { // put students in courses
+                dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse, (e, singleCourse) => {
+                    if (e) {
+                        cb("can't insert student into his checked courses");
+                    } else {
+                        console.log('inserter student into checked course');
+                    }
+                });
+                //}
             }
+            cb(null, studentInserted);
         }
     });
 }
@@ -61,6 +62,62 @@ function updateOne(studentToUpdate, cb) {
             console.log(e);
             cb(e);
         } else {
+            // get all the courses ------
+            // iterate through all the courses -----
+            // and check"
+            // if the courses id's in studentToUpdate.studentCourses match the course id in allCourses then 
+            //check if that course have this student.
+            //if not, add it. if yes do nothing
+            //else 
+            // check if that course have this student.
+            // if yes, delete it. if not, do nothing. 
+
+            dal.get(courseCollection, (e, allCourses) => {
+                if (e) {
+                    console.log('problem with getting courses list');
+                } else {
+                    const studentToAddToCourse = { ...studentToUpdate };
+                    delete studentToAddToCourse['courses']
+                    let isAlreadyEnrolled = false;
+                    let coursesToUpdate = [];
+                    for (let i = 0; i < allCourses.length; i++) {
+                        const course = allCourses[i];
+                        for (let j = 0; j < (studentToUpdate.courses).length; j++) {
+                            const studentCourse = studentToUpdate.courses[j];
+                            if (course._id.toString() === studentCourse._id) {
+                                for (let x = 0; x < (course.courseStudents).length; x++) {
+                                    const student = course.courseStudents[x];
+                                    if (student._id.toString() === studentToUpdate._id.toString()) {
+                                        isAlreadyEnrolled = true;
+                                        break;
+                                    }
+                                }
+                                if (!isAlreadyEnrolled) {
+                                    course.courseStudents.push(studentToAddToCourse);
+                                    coursesToUpdate.push(course);
+                                }
+                            } else { // if student didn't or no longer enrolled in the course
+                                for (let z = 0; z < (course.courseStudents).length; z++) {
+                                    const student = course.courseStudents[z];
+                                    if (student._id.toString() === studentToUpdate._id.toString()) {
+                                        (course.courseStudents).splice(z, 1);
+                                        coursesToUpdate.push(course);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    coursesToUpdate.forEach((course) => {
+                        dal.update(courseCollection, course, (e, d) => {
+                            if (e) {
+                                console.log('problem with updating the courses that students where deleted from');
+                            } else {
+                                console.log('courses that students where deleted from were updated');
+                            }
+                        })
+                    })
+                }
+            });
             cb(null, studentToUpdate);
         }
     });
@@ -70,9 +127,41 @@ function updateOne(studentToUpdate, cb) {
 function deleteOne(studentToDeleteId, cb) {
     dal.deleteDocument(studentCollection, studentToDeleteId, (e, studentDeletedId) => {
         if (e) {
-            console.log(e);
-            cb(e);
+            console.log('problem with deleting student');
+            cb('problem with deleting student');
         } else {
+            dal.get(courseCollection, (e, allCourses) => {
+                if (e) {
+                    console.log('problem with getting courses list');
+                } else {
+                    console.log(allCourses);
+                    let coursesToUpdate = [];
+                    for (let i = 0; i < allCourses.length; i++) {
+                        const singleCourseStudents = allCourses[i].courseStudents;
+                        console.log(singleCourseStudents);
+                        for (let j = 0; j < (singleCourseStudents).length; j++) {
+                            const studentId = singleCourseStudents[j]
+                            if (((studentId._id).toString()) === studentToDeleteId) {
+                                (singleCourseStudents).splice(j, 1);
+                                //go to dal and update the course without one student
+                                coursesToUpdate.push(allCourses[i]);
+                            }
+                        }
+                    }
+                    console.log(coursesToUpdate);
+                    coursesToUpdate.forEach((course) => {
+                        dal.update(courseCollection, course, (e, d) => {
+                            if (e) {
+                                console.log('problem with updating the courses that students where deleted from');
+                            } else {
+                                console.log('courses that students where deleted from were updated');
+                            }
+                        })
+                    })
+
+                    //cb(null, d);
+                }
+            });
             cb(null, studentDeletedId);
         }
     });

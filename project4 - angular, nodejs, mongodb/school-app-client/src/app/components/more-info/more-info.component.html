@@ -8,7 +8,7 @@
 <div>
     <img *ngIf="dataToEdit.image" class='floatLeft'
         [src]='baseUserImgUrl+imgFolder+dataToEdit.image'
-        [alt]='baseUserImgUrl+imgFolder+dataToEdit.image' width='150' height='150' />
+        [alt]='dataToEdit.image' width='150' height='150' />
     <ng-container class="floatLeft">
         <span>{{dataToEdit.name}}</span>
         <span *ngIf="mainContainerFilter.title === 'administrators'">, {{dataToEdit.role}}</span>
