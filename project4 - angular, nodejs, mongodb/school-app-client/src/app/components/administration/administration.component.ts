@@ -12,8 +12,8 @@ import { environment } from 'src/environments/environment';
 //TODO: on adding or editing, check if user already exist by user name and email
 //TODO: on adding or editing, check if all inputs/details are filled. especially on adding (maybe show save btn only after everything is filled)
 //TODO: on adding an image, add a spinner loader until the image is up
+//TODO: on adding an image, if the user didn't save it, delete from server user images folder
 //TODO: design page and check everything again
-
 
 export class AdministrationComponent implements OnInit {
   private usersList: UserModel[] = [];
