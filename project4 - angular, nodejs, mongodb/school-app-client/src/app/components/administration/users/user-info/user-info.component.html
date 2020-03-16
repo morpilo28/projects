@@ -1,0 +1,19 @@
+<ng-container *ngIf="currentUser && userInfo">
+    <span>{{userInfo.name}}</span>
+    <ng-container *ngIf="currentUser.name ===userInfo.name || currentUser.role !== userInfo.role">
+        <button *ngIf="(currentUser.role  === roles.manager && userInfo.role !== roles.owner) || 
+        (currentUser.role === roles.owner)" (click)="onEdit()">edit</button>
+    </ng-container>
+    <hr>
+    <div>
+        <img class='floatLeft' [src]='baseUserImgUrl+userInfo.image'
+        [alt]='userInfo.image' width='150' height='150' />
+        <ng-container class="floatLeft">
+            <span>{{userInfo.name}}</span>
+            <span>, {{userInfo.role}}</span>
+            <br>
+        </ng-container>
+        <span>{{userInfo.phone}}</span><br>
+        <span>{{userInfo.email}}</span><br>
+    </div>
+</ng-container>

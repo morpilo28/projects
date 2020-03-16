@@ -55,7 +55,7 @@ function insert(collection, documentToAdd, cb) {
             const DB = getDb(client);
             DB.collection(collection).insertOne(documentToAdd, (e, insertedDocument) => {
                 if (e) {
-                    console.log('cant get data from collection');
+                    console.log(e);
                     cb('cant get data from collection');
                 } else {
                     cb(null, insertedDocument.ops[0]);

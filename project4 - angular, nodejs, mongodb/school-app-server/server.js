@@ -21,3 +21,4 @@ app.use('/student', studentController);
 app.listen(process.env.PORT || PORT, () => {
     console.log(`Listening on port ${process.env.PORT || PORT}!`);
 });
+

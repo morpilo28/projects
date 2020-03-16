@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const multer = require('multer');
+var CryptoJS = require("crypto-js");
+var SHA256 = require("crypto-js/sha256");
 
 const userBl = require('../business-logic/user-bl');
 const dal = require('../dal');
@@ -53,8 +55,9 @@ router.get('/:id', (req, res) => {
 router.post('/login', (req, res) => {
     //TODO: maybe validation needs to happened on email and password and not user name and password
     const userToValidate = {
-        name: req.body.name,
-        password: req.body.password,
+        email: req.body.email,
+        password: CryptoJS.SHA256(req.body.password).toString(CryptoJS.enc.Hex),
+        //password:req.body.password
     };
 
     userBl.isUserExist(userToValidate, (e, data) => {
@@ -69,6 +72,8 @@ router.post('/login', (req, res) => {
 
 router.post('/register', (req, res) => {
     const userToAdd = req.body;
+    userToAdd.password = CryptoJS.SHA256(userToAdd.password).toString(CryptoJS.enc.Hex);
+
     userBl.insertOne(userToAdd, (e, data) => {
         if (e) {
             console.log(e);
@@ -110,7 +115,7 @@ router.post('/images', upload, (req, res) => {
             return res.status(500).end('problem with uploading img');
         } else {
             console.log('user image added: ' + req.file.filename);
-            const resObj = {fileName:req.file.filename}
+            const resObj = { fileName: req.file.filename }
             return res.send(resObj);
         }
     })

@@ -14,7 +14,7 @@ export class MoreInfoComponent implements OnInit {
   @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
   private array = [];
   private currentUserRole: string;
-  private imgFolder;
+  //private imgFolder;
   private baseUserImgUrl = (`${environment.serverUrl}/images/`);
 
   constructor(private userService: UserService) {}
@@ -22,9 +22,7 @@ export class MoreInfoComponent implements OnInit {
   ngOnInit() {
     this.dataToEdit = { name: null, description: null, phone: null, email: null, role: null, image: null, courseStudents: [], courses: [] };
     this.userService.getCurrentUser().subscribe(res => this.currentUserRole = res ? res.role : '');
-    if(this.mainContainerFilter.title){
-      this.imgFolder = this.getImgFolderName();
-    }
+    //this.imgFolder = this.getImgFolderName();
   }
 
   onEdit() {
@@ -37,14 +35,14 @@ export class MoreInfoComponent implements OnInit {
     });
   }
 
-  isExist(isNotUndefined) {
-    if (typeof isNotUndefined === 'undefined') {
+  isExist(isUndefined) {
+    if (typeof isUndefined === 'undefined') {
       return true;
     }else{
       return false;
     }
   }
-
+/* 
   getImgFolderName() {
     switch (this.mainContainerFilter.title) {
       case 'administrators':
@@ -54,5 +52,5 @@ export class MoreInfoComponent implements OnInit {
       case 'courses':
         return 'courseImages/';
     }
-  }
+  } */
 }

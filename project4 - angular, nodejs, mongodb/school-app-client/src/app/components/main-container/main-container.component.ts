@@ -140,6 +140,7 @@ export class MainContainerComponent implements OnInit {
             image: this.image,
             courses: this.coursesChecked
           };
+          //TODO: check why image is not transfered on edit
           this.studentsService.updateSingleStudent(this.newData).subscribe(
             res => {
               //console.log(res);
@@ -191,7 +192,6 @@ export class MainContainerComponent implements OnInit {
     const courseId = event.id;
     const courseName = event.value;
     const courseImage = event.dataset.img;
-    //if(this.mainContainerFilter.action === this.actions.add){
       if (isChecked) {
         this.coursesChecked.push({_id:courseId, name:courseName, image:courseImage});
       }else{
@@ -201,19 +201,6 @@ export class MainContainerComponent implements OnInit {
           }
         })
       }
-    /* }else if(this.mainContainerFilter.action === this.actions.add){
-      if (isChecked) {
-        this.coursesChecked.push({_id: courseId, name:courseName});
-      }else{
-        this.coursesChecked.map((checkedCourse,i)=>{
-          if(checkedCourse._id === courseId){
-            this.coursesChecked.splice(i,1);
-          }
-        })
-      }
-    } */
-
-        
   }
 
   delete(id) {
@@ -252,7 +239,6 @@ export class MainContainerComponent implements OnInit {
   }
 
   onSelectedRole(selectedRole) {
-    this.newData.role = selectedRole;
     this.newData.role = selectedRole;
   }
 

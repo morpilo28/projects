@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  public user: UserModel = { name: '', password: '' }
+  public user: UserModel = { email: '', password: '' }
   public note: string = '';
 
   constructor(private userService: UserService, private router: Router) { }
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
       err => {
         window.localStorage.clear();
         this.note = 'No user has been found!';
-        this.user.name = '';
+        this.user.email = '';
         this.user.password = '';
       });
   }

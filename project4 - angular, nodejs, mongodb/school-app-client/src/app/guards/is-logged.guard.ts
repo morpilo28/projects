@@ -21,10 +21,8 @@ export class IsLoggedGuard implements CanActivate {
         this.isLogged = false;
       } else {
         this.isLogged = true;
-        console.log('logged');
       }
     });
-
     return this.isLogged;
   }
 }

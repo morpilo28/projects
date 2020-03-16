@@ -1,0 +1,34 @@
+<div>
+    <button *ngIf="image" (click)="save()">Save</button>
+    <button *ngIf="mainContainerFilter.action === actions.edit && userNewData.name !== currentUser.name"
+        (click)='delete(userNewData._id)'>Delete</button><br>
+    <input [(ngModel)]="userNewData._id" hidden [id]='userNewData._id' />
+    <label>name: <input [(ngModel)]="userNewData.name" /><br></label>
+    <label *ngIf="mainContainerFilter.action === actions.add">password:<input
+            [(ngModel)]="userNewData.password" /><br></label>
+    <ng-container>
+        <label>phone: <input [(ngModel)]="userNewData.phone" /><br></label>
+        <label>email: <input [(ngModel)]="userNewData.email" /><br></label>
+    </ng-container>
+
+    <label *ngIf="userNewData.name !== currentUser.name">Choose a role:
+        <select id="role" (change)="onSelectedRole($event.target.value)">
+            <option [selected]="mainContainerFilter.action === actions.add" disabled></option>
+            <option [selected]="userNewData.role == roles.sales">sales</option>
+            <option *ngIf="currentUser.role === roles.owner" [selected]="userNewData.role === roles.manager">manager
+            </option>
+        </select>
+        <br>
+    </label>
+
+    <label>image:
+        <button #imgBtn id="imgPick" style="cursor:pointer" (click)="onChoosingImage(fileInput)">Choose an
+            Image</button>
+        <div *ngIf="image">
+            <img [src]="baseUserImgUrl+image" [alt]="image" width="50" height="50" />
+        </div> <br>
+        <input #fileInput type="file" id='addedImage' required style="display:none"
+            (change)="onPickedImg(imgBtn, fileInput)" /><br><br>
+
+    </label>
+</div>

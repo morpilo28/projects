@@ -6,7 +6,7 @@ import { UserModel } from '../models/user-model';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, pipe } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,9 @@ export class UserService {
   private usersList: BehaviorSubject<UserModel[]>;
   private usersListObservable: Observable<UserModel[]>;
 
+  private userInfo: BehaviorSubject<UserModel>
+  private userInfoObservable: Observable<UserModel>
+
   constructor(private httpClient: HttpClient) {
     this.currentUser = new BehaviorSubject<UserModel>(null);
     this.currentUserObservable = new Observable((o) => {
@@ -28,8 +31,16 @@ export class UserService {
     });
 
     this.usersList = new BehaviorSubject<UserModel[]>(null);
-    this.usersListObservable = new Observable((o)=>{
-      this.usersList.subscribe(res=>{
+    this.usersListObservable = new Observable((o) => {
+      this.usersList.subscribe(res => {
+        o.next(res);
+      });
+      /* o.complete(); // when the observable doesnt have nothing to listen to */
+    });
+
+    this.userInfo = new BehaviorSubject<UserModel>(null);
+    this.userInfoObservable = new Observable((o) => {
+      this.userInfo.subscribe(res => {
         o.next(res);
       });
       /* o.complete(); // when the observable doesnt have nothing to listen to */
@@ -54,6 +65,10 @@ export class UserService {
     return this.currentUserObservable;
   }
 
+  getUserInfo(): Observable<UserModel> {
+    return this.userInfoObservable;
+  }
+
   getUsersList(): Observable<UserModel[]> {
     this.updateUserList();
     return this.usersListObservable;
@@ -72,7 +87,10 @@ export class UserService {
   }
 
   getSingleUser(id): Observable<UserModel> {
-    return this.httpClient.get<UserModel>(`${environment.serverUrl}/user/${id}`);
+    return this.httpClient.get<UserModel>(`${environment.serverUrl}/user/${id}`).pipe(map(res => {
+      this.userInfo.next(res);
+      return res;
+    }));
   }
 
   addSingleUser(userToAdd): Observable<UserModel> {
@@ -104,4 +122,3 @@ export class UserService {
     this.getAllUsersFromDb().subscribe();
   }
 }
-

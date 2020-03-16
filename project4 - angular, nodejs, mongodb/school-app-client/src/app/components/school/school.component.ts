@@ -56,7 +56,6 @@ export class SchoolComponent implements OnInit {
   onPickedListItem(value) {
     this.singleItemToEdit = value;
     if (value.courses) {
-      console.log(value.courses);
       this.courseStudentsOrStudentCourses = value.courses;
     } else if (value.courseStudents) {
       this.courseStudentsOrStudentCourses = value.courseStudents;

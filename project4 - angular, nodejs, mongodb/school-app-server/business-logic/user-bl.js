@@ -43,7 +43,7 @@ function isUserExist(userToValidate, cb) {
         if (e) {
             cb("can't get user's list");
         } else {
-            let singleUser = allUsers.filter((obj) => obj.name === userToValidate.name && obj.password === userToValidate.password);
+            let singleUser = allUsers.filter((obj) => obj.email === userToValidate.email && obj.password === userToValidate.password);
             if (singleUser.length === 0) {
                 cb('no user has been found');
             } else if (singleUser.length > 1) {

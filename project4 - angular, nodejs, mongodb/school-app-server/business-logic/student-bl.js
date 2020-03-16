@@ -55,23 +55,12 @@ function insertOne(studentToAdd, cb) {
     });
 }
 
-//TODO: check if works;
 function updateOne(studentToUpdate, cb) {
     dal.update(studentCollection, studentToUpdate, (e, studentUpdated) => {
         if (e) {
             console.log(e);
             cb(e);
         } else {
-            // get all the courses ------
-            // iterate through all the courses -----
-            // and check"
-            // if the courses id's in studentToUpdate.studentCourses match the course id in allCourses then 
-            //check if that course have this student.
-            //if not, add it. if yes do nothing
-            //else 
-            // check if that course have this student.
-            // if yes, delete it. if not, do nothing. 
-
             dal.get(courseCollection, (e, allCourses) => {
                 if (e) {
                     console.log('problem with getting courses list');
@@ -123,7 +112,6 @@ function updateOne(studentToUpdate, cb) {
     });
 }
 
-//TODO: check if works;
 function deleteOne(studentToDeleteId, cb) {
     dal.deleteDocument(studentCollection, studentToDeleteId, (e, studentDeletedId) => {
         if (e) {
@@ -134,11 +122,9 @@ function deleteOne(studentToDeleteId, cb) {
                 if (e) {
                     console.log('problem with getting courses list');
                 } else {
-                    console.log(allCourses);
                     let coursesToUpdate = [];
                     for (let i = 0; i < allCourses.length; i++) {
                         const singleCourseStudents = allCourses[i].courseStudents;
-                        console.log(singleCourseStudents);
                         for (let j = 0; j < (singleCourseStudents).length; j++) {
                             const studentId = singleCourseStudents[j]
                             if (((studentId._id).toString()) === studentToDeleteId) {
@@ -158,8 +144,6 @@ function deleteOne(studentToDeleteId, cb) {
                             }
                         })
                     })
-
-                    //cb(null, d);
                 }
             });
             cb(null, studentDeletedId);

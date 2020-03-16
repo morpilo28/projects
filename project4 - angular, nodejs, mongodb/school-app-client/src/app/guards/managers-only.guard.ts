@@ -23,14 +23,11 @@ export class ManagersOnlyGuard implements CanActivate {
           alert('Restricted Area!')
           this.router.navigate(['/school']);
           this.isAManager = false;
-          console.log('not a manager');
         } else {
           this.isAManager = true;
-          console.log('a manager');
         }
       } 
     });
-
     return this.isAManager;
   }
 }
