@@ -18,7 +18,7 @@ import { environment } from 'src/environments/environment';
 export class AdministrationComponent implements OnInit {
   private usersList: UserModel[] = [];
   private _mainContainerFilter = { title: null, action: null };
-  private singleItemToEdit;
+  //private singleItemToEdit;
   private administratorsCount: { owner: number, manager: number, sales: number } = { owner: 0, manager: 0, sales: 0 };
   private roles = environment.roles;
   private totalUsers: number;
@@ -37,20 +37,19 @@ export class AdministrationComponent implements OnInit {
   }
 
   filterForMainContainer(value) {
-    if (value.action === 'add') {
+   /*  if (value.action === 'add') {
       this.singleItemToEdit = { name: null, description: null, phone: null, email: null, role: null, image: null, sumStudentsInCourse: null, courses: [] }
-    }
+    } */
     this._mainContainerFilter = value;
   }
 
   onPickedListItem(value) {
-    this.singleItemToEdit = value;
+    //this.singleItemToEdit = value;
   }
 
   onEdit(value) {
     //this.singleItemToEdit = value.objToEdit;
-    this._mainContainerFilter.action = value.mainContainerFilter.action;
-    this._mainContainerFilter.title = value.mainContainerFilter.title;
+    this._mainContainerFilter = value.mainContainerFilter;
   }
 
   onActionFinished(showUserMainPage) {

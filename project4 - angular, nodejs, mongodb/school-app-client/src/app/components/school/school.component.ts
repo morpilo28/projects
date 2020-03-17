@@ -41,7 +41,7 @@ export class SchoolComponent implements OnInit {
   }
 
   filterForMainContainer(value) {
-    if (value.action === 'add') {
+/*     if (value.action === 'add') {
       this.singleItemToEdit = { name: null, description: null, phone: null, email: null, role: null, image: null, courseStudents: [], courses: [] }
       this.coursesList.forEach(course => {
         this.singleItemToEdit.courses.push({
@@ -49,24 +49,23 @@ export class SchoolComponent implements OnInit {
           name: course.name
         })
       });
-    }
+    } */
     this._mainContainerFilter = value;
   }
 
   onPickedListItem(value) {
-    this.singleItemToEdit = value;
+/*     this.singleItemToEdit = value;
     if (value.courses) {
       this.courseStudentsOrStudentCourses = value.courses;
     } else if (value.courseStudents) {
       this.courseStudentsOrStudentCourses = value.courseStudents;
     }else{
       console.log('no value');
-    }
+    } */
   }
 
   onEdit(value) {
-    this.singleItemToEdit = value.objToEdit;
-    this._mainContainerFilter.action = value.mainContainerFilter.action;
-    this._mainContainerFilter.title = value.mainContainerFilter.title;
+    //this.singleItemToEdit = value.objToEdit;
+    this._mainContainerFilter = value.mainContainerFilter;
   }
 }

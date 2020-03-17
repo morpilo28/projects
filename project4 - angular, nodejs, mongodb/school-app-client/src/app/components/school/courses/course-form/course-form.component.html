@@ -1,1 +1,20 @@
-<p>course-form works!</p>
+<div *ngIf='mainContainerFilter'>
+    <button (click)="save()">Save</button>
+    <button (click)='delete(courseNewData._id)'>Delete</button><br>
+    <input [(ngModel)]="courseNewData.id" hidden [id]='courseNewData._id' />
+    <label>name: <input [(ngModel)]="courseNewData.name" /><br></label>
+    <label>description: <textarea [(ngModel)]="courseNewData.description"
+            [value]="courseNewData.description"></textarea><br></label>
+    <label>image:
+        <button #imgBtn id="imgPick" style="cursor:pointer" (click)="onChoosingImage(fileInput)">Choose an
+            Image</button>
+        <div *ngIf="image">
+            <img [src]="baseCourseImgUrl+image" [alt]="image" width="50" height="50" />
+        </div> <br>
+        <input #fileInput type="file" id='addedImage' required style="display:none"
+            (change)="onPickedImg(imgBtn, fileInput)" /><br><br>
+    </label>
+
+    <p *ngIf="mainContainerFilter.action !== actions.add">total {{courseOldData.courseStudents.length}} students taking this
+        course <br></p>
+</div>

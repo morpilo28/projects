@@ -63,8 +63,8 @@ router.post('/', (req, res) => {
 
 //check if it works
 router.put('/', (req, res) => {
-    const studentToUpdate = req.body;
-    studentBl.updateOne(studentToUpdate, (e, data) => {
+    const studentData = req.body;
+    studentBl.updateOne(studentData, (e, data) => {
         if (e) {
             return res.status(500).send();
         } else {

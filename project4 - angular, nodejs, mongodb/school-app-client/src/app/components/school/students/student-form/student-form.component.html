@@ -1,1 +1,27 @@
-<p>student-form works!</p>
+<div *ngIf='mainContainerFilter'>
+    <button (click)="save()">Save</button>
+    <button (click)='delete(studentNewData._id)'>Delete</button><br>
+    <input [(ngModel)]="studentNewData.id" hidden [id]='studentNewData._id' />
+    <label>name: <input [(ngModel)]="studentNewData.name" /><br></label>
+    <label>phone:
+        <input [(ngModel)]="studentNewData.phone" [value]="studentNewData.phone" /><br></label>
+    <label>email:
+        <input [(ngModel)]="studentNewData.email" [value]="studentNewData.email" /><br></label>
+    <label>image:
+        <button #imgBtn id="imgPick" style="cursor:pointer" (click)="onChoosingImage(fileInput)">Choose an
+            Image</button>
+        <div *ngIf="image">
+            <img [src]="baseStudentImgUrl+image" [alt]="image" width="50" height="50" />
+        </div> <br>
+        <input #fileInput type="file" id='addedImage' required style="display:none"
+            (change)="onPickedImg(imgBtn, fileInput)" /><br><br>
+    </label>
+
+    <label>courses:
+        <ng-container *ngFor="let course of allCourses">
+            <input type="checkbox" [value]='course.name' [id]='course._id' [attr.data-img] = "course.image" [checked]="course.isChecked"
+                (click)='onClickedCourseBox($event.target)' />
+            <label [for]='course.id'>{{course.name}}</label>
+        </ng-container>
+    </label>
+</div>

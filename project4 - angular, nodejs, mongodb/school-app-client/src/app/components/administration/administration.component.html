@@ -8,8 +8,7 @@
 </div>
 
 <!-- user's list -->
-<app-list class="administrators" title='administrators' [list]='usersList'
-    (mainContainerFilter)='filterForMainContainer($event)' (listItemData)="onPickedListItem($event)"></app-list>
+<app-list class="administrators" title='administrators' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
 
 <!-- on add user -->
 <app-user-form class="main" *ngIf="_mainContainerFilter.action === 'add'" [mainContainerFilter]='_mainContainerFilter'

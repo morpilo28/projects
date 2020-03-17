@@ -1,1 +1,18 @@
-<p>course-info works!</p>
+<ng-container *ngIf="courseInfo">
+    <span>{{courseInfo.name}}</span>
+    <button (click)="onEdit()">edit</button>
+    <hr>
+    <div>
+        <img class='floatLeft' [src]='baseCourseImgUrl+courseInfo.image' [alt]='courseInfo.image' width='150' height='150' />
+        <ng-container class="floatLeft">
+            <span>{{courseInfo.name}}</span>
+            <span>, {{courseInfo.courseStudents.length}} students</span>
+            <br>
+            <p>{{courseInfo.description}}</p>
+        </ng-container>
+        <div *ngFor="let student of courseInfo.courseStudents">
+            <img [src]="baseStudentImgUrl+student.image" [alt]="student.image" width="50" height="50"/>
+            <span>{{student.name}}</span>
+        </div>
+    </div>
+</ng-container>

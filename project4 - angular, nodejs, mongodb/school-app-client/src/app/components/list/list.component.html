@@ -2,12 +2,12 @@
     <span> {{title}} </span> <span (click)="onAction(title, 'add')">+</span>
 </h6>
 <div class='listContainer'>
-    <ng-container *ngIf="lista">
-        <ng-container class="itemContainer" *ngFor="let item of lista">
+    <ng-container *ngIf="list">
+        <ng-container class="itemContainer" *ngFor="let item of list">
             <ng-container
                 *ngIf="((title === 'administrators') && ((currentUserRole === 'manager' && item.role !== 'owner') || (currentUserRole === 'owner'))) || (title !== 'administrators')">
                 <div [id]='item._id' (click)="onItemClicked(title, item._id); onAction(title, 'moreInfo')">
-                    <img class='floatLeft' [src]='baseUserImgUrl+imgFolder+"/"+item.image' [alt]='item.image' width='50'
+                    <img class='floatLeft' [src]='baseImgUrl+imgFolder+item.image' [alt]='item.image' width='50'
                         height='50' />
                     <ng-container class="floatLeft">
                         <span>{{item.name}}</span> <span *ngIf="title === 'administrator'">, {{item.role}}</span><br>

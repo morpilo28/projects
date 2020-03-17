@@ -12,12 +12,10 @@ import { environment } from 'src/environments/environment';
 export class ListComponent implements OnInit {
   private currentUserRole: string;
   @Input() title;
-  @Input() list;
   @Output() mainContainerFilter: EventEmitter<any> = new EventEmitter<any>();
-  @Output() listItemData: EventEmitter<any> = new EventEmitter<any>();
-  private baseUserImgUrl = (`${environment.serverUrl}/images/`);
+  private baseImgUrl = (`${environment.serverUrl}/images/`);
   private imgFolder;
-  private lista;
+  private list;
 
   constructor(private userService: UserService, private studentsService: StudentsService, private courseService: CourseService) { }
 
@@ -28,37 +26,36 @@ export class ListComponent implements OnInit {
     switch (this.title) {
       case 'administrators':
         this.userService.getUsersList().subscribe(
-          res => this.lista = res,
+          res => this.list = res,
           err => console.log(err));
         break
       case 'students':
         this.studentsService.getStudentsList().subscribe(
-          res => this.lista = res,
+          res => this.list = res,
           err => console.log(err));
         break
       case 'courses':
         this.courseService.getCoursesList().subscribe(
-          res => this.lista = res,
+          res => this.list = res,
           err => console.log(err));
         break
     }
   }
 
   onAction(title, action) {
-    const obj = {title: title, action: action}
-    this.mainContainerFilter.emit(obj);
+    this.mainContainerFilter.emit({title: title, action: action});
   }
 
   onItemClicked(title, itemId) {
     switch (title) {
       case 'administrators':
-        this.userService.getSingleUser(itemId).subscribe(itemData => this.listItemData.emit(itemData));
+        this.userService.getSingleUser(itemId).subscribe();
         break
       case 'students':
-        this.studentsService.getSingleStudent(itemId).subscribe(itemData => this.listItemData.emit(itemData));
+        this.studentsService.getSingleStudent(itemId).subscribe();
         break
       case 'courses':
-        this.courseService.getSingleCourse(itemId).subscribe(itemData => this.listItemData.emit(itemData));
+        this.courseService.getSingleCourse(itemId).subscribe();
         break
     }
   }
@@ -66,12 +63,11 @@ export class ListComponent implements OnInit {
   getImgFolderName() {
     switch (this.title) {
       case 'administrators':
-        return 'userImages';
+        return 'userImages/';
       case 'students':
-        return 'studentImages';
+        return 'studentImages/';
       case 'courses':
-        return 'courseImages';
+        return 'courseImages/';
     }
   }
-
 }

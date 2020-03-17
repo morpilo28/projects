@@ -70,7 +70,7 @@ export class UserService {
   }
 
   getUsersList(): Observable<UserModel[]> {
-    this.updateUserList();
+    this.getUpdateUserList();
     return this.usersListObservable;
   }
 
@@ -95,21 +95,21 @@ export class UserService {
 
   addSingleUser(userToAdd): Observable<UserModel> {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/register`, userToAdd).pipe(map(res => {
-      this.updateUserList();
+      this.getUpdateUserList();
       return res;
     }));
   }
 
   deleteUser(userId): Observable<UserModel> {
     return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
-      this.updateUserList();
+      this.getUpdateUserList();
       return res;
     }));
   }
 
   updateSingleUser(newUserData): Observable<UserModel> {
     return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
-      this.updateUserList();
+      this.getUpdateUserList();
       return res;
     }));
   }
@@ -118,7 +118,7 @@ export class UserService {
     return this.httpClient.post<any>(`${environment.serverUrl}/user/images`, imgFormData);
   }
 
-  private updateUserList() {
+  private getUpdateUserList() {
     this.getAllUsersFromDb().subscribe();
   }
 }

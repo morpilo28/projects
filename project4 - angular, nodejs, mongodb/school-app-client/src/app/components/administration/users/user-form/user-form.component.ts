@@ -14,7 +14,7 @@ export class UserFormComponent implements OnInit {
   private currentUser: UserModel;
   private roles = environment.roles;
   private actions = environment.actions;
-  private baseUserImgUrl = (`${environment.baseUserImgUrl}/userImages/`);
+  private baseUserImgUrl = (`${environment.baseImgUrl}/userImages/`);
   private userNewData: UserModel = {};
   private image;
   @Input() mainContainerFilter: { title: string, action: string };

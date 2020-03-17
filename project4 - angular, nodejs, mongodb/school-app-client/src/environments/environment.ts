@@ -8,7 +8,7 @@ export const environment = {
   roles: { owner: 'owner', manager: "manager", sales: "sales" },
   actions: { add: 'add', edit: 'edit' },
   titles: { courses: "courses", students: "students", administrators: "administrators" },
-  baseUserImgUrl: 'http://localhost:5000/images',
+  baseImgUrl: 'http://localhost:5000/images',
 };
 
 /*

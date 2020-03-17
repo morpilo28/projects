@@ -14,7 +14,7 @@ export class UserInfoComponent implements OnInit {
   private currentUser: UserModel;
   private roles = environment.roles;
   private actions = environment.actions;
-  private baseUserImgUrl = (`${environment.baseUserImgUrl}/userImages/`);
+  private baseUserImgUrl = (`${environment.baseImgUrl}/userImages/`);
   @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private users: UserService) {}
