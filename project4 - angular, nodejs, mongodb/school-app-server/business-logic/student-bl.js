@@ -40,7 +40,6 @@ function insertOne(studentToAdd, cb) {
             const studentToAddToCourse = { ...studentToAdd };
             delete studentToAddToCourse['courses'];
             for (let i = 0; i < studentToAdd.courses.length; i++) {
-                //if (studentToAdd.courses[i].isChecked) { // put students in courses
                 dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse, (e, singleCourse) => {
                     if (e) {
                         cb("can't insert student into his checked courses");
@@ -48,7 +47,6 @@ function insertOne(studentToAdd, cb) {
                         console.log('inserter student into checked course');
                     }
                 });
-                //}
             }
             cb(null, studentInserted);
         }
@@ -56,42 +54,104 @@ function insertOne(studentToAdd, cb) {
 }
 
 function updateOne(studentData, cb) {
-    const studentNewDataToUpdate = studentData.new;
-    dal.update(studentCollection, studentNewDataToUpdate, (e, studentUpdated) => {
+    const studentNewData = studentData.new;
+    const studentOldData = studentData.old;
+    dal.update(studentCollection, studentNewData, (e, studentUpdated) => {
         if (e) {
             console.log(e);
             cb(e);
         } else {
-            //TODO: take the new and old arrays
-            //TODO: check if which courses among them were added and which was remove
-            //TODO: create a new array of 2 keys: id, action (add/remove).
             //TODO: iterate on this new array
             //TODO: extract a course from the courses collection (by id)
             //TODO: if action === 'add' then add the student to the course students array and send to db for update
             //TODO: if action === 'remove' then remove the student from the course students array and send to db for update
-            //TODO: send back to cb the updated student obj
-            
-            dal.get(courseCollection, (e, allCourses) => {
-                if (e) {
-                    console.log('problem with getting courses list');
-                } else {
-                    //const studentData = {old: this.studentOldData, new:this.studentNewData}
-                    //const coursesToUpdate = [];
-                    //TODO: create the coursesToUpdate array that should add or delete the student
-                    /* coursesToUpdate.forEach((course) => {
-                        dal.update(courseCollection, course, (e, d) => {
-                            if (e) {
-                                console.log('problem with updating the courses that students where deleted from');
-                            } else {
-                                console.log('courses updated');
-                            }
-                        })
-                    }) */
-                }
-            });
+            //TODO: send back to cb the updated student obj 
+            const coursesToUpdate = getCoursesToUpdate(studentData);
+            const studentToAddToCourse = { ...studentNewData };
+            delete studentToAddToCourse['courses'];
+            coursesToUpdate.forEach((course) => {
+                updateCourses(course, studentToAddToCourse);
+            })
             cb(null, studentData);
         }
     });
+
+    function updateCourses(course, studentToAddToCourse) {
+        dal.getOne(courseCollection, course._id, (e, d) => {
+            let courseStudents = d.courseStudents;
+            if (e) {
+                console.log("can't get course");
+            }
+            else {
+                if (course.action === 'add') {
+                    let isExist = false;
+                    for (let i = 0; i < courseStudents.length; i++) {
+                        const student = courseStudents[i];
+                        if (studentNewData._id.toString() === student._id.toString()) {
+                            isExist = true;
+                            break;
+                        }
+                    }
+                    if (!isExist) {
+                        courseStudents.push(studentToAddToCourse);
+                        updateCourse(d);
+                    }
+                }
+                else if (course.action === 'remove') {
+                    //maybe use find func
+                    courseStudents = courseStudents.map((student, i) => {
+                        if (studentNewData._id.toString() === student._id.toString()) {
+                            courseStudents.splice(i, 1);
+                        }
+                        updateCourse(d);
+                    });
+                }
+            }
+        });
+    }
+
+    function getCoursesToUpdate(studentData) {
+        //TODO: take the new and old arrays
+        //TODO: check if which courses among them were added and which was remove
+        //TODO: create a new array of 2 keys: id, action (add/remove).
+    
+        const studentOldCourses = studentData.old.courses;
+        let studentNewCourses = studentData.new.courses;
+        let coursesToUpdate = [];
+        let isTheSameCourse = false;
+        studentNewCourses = studentNewCourses.map(course => {
+            course['action'] = 'add';
+            return course;
+        });
+        coursesToUpdate = [...studentNewCourses];
+        studentOldCourses.forEach((course) => {
+            for (let i = 0; i < studentNewCourses.length; i++) {
+                isTheSameCourse = false;
+                if (course._id.toString() === studentNewCourses[i]._id.toString()) {
+                    isTheSameCourse = true;
+                    break
+                }
+            }
+            console.log(isTheSameCourse);
+            if (!isTheSameCourse) {
+                course['action'] = 'remove';
+                coursesToUpdate.push(course);
+            }
+        });
+    
+        return coursesToUpdate
+    }
+
+    function updateCourse(d) {
+        dal.update(courseCollection, d, (e, data) => {
+            if (e) {
+                console.log('problem with updating the course');
+            }
+            else {
+                console.log('course updated');
+            }
+        });
+    }
 }
 
 function deleteOne(studentToDeleteId, cb) {
@@ -140,46 +200,3 @@ module.exports = {
     updateOne: updateOne,
     deleteOne: deleteOne,
 }
-
-/* 
-
-  const studentToAddToCourse = { ...studentData };
-                    const _allCourses = [...allCourses];
-                    delete studentToAddToCourse['courses']
-                    let isAlreadyEnrolled = false;
-                    let coursesToUpdate = [];
-                    //iterates through all courses
-                    for (let i = 0; i < allCourses.length; i++) {
-                        const course = allCourses[i];
-                        //iterates through courses that the student is enrolled to 
-                        for (let j = 0; j < (studentData.courses).length; j++) {
-                            const studentCourse = studentData.courses[j];
-                            //if the student is enrolled to the course
-                            if (course._id.toString() === studentCourse._id) {
-                                //iterates through students that are already enrolled to the course
-                                for (let x = 0; x < (course.courseStudents).length; x++) {
-                                    const student = course.courseStudents[x];
-                                    //if the student is enrolled to the course
-                                    if (student._id.toString() === studentData._id.toString()) {
-                                        isAlreadyEnrolled = true;
-                                        console.log('do something');
-                                        break;
-                                    }
-                                }
-                                if (!isAlreadyEnrolled) {
-                                    _allCourses[i].courseStudents.push(studentToAddToCourse);
-                                    coursesToUpdate.push(_allCourses[i]);
-                                }
-                            } else { // if student didn't or no longer enrolled in the course
-                                for (let z = 0; z < (course.courseStudents).length; z++) {
-                                    const student = course.courseStudents[z];
-                                    if (student._id.toString() === studentData._id.toString()) {
-                                        (_allCourses[i].courseStudents).splice(z, 1);
-                                        coursesToUpdate.push(_allCourses[i]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-*/

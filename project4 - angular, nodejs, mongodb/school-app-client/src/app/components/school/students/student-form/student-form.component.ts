@@ -29,7 +29,7 @@ export class StudentFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.studentService.getStudentInfo().subscribe(res => {
-        this.studentNewData = {...res}; //check if to do it like this
+        this.studentNewData = { ...res }; //check if to do it like this
         this.studentOldData = res;
         this.image = res.image;
       });
@@ -61,7 +61,8 @@ export class StudentFormComponent implements OnInit {
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
-      const studentData = {old: this.studentOldData, new:this.studentNewData}
+      const studentData = { old: this.studentOldData, new: this.studentNewData }
+      console.log(studentData);
       this.studentService.updateSingleStudent(studentData).subscribe(
         res => this.showSchoolMainPage.emit(true),
         err => console.log(err)
