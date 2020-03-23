@@ -9,29 +9,36 @@
 <!-- only on edit -->
 <!-- <app-main-container *ngIf="_mainContainerFilter.action === 'edit'" class="main" [mainContainerFilter] = '_mainContainerFilter' [dataToEdit]='singleItemToEdit' [courseStudentsOrStudentCourses]='courseStudentsOrStudentCourses'></app-main-container> -->
 
+<!-- only on start -->
+<div class="main" *ngIf="!_mainContainerFilter.action">
+    <u>Total of School: </u><br>
+    courses: {{coursesCount}} <br>
+    students: {{studentsCount}}
+</div>
+
 <app-list class="courses" title='courses' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
 <app-list class="students" title='students' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
 
 <ng-container *ngIf="_mainContainerFilter.title === 'courses'">
-    <!-- only on add --> 
+    <!-- only on add -->
     <app-course-form *ngIf="_mainContainerFilter.action === 'add'" class="main"
-        [mainContainerFilter]='_mainContainerFilter'></app-course-form>
+        [mainContainerFilter]='_mainContainerFilter' (showSchoolMainPage)="componentLoading($event)"></app-course-form>
     <!-- only on more info -->
     <app-course-info class="main" *ngIf="_mainContainerFilter.action === 'moreInfo'"
         [mainContainerFilter]='_mainContainerFilter' (onEditData)="onEdit($event)"></app-course-info>
     <!-- only on edit -->
     <app-course-form *ngIf="_mainContainerFilter.action === 'edit'" class="main"
-        [mainContainerFilter]='_mainContainerFilter'></app-course-form>
+        [mainContainerFilter]='_mainContainerFilter' (showSchoolMainPage)="componentLoading($event)"></app-course-form>
 </ng-container>
 
 <ng-container *ngIf="_mainContainerFilter.title === 'students'">
     <!-- only on add -->
     <app-student-form *ngIf="_mainContainerFilter.action === 'add'" class="main"
-        [mainContainerFilter]='_mainContainerFilter'></app-student-form>
+        [mainContainerFilter]='_mainContainerFilter' (showSchoolMainPage)="componentLoading($event)"></app-student-form>
     <!-- only on more info -->
     <app-student-info class="main" *ngIf="_mainContainerFilter.action === 'moreInfo'"
         [mainContainerFilter]='_mainContainerFilter' (onEditData)="onEdit($event)"></app-student-info>
     <!-- only on edit -->
     <app-student-form *ngIf="_mainContainerFilter.action === 'edit'" class="main"
-        [mainContainerFilter]='_mainContainerFilter'></app-student-form>
+        [mainContainerFilter]='_mainContainerFilter' (showSchoolMainPage)="componentLoading($event)"></app-student-form>
 </ng-container>

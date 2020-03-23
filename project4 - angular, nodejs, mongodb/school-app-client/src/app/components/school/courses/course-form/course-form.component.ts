@@ -16,7 +16,7 @@ export class CourseFormComponent implements OnInit {
   private baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
   private image;
   @Input() mainContainerFilter: { title: string, action: string };
-  @Output() showSchoolMainPage: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private courseService: CourseService) { }
 
@@ -38,7 +38,11 @@ export class CourseFormComponent implements OnInit {
       if (this.image) {
         this.courseNewData.image = this.image;
         this.courseService.addSingleCourse(this.courseNewData).subscribe(
-          res => this.showSchoolMainPage.emit(true),
+          res => {
+            //need to update the updated/added obj before going to moreInfo
+          //this.courseService.setSingleCourse(this.courseNewData._id);
+            this.showSchoolMainPage.emit('moreInfo');
+          },
           err => console.log(err)
         );
       } else {
@@ -47,7 +51,11 @@ export class CourseFormComponent implements OnInit {
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseNewData.image = this.image;
       this.courseService.updateSingleCourse(this.courseNewData).subscribe(
-        res => this.showSchoolMainPage.emit(true),
+        res => {
+          //need to update the updated/added obj before going to moreInfo
+          //this.courseService.setSingleCourse(this.courseNewData._id);
+          this.showSchoolMainPage.emit('moreInfo');
+        },
         err => console.log(err)
       );
     }
@@ -80,7 +88,7 @@ export class CourseFormComponent implements OnInit {
   delete(id) {
     if (confirm(`Are you sure you want to delete this course (${this.courseOldData.name})?`)) {
       this.courseService.deleteCourse(id).subscribe(
-        res => this.showSchoolMainPage.emit(true),
+        res => this.showSchoolMainPage.emit(null),
         err => console.log(err)
       );
     } else {

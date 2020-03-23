@@ -49,7 +49,7 @@ export class StudentsService {
     }));
   }
 
-  getSingleStudent(id): Observable<StudentModel> {
+  setSingleStudent(id): Observable<StudentModel> {
     return this.httpClient.get<StudentModel>(`${environment.serverUrl}/student/${id}`).pipe(map(res => {
       this.studentsInfo.next(res);
       return res;

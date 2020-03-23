@@ -163,7 +163,6 @@ function deleteOne(studentToDeleteId, cb) {
                             const studentId = singleCourseStudents[j]
                             if (((studentId._id).toString()) === studentToDeleteId) {
                                 (singleCourseStudents).splice(j, 1);
-                                //go to dal and update the course without one student
                                 coursesToUpdate.push(allCourses[i]);
                             }
                         }

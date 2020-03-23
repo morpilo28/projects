@@ -49,7 +49,7 @@ export class CourseService {
     return this.coursesInfoObservable;
   }
 
-  getSingleCourse(id): Observable<CourseModel> {
+  setSingleCourse(id): Observable<CourseModel> {
     return this.httpClient.get<CourseModel>(`${environment.serverUrl}/course/${id}`).pipe(map(res => {
       this.coursesInfo.next(res);
       return res;

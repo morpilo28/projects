@@ -55,10 +55,10 @@ export class ListComponent implements OnInit {
         this.userService.getSingleUser(itemId).subscribe();
         break
       case 'students':
-        this.studentsService.getSingleStudent(itemId).subscribe();
+        this.studentsService.setSingleStudent(itemId).subscribe();
         break
       case 'courses':
-        this.courseService.getSingleCourse(itemId).subscribe();
+        this.courseService.setSingleCourse(itemId).subscribe();
         break
     }
   }

@@ -22,7 +22,7 @@ export class StudentFormComponent implements OnInit {
 
 
   @Input() mainContainerFilter: { title: string, action: string };
-  @Output() showSchoolMainPage: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private studentService: StudentsService, private courseService: CourseService) { }
 
@@ -52,7 +52,11 @@ export class StudentFormComponent implements OnInit {
         this.studentNewData.image = this.image;
         this.studentNewData.courses = this.coursesChecked;
         this.studentService.addSingleStudent(this.studentNewData).subscribe(
-          res => this.showSchoolMainPage.emit(true),
+          res => {
+            //TODO: need to update the updated/added obj before going to moreInfo
+            //this.studentService.setSingleStudent(this.studentNewData._id);
+            this.showSchoolMainPage.emit('moreInfo');
+          },
           err => console.log(err)
         );
       } else {
@@ -63,7 +67,11 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.courses = this.coursesChecked;
       const studentData = { old: this.studentOldData, new: this.studentNewData }
       this.studentService.updateSingleStudent(studentData).subscribe(
-        res => this.showSchoolMainPage.emit(true),
+        res => {
+          //TODO: need to update the updated/added obj before going to moreInfo
+          //this.studentService.setSingleStudent(this.studentNewData._id);
+          this.showSchoolMainPage.emit('moreInfo');
+        },
         err => console.log(err)
       );
     }
@@ -94,9 +102,9 @@ export class StudentFormComponent implements OnInit {
   }
 
   delete(id) {
-    if (confirm(`Are you sure you want to delete this course (${this.studentOldData.name})?`)) {
+    if (confirm(`Are you sure you want to delete this student (${this.studentOldData.name})?`)) {
       this.studentService.deleteStudent(id).subscribe(
-        res => this.showSchoolMainPage.emit(true),
+        res => this.showSchoolMainPage.emit(null),
         err => console.log(err)
       );
     } else {
