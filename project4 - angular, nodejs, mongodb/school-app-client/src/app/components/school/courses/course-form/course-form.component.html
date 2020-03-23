@@ -1,6 +1,6 @@
 <div *ngIf='mainContainerFilter'>
     <button (click)="save()">Save</button>
-    <button (click)='delete(courseNewData._id)'>Delete</button><br>
+    <button *ngIf="courseOldData.courseStudents.length === 0" (click)='delete(courseNewData._id)'>Delete</button><br>
     <input [(ngModel)]="courseNewData.id" hidden [id]='courseNewData._id' />
     <label>name: <input [(ngModel)]="courseNewData.name" /><br></label>
     <label>description: <textarea [(ngModel)]="courseNewData.description"

@@ -79,8 +79,6 @@ function updateOne(studentData, cb) {
                         if (studentNewData._id.toString() === student._id.toString()) {
                             isExist = true;
                             courseStudents[i] = studentToAddToCourse;
-                            console.log('line 82');
-                            console.log(courseStudents);
                             break;
                         }
                     }
@@ -88,8 +86,6 @@ function updateOne(studentData, cb) {
                         courseStudents.push(studentToAddToCourse);
                         updateCourse(d);
                     }else{
-                        console.log('line 93');
-                        console.log(d);
                         updateCourse(d);
                     }
                 }
@@ -172,11 +168,10 @@ function deleteOne(studentToDeleteId, cb) {
                             }
                         }
                     }
-                    console.log(coursesToUpdate);
                     coursesToUpdate.forEach((course) => {
                         dal.update(courseCollection, course, (e, d) => {
                             if (e) {
-                                console.log('problem with updating the courses that students where deleted from');
+                                console.log('problem with updating deletion of student from relevant courses');
                             } else {
                                 console.log('courses that students where deleted from were updated');
                             }
