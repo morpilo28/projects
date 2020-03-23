@@ -62,7 +62,6 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
       const studentData = { old: this.studentOldData, new: this.studentNewData }
-      console.log(studentData);
       this.studentService.updateSingleStudent(studentData).subscribe(
         res => this.showSchoolMainPage.emit(true),
         err => console.log(err)

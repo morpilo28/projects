@@ -1,12 +1,5 @@
 'use strict';
 
-//TODO: create functions and put each code line in his matching function:
-//get('administrator').then(res => console.log(res)); // from bl
-//getOne('administrator', "5e57cf70b97e27183cd46a6c").then(res => console.log(res)); // from bl 
-//insert('administrator', { "name": "oz", "role": "sales" }).then(res => console.log(res)); // from bl 
-//update('administrator', { "_id": "5e57db8de8e843269831a5a6", "name": "solki", "role": "bitch" }).then(res => console.log(res)); // from bl 
-//deleteDocument('administrator', "5e57f0dcd50ad031e09207f4").then(res => console.log("id dDeleted: "+ res)); // from bl 
-
 const studentCollection = 'student';
 const courseCollection = 'course';
 const dal = require('../dal');
@@ -61,16 +54,12 @@ function updateOne(studentData, cb) {
             console.log(e);
             cb(e);
         } else {
-            //TODO: iterate on this new array
-            //TODO: extract a course from the courses collection (by id)
-            //TODO: if action === 'add' then add the student to the course students array and send to db for update
-            //TODO: if action === 'remove' then remove the student from the course students array and send to db for update
-            //TODO: send back to cb the updated student obj 
             const coursesToUpdate = getCoursesToUpdate(studentData);
-            const studentToAddToCourse = { ...studentNewData };
-            delete studentToAddToCourse['courses'];
+            //const studentToAddToCourse = { ...studentNewData };
+            delete studentUpdated['courses'];
+            
             coursesToUpdate.forEach((course) => {
-                updateCourses(course, studentToAddToCourse);
+                updateCourses(course, studentUpdated);
             })
             cb(null, studentData);
         }
@@ -86,14 +75,21 @@ function updateOne(studentData, cb) {
                 if (course.action === 'add') {
                     let isExist = false;
                     for (let i = 0; i < courseStudents.length; i++) {
-                        const student = courseStudents[i];
+                        let student = courseStudents[i];
                         if (studentNewData._id.toString() === student._id.toString()) {
                             isExist = true;
+                            courseStudents[i] = studentToAddToCourse;
+                            console.log('line 82');
+                            console.log(courseStudents);
                             break;
                         }
                     }
                     if (!isExist) {
                         courseStudents.push(studentToAddToCourse);
+                        updateCourse(d);
+                    }else{
+                        console.log('line 93');
+                        console.log(d);
                         updateCourse(d);
                     }
                 }

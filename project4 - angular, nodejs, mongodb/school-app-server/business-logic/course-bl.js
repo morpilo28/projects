@@ -8,6 +8,7 @@
 //deleteDocument('administrator', "5e57f0dcd50ad031e09207f4").then(res => console.log("id dDeleted: "+ res)); // from bl 
 
 const collection = 'course';
+const studentCollection = 'student';
 const dal = require('../dal');
 
 function get(cb) {
@@ -47,9 +48,38 @@ function updateOne(courseNewData, cb) {
             console.log(e);
             cb(e);
         } else {
+            const studentsToUpdate = courseNewData.courseStudents;
+            delete courseUpdated['courseStudents'];
+            studentsToUpdate.forEach(student => {
+                dal.getOne(studentCollection, student._id, (e, student) => {
+                    if (e) {
+                        console.log("can't get student");
+                    }
+                    else {
+                        //TODO: iterate through studentCourses and find the course that needs to be updated
+                        // change it and then update the whole student document
+                        if (student) {
+                            let studentCourses = student.courses;
+                            const foundIndex = studentCourses.findIndex(course => course._id.toString() === courseNewData._id.toString());
+                            studentCourses[foundIndex] = courseUpdated;
+                            updateStudent(student);
+                        }
+                    }
+                });
+            });
             cb(null, courseNewData);
         }
     });
+    function updateStudent(student) {
+        dal.update(studentCollection, student, (e, data) => {
+            if (e) {
+                console.log('problem with updating the course');
+            }
+            else {
+                console.log('course updated');
+            }
+        });
+    }
 }
 
 //TODO: check if works;

@@ -31,12 +31,15 @@ export class ListComponent implements OnInit {
         break
       case 'students':
         this.studentsService.getStudentsList().subscribe(
-          res => this.list = res,
+          res => {
+            this.list = res; 
+            console.log(res);
+          },
           err => console.log(err));
         break
       case 'courses':
         this.courseService.getCoursesList().subscribe(
-          res => this.list = res,
+          res => {this.list = res; console.log(res)},
           err => console.log(err));
         break
     }

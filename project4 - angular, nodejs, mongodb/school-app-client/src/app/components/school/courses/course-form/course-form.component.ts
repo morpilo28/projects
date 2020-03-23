@@ -37,8 +37,6 @@ export class CourseFormComponent implements OnInit {
     if (this.mainContainerFilter.action === this.actions.add) {
       if (this.image) {
         this.courseNewData.image = this.image;
-        console.log(this.courseNewData);
-        debugger
         this.courseService.addSingleCourse(this.courseNewData).subscribe(
           res => this.showSchoolMainPage.emit(true),
           err => console.log(err)

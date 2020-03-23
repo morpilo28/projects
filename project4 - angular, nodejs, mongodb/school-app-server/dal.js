@@ -107,7 +107,8 @@ function update(collection, documentNewDataToUpdate, cb) {
                     console.log("can't update document");
                     cb("can't update document");
                 } else {
-                    DB.collection(collection).findOne({ _id: documentNewDataToUpdate._id }, (e, d) => {
+                    DB.collection(collection)
+                    .findOne({ _id: documentNewDataToUpdate._id }, (e, d) => {
                         if (e) {
                             console.log("can't find updated document");
                             cb("can't find updated document");
