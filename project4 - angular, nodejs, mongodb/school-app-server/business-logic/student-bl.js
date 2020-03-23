@@ -54,14 +54,15 @@ function updateOne(studentData, cb) {
             console.log(e);
             cb(e);
         } else {
+            console.log('------------------');
+            console.log(studentUpdated);
             const coursesToUpdate = getCoursesToUpdate(studentData);
-            //const studentToAddToCourse = { ...studentNewData };
-            delete studentUpdated['courses'];
+            delete studentNewData['courses'];
             
             coursesToUpdate.forEach((course) => {
-                updateCourses(course, studentUpdated);
+                updateCourses(course, studentNewData);
             })
-            cb(null, studentData);
+            cb(null, studentUpdated);
         }
     });
 

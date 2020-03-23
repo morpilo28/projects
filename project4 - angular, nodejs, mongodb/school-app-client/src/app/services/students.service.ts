@@ -59,6 +59,7 @@ export class StudentsService {
   addSingleStudent(studentToAdd): Observable<StudentModel> {
     return this.httpClient.post<StudentModel>(`${environment.serverUrl}/student`, studentToAdd).pipe(map(res => {
       this.getUpdateStudentList();
+      this.studentsInfo.next(res);
       return res;
     }));
   }
@@ -73,6 +74,8 @@ export class StudentsService {
   updateSingleStudent(studentData): Observable<StudentModel> {
     return this.httpClient.put<StudentModel>(`${environment.serverUrl}/student`, studentData).pipe(map(res => {
       this.getUpdateStudentList();
+      console.log(res);
+      this.studentsInfo.next(res);
       return res;
     }));
   }

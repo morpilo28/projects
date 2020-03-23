@@ -52,11 +52,7 @@ export class StudentFormComponent implements OnInit {
         this.studentNewData.image = this.image;
         this.studentNewData.courses = this.coursesChecked;
         this.studentService.addSingleStudent(this.studentNewData).subscribe(
-          res => {
-            //TODO: need to update the updated/added obj before going to moreInfo
-            //this.studentService.setSingleStudent(this.studentNewData._id);
-            this.showSchoolMainPage.emit('moreInfo');
-          },
+          res => this.showSchoolMainPage.emit('moreInfo'),
           err => console.log(err)
         );
       } else {
@@ -67,11 +63,7 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.courses = this.coursesChecked;
       const studentData = { old: this.studentOldData, new: this.studentNewData }
       this.studentService.updateSingleStudent(studentData).subscribe(
-        res => {
-          //TODO: need to update the updated/added obj before going to moreInfo
-          //this.studentService.setSingleStudent(this.studentNewData._id);
-          this.showSchoolMainPage.emit('moreInfo');
-        },
+        res => this.showSchoolMainPage.emit('moreInfo'),
         err => console.log(err)
       );
     }
@@ -116,6 +108,7 @@ export class StudentFormComponent implements OnInit {
     this.coursesChecked = [];
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.allCourses = this.allCourses.map((course) => {
+        console.log(this.studentOldData.courses);
         for (let i = 0; i < this.studentOldData.courses.length; i++) {
           if (course._id === this.studentOldData.courses[i]._id) {
             course['isChecked'] = true;

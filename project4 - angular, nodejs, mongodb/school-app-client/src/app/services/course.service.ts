@@ -59,6 +59,7 @@ export class CourseService {
   addSingleCourse(courseToAdd): Observable<CourseModel> {
     return this.httpClient.post<CourseModel>(`${environment.serverUrl}/course`, courseToAdd).pipe(map(res => {
       this.getUpdateCourseList();
+      this.coursesInfo.next(res);
       return res;
     }));
   }
@@ -73,6 +74,7 @@ export class CourseService {
   updateSingleCourse(newCourseData): Observable<CourseModel> {
     return this.httpClient.put<CourseModel>(`${environment.serverUrl}/course`, newCourseData).pipe(map(res => {
       this.getUpdateCourseList();
+      this.coursesInfo.next(res);
       return res;
     }));
   }
