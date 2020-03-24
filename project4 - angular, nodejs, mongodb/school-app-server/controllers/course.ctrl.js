@@ -96,4 +96,9 @@ router.post('/images', upload, (req, res) => {
     })
 })
 
+router.delete('/images/:imgName', (req,res)=>{
+    const imageName = req.params.imgName;
+    courseBl.deleteImageFromFolder(imageName);
+})
+
 module.exports = router;

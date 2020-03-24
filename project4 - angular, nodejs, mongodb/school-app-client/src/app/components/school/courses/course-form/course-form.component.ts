@@ -15,6 +15,7 @@ export class CourseFormComponent implements OnInit {
   private actions = environment.actions;
   private baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
   private image;
+  private imagesToDelete: string[] = [];
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
@@ -23,7 +24,7 @@ export class CourseFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseService.getCourseInfo().subscribe(res => {
-        this.courseNewData = {...res};
+        this.courseNewData = { ...res };
         this.courseOldData = res;
         this.image = res.image;
       });
@@ -37,12 +38,9 @@ export class CourseFormComponent implements OnInit {
     if (this.mainContainerFilter.action === this.actions.add) {
       if (this.image) {
         this.courseNewData.image = this.image;
+        this.deleteUnsavedImages(this.courseNewData.image);
         this.courseService.addSingleCourse(this.courseNewData).subscribe(
-          res => {
-            //need to update the updated/added obj before going to moreInfo
-          //this.courseService.setSingleCourse(this.courseNewData._id);
-            this.showSchoolMainPage.emit('moreInfo');
-          },
+          res => this.showSchoolMainPage.emit('moreInfo'),
           err => console.log(err)
         );
       } else {
@@ -50,12 +48,10 @@ export class CourseFormComponent implements OnInit {
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseNewData.image = this.image;
+      this.imagesToDelete.push(this.courseOldData.image);
+      this.deleteUnsavedImages(this.courseNewData.image);
       this.courseService.updateSingleCourse(this.courseNewData).subscribe(
-        res => {
-          //need to update the updated/added obj before going to moreInfo
-          //this.courseService.setSingleCourse(this.courseNewData._id);
-          this.showSchoolMainPage.emit('moreInfo');
-        },
+        res => this.showSchoolMainPage.emit('moreInfo'),
         err => console.log(err)
       );
     }
@@ -71,11 +67,16 @@ export class CourseFormComponent implements OnInit {
       imgBtn.innerHTML = 'Change Image';
       const formData = this.createFormData(imgFile);
       this.courseService.uploadCourseImg(formData).subscribe(
-        res => this.image = res.fileName,
+        res => {
+          this.image = res.fileName;
+          this.imagesToDelete.push(res.fileName);
+        },
         err => console.log(err));
     } else {
       imgBtn.innerHTML = 'Choose an Image';
-      this.image = this.courseOldData.image;
+      if (this.courseOldData) {
+        this.image = this.courseOldData.image;
+      }
     }
   }
 
@@ -94,5 +95,10 @@ export class CourseFormComponent implements OnInit {
     } else {
       console.log("don't delete");
     }
+  }
+
+  deleteUnsavedImages(imageSaved) {
+    this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
+    this.imagesToDelete.forEach(imageName => this.courseService.deleteUnsavedImages(imageName).subscribe());
   }
 }

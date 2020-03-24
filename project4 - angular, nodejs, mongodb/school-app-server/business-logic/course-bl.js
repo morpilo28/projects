@@ -1,18 +1,14 @@
 'use strict';
 
-//TODO: create functions and put each code line in his matching function:
-//get('administrator').then(res => console.log(res)); // from bl
-//getOne('administrator', "5e57cf70b97e27183cd46a6c").then(res => console.log(res)); // from bl 
-//insert('administrator', { "name": "oz", "role": "sales" }).then(res => console.log(res)); // from bl 
-//update('administrator', { "_id": "5e57db8de8e843269831a5a6", "name": "solki", "role": "bitch" }).then(res => console.log(res)); // from bl 
-//deleteDocument('administrator', "5e57f0dcd50ad031e09207f4").then(res => console.log("id dDeleted: "+ res)); // from bl 
-
-const collection = 'course';
+const courseCollection = 'course';
 const studentCollection = 'student';
 const dal = require('../dal');
+const fs = require('fs');
+const path = require('path').resolve(__dirname, '..');
+const imgFolder = 'courseImages';
 
 function get(cb) {
-    dal.get(collection, (e, allCourses) => {
+    dal.get(courseCollection, (e, allCourses) => {
         if (e) {
             cb(e);
         } else {
@@ -22,7 +18,7 @@ function get(cb) {
 }
 
 function getOne(id, cb) {
-    dal.getOne(collection, id, (e, course) => {
+    dal.getOne(courseCollection, id, (e, course) => {
         if (e) {
             cb("can't get course")
         } else {
@@ -32,7 +28,7 @@ function getOne(id, cb) {
 }
 
 function insertOne(courseToAdd, cb) {
-    dal.insert(collection, courseToAdd, (e, courseInserted) => {
+    dal.insert(courseCollection, courseToAdd, (e, courseInserted) => {
         if (e) {
             cb("can't insert course")
         } else {
@@ -43,7 +39,7 @@ function insertOne(courseToAdd, cb) {
 
 //TODO: check if works;
 function updateOne(courseNewData, cb) {
-    dal.update(collection, courseNewData, (e, courseUpdated) => {
+    dal.update(courseCollection, courseNewData, (e, courseUpdated) => {
         if (e) {
             console.log(e);
             cb(e);
@@ -84,20 +80,39 @@ function updateOne(courseNewData, cb) {
 
 //TODO: check if works;
 function deleteOne(courseToDeleteId, cb) {
-    dal.deleteDocument(collection, courseToDeleteId, (e, courseDeletedId) => {
+    dal.getOne(courseCollection, courseToDeleteId, (e, course) => {
+        if (e) {
+            console.log("can't get student");
+        } else {
+            const courseImageName = course.image;
+            dal.deleteDocument(courseCollection, courseToDeleteId, (e, courseDeletedId) => {
+                if (e) {
+                    console.log(e);
+                    cb(e);
+                } else {
+                    deleteImageFromFolder(courseImageName);
+                    cb(null, courseDeletedId);
+                }
+            });
+        }
+    })
+}
+
+function deleteImageFromFolder(imageName) {
+    let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
+    fs.unlink(ImageToDelete, (e) => {
         if (e) {
             console.log(e);
-            cb(e);
         } else {
-            cb(null, courseDeletedId);
+            console.log('image deleted from folder');
         }
     });
 }
-
 module.exports = {
     get: get,
     getOne: getOne,
     insertOne: insertOne,
     updateOne: updateOne,
     deleteOne: deleteOne,
+    deleteImageFromFolder: deleteImageFromFolder,
 }

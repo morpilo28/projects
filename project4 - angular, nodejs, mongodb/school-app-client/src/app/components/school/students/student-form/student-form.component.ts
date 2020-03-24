@@ -64,7 +64,6 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.courses = this.coursesChecked;
       const studentData = { old: this.studentOldData, new: this.studentNewData };
       this.imagesToDelete.push(this.studentOldData.image);
-      console.log(this.imagesToDelete);
       this.deleteUnsavedImages(this.studentNewData.image);
       this.studentService.updateSingleStudent(studentData).subscribe(
         res => this.showSchoolMainPage.emit('moreInfo'),
@@ -90,7 +89,9 @@ export class StudentFormComponent implements OnInit {
         err => console.log(err));
     } else {
       imgBtn.innerHTML = 'Choose an Image';
-      this.image = this.studentOldData.image;
+      if(this.studentOldData){
+        this.image = this.studentOldData.image;
+      }
     }
   }
 

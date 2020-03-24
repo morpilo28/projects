@@ -86,4 +86,8 @@ export class CourseService {
   private getUpdateCourseList() {
     this.getAllCoursesFromDb().subscribe();
   }
+
+  deleteUnsavedImages(imageName):Observable<any>{
+    return this.httpClient.delete<any>(`${environment.serverUrl}/course/images/${imageName}`);
+  }
 }
