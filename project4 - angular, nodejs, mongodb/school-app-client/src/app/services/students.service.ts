@@ -80,11 +80,15 @@ export class StudentsService {
     }));
   }
 
+  private getUpdateStudentList() {
+    this.getAllStudentsFromDb().subscribe();
+  }
+
   uploadStudentImg(imgFormData): Observable<any> {
     return this.httpClient.post<any>(`${environment.serverUrl}/student/images`, imgFormData);
   }
 
-  private getUpdateStudentList() {
-    this.getAllStudentsFromDb().subscribe();
+  deleteUnsavedImages(imageName):Observable<any>{
+    return this.httpClient.delete<any>(`${environment.serverUrl}/student/images/${imageName}`);
   }
 }

@@ -82,6 +82,7 @@ router.delete('/:id', (req, res) => {
             console.log(e);
             return res.status(500).send(e);
         } else {
+            //deleteImageFromFolder();
             console.log(data);
             return res.send(data);
         }
@@ -98,6 +99,11 @@ router.post('/images', upload, (req, res) => {
             return res.send(resObj);
         }
     })
+})
+
+router.delete('/images/:imgName', (req,res)=>{
+    const imageName = req.params.imgName;
+    studentBl.deleteImageFromFolder(imageName);
 })
 
 module.exports = router;

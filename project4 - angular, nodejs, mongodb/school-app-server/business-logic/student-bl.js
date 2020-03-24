@@ -3,6 +3,9 @@
 const studentCollection = 'student';
 const courseCollection = 'course';
 const dal = require('../dal');
+const fs = require('fs');
+const path = require('path').resolve(__dirname, '..');
+const imgFolder = 'studentImages';
 
 function get(cb) {
     dal.get(studentCollection, (e, d) => {
@@ -58,7 +61,7 @@ function updateOne(studentData, cb) {
             console.log(studentUpdated);
             const coursesToUpdate = getCoursesToUpdate(studentData);
             delete studentNewData['courses'];
-            
+
             coursesToUpdate.forEach((course) => {
                 updateCourses(course, studentNewData);
             })
@@ -86,7 +89,7 @@ function updateOne(studentData, cb) {
                     if (!isExist) {
                         courseStudents.push(studentToAddToCourse);
                         updateCourse(d);
-                    }else{
+                    } else {
                         updateCourse(d);
                     }
                 }
@@ -107,7 +110,7 @@ function updateOne(studentData, cb) {
         //TODO: take the new and old arrays
         //TODO: check if which courses among them were added and which was remove
         //TODO: create a new array of 2 keys: id, action (add/remove).
-    
+
         const studentOldCourses = studentData.old.courses;
         let studentNewCourses = studentData.new.courses;
         let coursesToUpdate = [];
@@ -131,7 +134,7 @@ function updateOne(studentData, cb) {
                 coursesToUpdate.push(course);
             }
         });
-    
+
         return coursesToUpdate
     }
 
@@ -148,38 +151,57 @@ function updateOne(studentData, cb) {
 }
 
 function deleteOne(studentToDeleteId, cb) {
-    dal.deleteDocument(studentCollection, studentToDeleteId, (e, studentDeletedId) => {
+    dal.getOne(studentCollection, studentToDeleteId, (e, student) => {
         if (e) {
-            console.log('problem with deleting student');
-            cb('problem with deleting student');
+            console.log("can't get student");
         } else {
-            dal.get(courseCollection, (e, allCourses) => {
+            const studentImageName = student.image;
+            dal.deleteDocument(studentCollection, studentToDeleteId, (e, studentDeletedId) => {
                 if (e) {
-                    console.log('problem with getting courses list');
+                    console.log('problem with deleting student');
+                    cb('problem with deleting student');
                 } else {
-                    let coursesToUpdate = [];
-                    for (let i = 0; i < allCourses.length; i++) {
-                        const singleCourseStudents = allCourses[i].courseStudents;
-                        for (let j = 0; j < (singleCourseStudents).length; j++) {
-                            const studentId = singleCourseStudents[j]
-                            if (((studentId._id).toString()) === studentToDeleteId) {
-                                (singleCourseStudents).splice(j, 1);
-                                coursesToUpdate.push(allCourses[i]);
+                    deleteImageFromFolder(studentImageName);
+                    dal.get(courseCollection, (e, allCourses) => {
+                        if (e) {
+                            console.log('problem with getting courses list');
+                        } else {
+                            let coursesToUpdate = [];
+                            for (let i = 0; i < allCourses.length; i++) {
+                                const singleCourseStudents = allCourses[i].courseStudents;
+                                for (let j = 0; j < (singleCourseStudents).length; j++) {
+                                    const studentId = singleCourseStudents[j]
+                                    if (((studentId._id).toString()) === studentToDeleteId) {
+                                        (singleCourseStudents).splice(j, 1);
+                                        coursesToUpdate.push(allCourses[i]);
+                                    }
+                                }
                             }
+                            coursesToUpdate.forEach((course) => {
+                                dal.update(courseCollection, course, (e, d) => {
+                                    if (e) {
+                                        console.log('problem with updating deletion of student from relevant courses');
+                                    } else {
+                                        console.log('courses that students where deleted from were updated');
+                                    }
+                                })
+                            })
                         }
-                    }
-                    coursesToUpdate.forEach((course) => {
-                        dal.update(courseCollection, course, (e, d) => {
-                            if (e) {
-                                console.log('problem with updating deletion of student from relevant courses');
-                            } else {
-                                console.log('courses that students where deleted from were updated');
-                            }
-                        })
-                    })
+                    });
+                    cb(null, studentDeletedId);
                 }
             });
-            cb(null, studentDeletedId);
+        }
+    });
+}
+
+function deleteImageFromFolder(imageName) {
+    let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
+    fs.unlink(ImageToDelete, (e) => {
+        if (e) {
+            console.log(e);
+        } else {
+            console.log('image deleted from folder');
         }
     });
 }
@@ -190,4 +212,5 @@ module.exports = {
     insertOne: insertOne,
     updateOne: updateOne,
     deleteOne: deleteOne,
+    deleteImageFromFolder: deleteImageFromFolder,
 }

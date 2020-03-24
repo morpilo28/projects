@@ -19,7 +19,7 @@ export class StudentFormComponent implements OnInit {
   private image;
   private allCourses: CourseModel[];
   private coursesChecked;
-
+  private imagesToDelete:string[] = [];
 
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
@@ -51,6 +51,7 @@ export class StudentFormComponent implements OnInit {
       if (this.image) {
         this.studentNewData.image = this.image;
         this.studentNewData.courses = this.coursesChecked;
+        this.deleteUnsavedImages(this.studentNewData.image);
         this.studentService.addSingleStudent(this.studentNewData).subscribe(
           res => this.showSchoolMainPage.emit('moreInfo'),
           err => console.log(err)
@@ -61,7 +62,10 @@ export class StudentFormComponent implements OnInit {
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
-      const studentData = { old: this.studentOldData, new: this.studentNewData }
+      const studentData = { old: this.studentOldData, new: this.studentNewData };
+      this.imagesToDelete.push(this.studentOldData.image);
+      console.log(this.imagesToDelete);
+      this.deleteUnsavedImages(this.studentNewData.image);
       this.studentService.updateSingleStudent(studentData).subscribe(
         res => this.showSchoolMainPage.emit('moreInfo'),
         err => console.log(err)
@@ -79,7 +83,10 @@ export class StudentFormComponent implements OnInit {
       imgBtn.innerHTML = 'Change Image';
       const formData = this.createFormData(imgFile);
       this.studentService.uploadStudentImg(formData).subscribe(
-        res => this.image = res.fileName,
+        res => {
+          this.image = res.fileName;
+          this.imagesToDelete.push(res.fileName);
+        },
         err => console.log(err));
     } else {
       imgBtn.innerHTML = 'Choose an Image';
@@ -144,5 +151,10 @@ export class StudentFormComponent implements OnInit {
         }
       })
     }
+  }
+
+  deleteUnsavedImages(imageSaved){
+    this.imagesToDelete = this.imagesToDelete.filter(image=> image !== imageSaved);
+    this.imagesToDelete.forEach(imageName=> this.studentService.deleteUnsavedImages(imageName).subscribe());
   }
 }
