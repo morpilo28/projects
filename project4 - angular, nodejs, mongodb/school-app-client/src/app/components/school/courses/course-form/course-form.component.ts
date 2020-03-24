@@ -99,6 +99,7 @@ export class CourseFormComponent implements OnInit {
 
   deleteUnsavedImages(imageSaved) {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
+    console.log(this.imagesToDelete);
     this.imagesToDelete.forEach(imageName => this.courseService.deleteUnsavedImages(imageName).subscribe());
   }
 }

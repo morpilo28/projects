@@ -82,14 +82,16 @@ function updateOne(courseNewData, cb) {
 function deleteOne(courseToDeleteId, cb) {
     dal.getOne(courseCollection, courseToDeleteId, (e, course) => {
         if (e) {
-            console.log("can't get student");
+            console.log("can't get course");
         } else {
             const courseImageName = course.image;
+            console.log(course.image);
             dal.deleteDocument(courseCollection, courseToDeleteId, (e, courseDeletedId) => {
                 if (e) {
                     console.log(e);
                     cb(e);
                 } else {
+                    //TODO: maybe make it sync func or put cb after deleting image
                     deleteImageFromFolder(courseImageName);
                     cb(null, courseDeletedId);
                 }
@@ -102,12 +104,14 @@ function deleteImageFromFolder(imageName) {
     let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
     fs.unlink(ImageToDelete, (e) => {
         if (e) {
+            console.log('problem with deleting image');
             console.log(e);
         } else {
             console.log('image deleted from folder');
         }
     });
 }
+
 module.exports = {
     get: get,
     getOne: getOne,

@@ -161,6 +161,7 @@ function deleteOne(studentToDeleteId, cb) {
                     console.log('problem with deleting student');
                     cb('problem with deleting student');
                 } else {
+                    //TODO: maybe make it sync func or put cb after deleting image
                     deleteImageFromFolder(studentImageName);
                     dal.get(courseCollection, (e, allCourses) => {
                         if (e) {

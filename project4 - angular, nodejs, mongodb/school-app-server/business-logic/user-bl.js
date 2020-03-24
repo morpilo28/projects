@@ -1,14 +1,11 @@
-//TODO: create functions and put each code line in his matching function:
-//get('administrator').then(res => console.log(res)); // from bl
-//getOne('administrator', "5e57cf70b97e27183cd46a6c").then(res => console.log(res)); // from bl 
-//insert('administrator', { "name": "oz", "role": "sales" }).then(res => console.log(res)); // from bl 
-//update('administrator', { "_id": "5e57db8de8e843269831a5a6", "name": "solki", "role": "bitch" }).then(res => console.log(res)); // from bl 
-//deleteDocument('administrator', "5e57f0dcd50ad031e09207f4").then(res => console.log("id dDeleted: "+ res)); // from bl 
-
 "use strict";
+
 const ObjectId = require('mongodb').ObjectId;
 const collection = 'administrator';
 const dal = require('../dal');
+const fs = require('fs');
+const path = require('path').resolve(__dirname, '..');
+const imgFolder = 'userImages';
 const SECRET_KEY_FOR_JWT = '687d6f87sd6f87sd6f78sd6f87sd';
 const jwt = require('jsonwebtoken');
 
@@ -87,20 +84,41 @@ function updateOne(userToUpdate, cb) {
 
 //TODO: check if works;
 function deleteOne(userToDeleteId, cb) {
-    dal.deleteDocument(collection, userToDeleteId, (e, userDeletedId) => {
+    dal.getOne(collection, userToDeleteId, (e, user) => {
         if (e) {
-            console.log(e);
-            cb(e);
+            console.log("can't get user");
         } else {
-            cb(null, userDeletedId);
+            const userImageName = user.image;
+            console.log(user.image);
+            dal.deleteDocument(collection, userToDeleteId, (e, userDeletedId) => {
+                if (e) {
+                    console.log(e);
+                    cb(e);
+                } else {
+                    //TODO: maybe make it sync func or put cb after deleting image
+                    deleteImageFromFolder(userImageName);
+                    cb(null, userDeletedId);
+                }
+            });
         }
-    });
+    })
 }
 
 function deleteObjProp(obj, key) {
     delete obj[key];
 }
 
+function deleteImageFromFolder(imageName) {
+    let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
+    fs.unlink(ImageToDelete, (e) => {
+        if (e) {
+            console.log('problem with deleting image');
+            console.log(e);
+        } else {
+            console.log('image deleted from folder');
+        }
+    });
+}
 
 function getToken(userToValidate) {
     return jwt.sign({
@@ -117,4 +135,5 @@ module.exports = {
     insertOne: insertOne,
     updateOne: updateOne,
     deleteOne: deleteOne,
+    deleteImageFromFolder: deleteImageFromFolder,
 };

@@ -113,12 +113,16 @@ export class UserService {
       return res;
     }));
   }
+  
+  private getUpdateUserList() {
+    this.getAllUsersFromDb().subscribe();
+  }
 
   uploadUserImg(imgFormData): Observable<any> {
     return this.httpClient.post<any>(`${environment.serverUrl}/user/images`, imgFormData);
   }
 
-  private getUpdateUserList() {
-    this.getAllUsersFromDb().subscribe();
+  deleteUnsavedImages(imageName):Observable<any>{
+    return this.httpClient.delete<any>(`${environment.serverUrl}/user/images/${imageName}`);
   }
 }

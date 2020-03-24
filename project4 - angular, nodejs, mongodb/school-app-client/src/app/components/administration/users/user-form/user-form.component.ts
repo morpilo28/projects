@@ -17,6 +17,7 @@ export class UserFormComponent implements OnInit {
   private baseUserImgUrl = (`${environment.baseImgUrl}/userImages/`);
   private userNewData: UserModel = {};
   private image;
+  private imagesToDelete: string[] = [];
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showUserMainPage: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -44,6 +45,7 @@ export class UserFormComponent implements OnInit {
     if (this.mainContainerFilter.action === this.actions.add) {
       if (this.image) {
         this.userNewData.image = this.image;
+        this.deleteUnsavedImages(this.userNewData.image);
         this.userService.addSingleUser(this.userNewData).subscribe(
           res => this.showUserMainPage.emit(true),
           err => console.log(err)
@@ -53,6 +55,8 @@ export class UserFormComponent implements OnInit {
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
+      this.imagesToDelete.push(this.userOldData.image);
+      this.deleteUnsavedImages(this.userNewData.image);
       this.userService.updateSingleUser(this.userNewData).subscribe(
         res => this.showUserMainPage.emit(true),
         err => console.log(err)
@@ -70,11 +74,16 @@ export class UserFormComponent implements OnInit {
       imgBtn.innerHTML = 'Change Image';
       const formData = this.createFormData(imgFile);
       this.userService.uploadUserImg(formData).subscribe(
-        res => this.image = res.fileName,
+        res => {
+          this.image = res.fileName;
+          this.imagesToDelete.push(res.fileName);
+        },
         err => console.log(err));
     } else {
       imgBtn.innerHTML = 'Choose an Image';
-      this.image = this.userOldData.image;
+      if(this.userOldData){
+        this.image = this.userOldData.image;
+      }
     }
   }
 
@@ -93,5 +102,11 @@ export class UserFormComponent implements OnInit {
     } else {
       console.log("don't delete");
     }
+  }
+
+  deleteUnsavedImages(imageSaved) {
+    this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
+    console.log(this.imagesToDelete);
+    this.imagesToDelete.forEach(imageName => this.userService.deleteUnsavedImages(imageName).subscribe());
   }
 }
