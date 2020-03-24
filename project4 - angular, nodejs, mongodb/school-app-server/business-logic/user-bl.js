@@ -48,7 +48,7 @@ function isUserExist(userToValidate, cb) {
             } else {
                 const token = getToken(userToValidate);
                 deleteObjProp(singleUser[0], 'password');
-                deleteObjProp(singleUser[0], '_id');
+                //deleteObjProp(singleUser[0], '_id');
                 deleteObjProp(singleUser[0], 'phone');
                 deleteObjProp(singleUser[0], 'email');
                 singleUser[0]['token'] = token;

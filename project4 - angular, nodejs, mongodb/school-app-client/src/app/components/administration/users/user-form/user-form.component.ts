@@ -26,7 +26,7 @@ export class UserFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.userService.getUserInfo().subscribe(res => {
-        this.userNewData = res;
+        this.userNewData = {...res};
         this.userOldData = res;
         this.image = res.image;
       });
@@ -55,10 +55,14 @@ export class UserFormComponent implements OnInit {
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
+      debugger
       this.imagesToDelete.push(this.userOldData.image);
       this.deleteUnsavedImages(this.userNewData.image);
       this.userService.updateSingleUser(this.userNewData).subscribe(
-        res => this.showUserMainPage.emit(true),
+        res => {
+          this.showUserMainPage.emit(true);
+          console.log(res);
+        },
         err => console.log(err)
       );
     }

@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   private currentUser: UserModel;
 
   constructor(private userService: UserService) {
-    this.userService.setCurrentUser();
+    this.userService.setLocalCurrentUser();
     this.userService.getCurrentUser().subscribe(res => {
       this.currentUser = res;
       this.isAllowed = (!res || res.role === 'sales') ? false : true;

@@ -12,6 +12,7 @@ import { BehaviorSubject, Observable, pipe } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
+  private currentUserIdAndToken: UserModel;
   private currentUser: BehaviorSubject<UserModel>;
   private currentUserObservable: Observable<UserModel>
 
@@ -28,6 +29,7 @@ export class UserService {
         o.next(res);
       });
       /* o.complete(); // when the observable doesnt have nothing to listen to */
+      this.currentUserIdAndToken = JSON.parse(window.localStorage.getItem('userIdAndToken'))
     });
 
     this.usersList = new BehaviorSubject<UserModel[]>(null);
@@ -51,13 +53,20 @@ export class UserService {
   userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
       userLogged => {
-        window.localStorage.setItem('user', JSON.stringify(userLogged));
-        this.currentUser.next(userLogged);
+        const userWithoutId = { ...userLogged };
+        delete userWithoutId['_id'];
+        this.setCurrentUserInLocalStorage('user',userWithoutId);
+        this.currentUser.next(userWithoutId);
+        this.setCurrentUserInLocalStorage('userIdAndToken',userLogged);;
         return true;
       }));
   }
 
-  setCurrentUser() {
+  setCurrentUserInLocalStorage(name, user){
+    window.localStorage.setItem(name, JSON.stringify(user));
+  }
+
+  setLocalCurrentUser() {
     this.currentUser.next(JSON.parse(window.localStorage.getItem('user')));
   }
 
@@ -110,10 +119,24 @@ export class UserService {
   updateSingleUser(newUserData): Observable<UserModel> {
     return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
       this.getUpdateUserList();
+      this.updateIfCurrentUser(res);
       return res;
     }));
   }
-  
+
+  private updateIfCurrentUser(res: UserModel) {
+    if(this.currentUserIdAndToken._id.toString() === res._id.toString()) {
+      const updatedCurrentUser = {
+        name: res.name,
+        role: res.role,
+        image: res.image,
+        token: this.currentUserIdAndToken.token,
+      };
+      this.setCurrentUserInLocalStorage('user',updatedCurrentUser);
+      this.currentUser.next(updatedCurrentUser);
+    }
+  }
+
   private getUpdateUserList() {
     this.getAllUsersFromDb().subscribe();
   }
@@ -122,7 +145,7 @@ export class UserService {
     return this.httpClient.post<any>(`${environment.serverUrl}/user/images`, imgFormData);
   }
 
-  deleteUnsavedImages(imageName):Observable<any>{
+  deleteUnsavedImages(imageName): Observable<any> {
     return this.httpClient.delete<any>(`${environment.serverUrl}/user/images/${imageName}`);
   }
 }

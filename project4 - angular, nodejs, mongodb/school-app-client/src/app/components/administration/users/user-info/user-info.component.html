@@ -1,6 +1,6 @@
 <ng-container *ngIf="currentUser && userInfo">
     <span>{{userInfo.name}}</span>
-    <ng-container *ngIf="currentUser.name ===userInfo.name || currentUser.role !== userInfo.role">
+    <ng-container *ngIf="currentUser.name === userInfo.name || currentUser.role !== userInfo.role">
         <button *ngIf="(currentUser.role  === roles.manager && userInfo.role !== roles.owner) || 
         (currentUser.role === roles.owner)" (click)="onEdit()">edit</button>
     </ng-container>

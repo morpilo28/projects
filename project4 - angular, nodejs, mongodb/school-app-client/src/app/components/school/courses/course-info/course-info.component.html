@@ -1,6 +1,6 @@
 <ng-container *ngIf="courseInfo">
     <span>{{courseInfo.name}}</span>
-    <button (click)="onEdit()">edit</button>
+    <button *ngIf="currentUser.role !== roles.sales" (click)="onEdit()">edit</button>
     <hr>
     <div>
         <img class='floatLeft' [src]='baseCourseImgUrl+courseInfo.image' [alt]='courseInfo.image' width='150' height='150' />
