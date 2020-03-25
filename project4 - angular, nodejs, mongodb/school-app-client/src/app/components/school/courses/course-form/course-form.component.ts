@@ -38,22 +38,32 @@ export class CourseFormComponent implements OnInit {
     if (this.mainContainerFilter.action === this.actions.add) {
       if (this.image) {
         this.courseNewData.image = this.image;
-        this.deleteUnsavedImages(this.courseNewData.image);
-        this.courseService.addSingleCourse(this.courseNewData).subscribe(
-          res => this.showSchoolMainPage.emit('moreInfo'),
-          err => console.log(err)
-        );
+        const isAllFull = this.areAllFieldsFull(this.courseNewData);
+        if (isAllFull) {
+          this.deleteUnsavedImages(this.courseNewData.image);
+          this.courseService.addSingleCourse(this.courseNewData).subscribe(
+            res => this.showSchoolMainPage.emit('moreInfo'),
+            err => console.log(err)
+          );
+        } else {
+          alert('all fields must be filled');
+        }
       } else {
         alert('please choose an Image');
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseNewData.image = this.image;
-      this.imagesToDelete.push(this.courseOldData.image);
-      this.deleteUnsavedImages(this.courseNewData.image);
-      this.courseService.updateSingleCourse(this.courseNewData).subscribe(
-        res => this.showSchoolMainPage.emit('moreInfo'),
-        err => console.log(err)
-      );
+      const isAllFull = this.areAllFieldsFull(this.courseNewData);
+      if (isAllFull) {
+        this.imagesToDelete.push(this.courseOldData.image);
+        this.deleteUnsavedImages(this.courseNewData.image);
+        this.courseService.updateSingleCourse(this.courseNewData).subscribe(
+          res => this.showSchoolMainPage.emit('moreInfo'),
+          err => console.log(err)
+        );
+      }else{
+        alert('all fields must be filled');
+      }
     }
   }
 
@@ -101,5 +111,16 @@ export class CourseFormComponent implements OnInit {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
     console.log(this.imagesToDelete);
     this.imagesToDelete.forEach(imageName => this.courseService.deleteUnsavedImages(imageName).subscribe());
+  }
+
+  areAllFieldsFull(formItems) {
+    //debugger
+    for (var key in formItems) {
+      //debugger
+      if (formItems[key] === null || formItems[key] === "") {
+        return false;
+      }
+    }
+    return true;
   }
 }

@@ -1,5 +1,5 @@
 <div>
-    <button *ngIf="image" (click)="save()">Save</button>
+    <button (click)="save()">Save</button>
     <button *ngIf="mainContainerFilter.action === actions.edit && userNewData.role !== currentUser.role"
         (click)='delete(userNewData._id)'>Delete</button><br>
     <input [(ngModel)]="userNewData._id" hidden [id]='userNewData._id' />

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import {FormsModule} from '@angular/forms'
+import { FormsModule } from '@angular/forms'
 import { UserService } from 'src/app/services/user.service';
 import { UserModel } from 'src/app/models/user-model';
 import { environment } from 'src/environments/environment';
@@ -26,7 +26,7 @@ export class UserFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.userService.getUserInfo().subscribe(res => {
-        this.userNewData = {...res};
+        this.userNewData = { ...res };
         this.userOldData = res;
         this.image = res.image;
       });
@@ -45,26 +45,35 @@ export class UserFormComponent implements OnInit {
     if (this.mainContainerFilter.action === this.actions.add) {
       if (this.image) {
         this.userNewData.image = this.image;
-        this.deleteUnsavedImages(this.userNewData.image);
-        this.userService.addSingleUser(this.userNewData).subscribe(
-          res => this.showUserMainPage.emit(true),
-          err => console.log(err)
-        );
+        const isAllFull = this.areAllFieldsFull(this.userNewData);
+        if (isAllFull) {
+          this.deleteUnsavedImages(this.userNewData.image);
+          this.userService.addSingleUser(this.userNewData).subscribe(
+            res => this.showUserMainPage.emit(true),
+            err => console.log(err)
+          );
+        } else {
+          alert('all fields must be filled');
+        }
       } else {
         alert('please choose an Image');
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
-      debugger
-      this.imagesToDelete.push(this.userOldData.image);
-      this.deleteUnsavedImages(this.userNewData.image);
-      this.userService.updateSingleUser(this.userNewData).subscribe(
-        res => {
-          this.showUserMainPage.emit(true);
-          console.log(res);
-        },
-        err => console.log(err)
-      );
+      const isAllFull = this.areAllFieldsFull(this.userNewData);
+      if (isAllFull) {
+        this.imagesToDelete.push(this.userOldData.image);
+        this.deleteUnsavedImages(this.userNewData.image);
+        this.userService.updateSingleUser(this.userNewData).subscribe(
+          res => {
+            this.showUserMainPage.emit(true);
+            console.log(res);
+          },
+          err => console.log(err)
+        );
+      }else{
+        alert('all fields must be filled');
+      }
     }
   }
 
@@ -85,7 +94,7 @@ export class UserFormComponent implements OnInit {
         err => console.log(err));
     } else {
       imgBtn.innerHTML = 'Choose an Image';
-      if(this.userOldData){
+      if (this.userOldData) {
         this.image = this.userOldData.image;
       }
     }
@@ -112,5 +121,15 @@ export class UserFormComponent implements OnInit {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
     console.log(this.imagesToDelete);
     this.imagesToDelete.forEach(imageName => this.userService.deleteUnsavedImages(imageName).subscribe());
+  }
+
+  areAllFieldsFull(formItems) {
+    debugger
+    for (var key in formItems) {
+      if (formItems[key] === null || formItems[key] === "") {
+        return false;
+      }
+    }
+    return true;
   }
 }

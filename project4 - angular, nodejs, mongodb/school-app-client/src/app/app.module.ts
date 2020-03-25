@@ -9,9 +9,7 @@ import { LoginComponent } from './components/login/login.component';
 import { SchoolComponent } from './components/school/school.component';
 import { AdministrationComponent } from './components/administration/administration.component';
 import { TokenInterceptor } from './interceptors/token.Interceptor';
-import { MainContainerComponent } from './components/main-container/main-container.component';
 import { ListComponent } from './components/list/list.component';
-import { MoreInfoComponent } from './components/more-info/more-info.component';
 import { StudentInfoComponent } from './components/school/students/student-info/student-info.component';
 import { StudentFormComponent } from './components/school/students/student-form/student-form.component';
 import { CourseFormComponent } from './components/school/courses/course-form/course-form.component';
@@ -27,9 +25,7 @@ import { CurrentUserInfoComponent } from './components/current-user-info/current
     SchoolComponent,
     UserInfoComponent,
     AdministrationComponent,
-    MainContainerComponent,
     ListComponent,
-    MoreInfoComponent,
     StudentInfoComponent,
     StudentFormComponent,
     CourseFormComponent,

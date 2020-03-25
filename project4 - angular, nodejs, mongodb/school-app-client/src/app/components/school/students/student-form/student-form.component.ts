@@ -19,7 +19,7 @@ export class StudentFormComponent implements OnInit {
   private image;
   private allCourses: CourseModel[];
   private coursesChecked;
-  private imagesToDelete:string[] = [];
+  private imagesToDelete: string[] = [];
 
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
@@ -51,11 +51,16 @@ export class StudentFormComponent implements OnInit {
       if (this.image) {
         this.studentNewData.image = this.image;
         this.studentNewData.courses = this.coursesChecked;
-        this.deleteUnsavedImages(this.studentNewData.image);
-        this.studentService.addSingleStudent(this.studentNewData).subscribe(
-          res => this.showSchoolMainPage.emit('moreInfo'),
-          err => console.log(err)
-        );
+        const isAllFull = this.areAllFieldsFull(this.studentNewData);
+        if (isAllFull) {
+          this.deleteUnsavedImages(this.studentNewData.image);
+          this.studentService.addSingleStudent(this.studentNewData).subscribe(
+            res => this.showSchoolMainPage.emit('moreInfo'),
+            err => console.log(err)
+          );
+        }else{
+          alert('all fields must be filled');
+        }
       } else {
         alert('please choose an Image');
       }
@@ -63,12 +68,17 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
       const studentData = { old: this.studentOldData, new: this.studentNewData };
-      this.imagesToDelete.push(this.studentOldData.image);
-      this.deleteUnsavedImages(this.studentNewData.image);
-      this.studentService.updateSingleStudent(studentData).subscribe(
-        res => this.showSchoolMainPage.emit('moreInfo'),
-        err => console.log(err)
-      );
+      const isAllFull = this.areAllFieldsFull(this.studentNewData);
+      if(isAllFull){
+        this.imagesToDelete.push(this.studentOldData.image);
+        this.deleteUnsavedImages(this.studentNewData.image);
+        this.studentService.updateSingleStudent(studentData).subscribe(
+          res => this.showSchoolMainPage.emit('moreInfo'),
+          err => console.log(err)
+        );
+      }else{
+        alert('all fields must be filled');
+      }
     }
   }
 
@@ -89,7 +99,7 @@ export class StudentFormComponent implements OnInit {
         err => console.log(err));
     } else {
       imgBtn.innerHTML = 'Choose an Image';
-      if(this.studentOldData){
+      if (this.studentOldData) {
         this.image = this.studentOldData.image;
       }
     }
@@ -154,8 +164,17 @@ export class StudentFormComponent implements OnInit {
     }
   }
 
-  deleteUnsavedImages(imageSaved){
-    this.imagesToDelete = this.imagesToDelete.filter(image=> image !== imageSaved);
-    this.imagesToDelete.forEach(imageName=> this.studentService.deleteUnsavedImages(imageName).subscribe());
+  deleteUnsavedImages(imageSaved) {
+    this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
+    this.imagesToDelete.forEach(imageName => this.studentService.deleteUnsavedImages(imageName).subscribe());
+  }
+
+  areAllFieldsFull(formItems) {
+    for (var key in formItems) {
+      if (formItems[key] === null || formItems[key] === "") {
+        return false;
+      }
+    }
+    return true;
   }
 }
