@@ -46,13 +46,12 @@ export class StudentFormComponent implements OnInit {
   }
 
   save() {
-    //TODO: show 'save' btn only when all fields are full;
     if (this.mainContainerFilter.action === this.actions.add) {
-      if (this.image) {
         this.studentNewData.image = this.image;
         this.studentNewData.courses = this.coursesChecked;
         const isAllFull = this.areAllFieldsFull(this.studentNewData);
         if (isAllFull) {
+          //TODO: check if already exist
           this.deleteUnsavedImages(this.studentNewData.image);
           this.studentService.addSingleStudent(this.studentNewData).subscribe(
             res => this.showSchoolMainPage.emit('moreInfo'),
@@ -61,9 +60,6 @@ export class StudentFormComponent implements OnInit {
         }else{
           alert('all fields must be filled');
         }
-      } else {
-        alert('please choose an Image');
-      }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
@@ -171,7 +167,7 @@ export class StudentFormComponent implements OnInit {
 
   areAllFieldsFull(formItems) {
     for (var key in formItems) {
-      if (formItems[key] === null || formItems[key] === "") {
+      if (formItems[key] === null || formItems[key] === undefined || formItems[key] === "") {
         return false;
       }
     }

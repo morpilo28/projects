@@ -41,12 +41,11 @@ export class UserFormComponent implements OnInit {
   }
 
   save() {
-    //TODO: show 'save' btn only when all fields are full;
     if (this.mainContainerFilter.action === this.actions.add) {
-      if (this.image) {
         this.userNewData.image = this.image;
         const isAllFull = this.areAllFieldsFull(this.userNewData);
         if (isAllFull) {
+          //TODO: check if already exist
           this.deleteUnsavedImages(this.userNewData.image);
           this.userService.addSingleUser(this.userNewData).subscribe(
             res => this.showUserMainPage.emit(true),
@@ -55,9 +54,6 @@ export class UserFormComponent implements OnInit {
         } else {
           alert('all fields must be filled');
         }
-      } else {
-        alert('please choose an Image');
-      }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
       const isAllFull = this.areAllFieldsFull(this.userNewData);
@@ -124,12 +120,15 @@ export class UserFormComponent implements OnInit {
   }
 
   areAllFieldsFull(formItems) {
-    debugger
     for (var key in formItems) {
-      if (formItems[key] === null || formItems[key] === "") {
+      if (formItems[key] === null || formItems[key] === undefined || formItems[key] === "") {
         return false;
       }
     }
     return true;
+  }
+
+  isAlreadyExist(uniqKey){
+
   }
 }

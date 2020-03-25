@@ -34,22 +34,18 @@ export class CourseFormComponent implements OnInit {
   }
 
   save() {
-    //TODO: show 'save' btn only when all fields are full;
     if (this.mainContainerFilter.action === this.actions.add) {
-      if (this.image) {
-        this.courseNewData.image = this.image;
-        const isAllFull = this.areAllFieldsFull(this.courseNewData);
-        if (isAllFull) {
-          this.deleteUnsavedImages(this.courseNewData.image);
-          this.courseService.addSingleCourse(this.courseNewData).subscribe(
-            res => this.showSchoolMainPage.emit('moreInfo'),
-            err => console.log(err)
-          );
-        } else {
-          alert('all fields must be filled');
-        }
+      this.courseNewData.image = this.image;
+      const isAllFull = this.areAllFieldsFull(this.courseNewData);
+      if (isAllFull) {
+        //TODO: check if already exist
+        this.deleteUnsavedImages(this.courseNewData.image);
+        this.courseService.addSingleCourse(this.courseNewData).subscribe(
+          res => this.showSchoolMainPage.emit('moreInfo'),
+          err => console.log(err)
+        );
       } else {
-        alert('please choose an Image');
+        alert('all fields must be filled');
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseNewData.image = this.image;
@@ -61,7 +57,7 @@ export class CourseFormComponent implements OnInit {
           res => this.showSchoolMainPage.emit('moreInfo'),
           err => console.log(err)
         );
-      }else{
+      } else {
         alert('all fields must be filled');
       }
     }
@@ -114,10 +110,8 @@ export class CourseFormComponent implements OnInit {
   }
 
   areAllFieldsFull(formItems) {
-    //debugger
     for (var key in formItems) {
-      //debugger
-      if (formItems[key] === null || formItems[key] === "") {
+      if (formItems[key] === null || formItems[key] === undefined || formItems[key] === "") {
         return false;
       }
     }
