@@ -1,3 +1,4 @@
+'use strict';
   
 function User(_id, name, role, phone, email, password, image) {
     this._id = _id;

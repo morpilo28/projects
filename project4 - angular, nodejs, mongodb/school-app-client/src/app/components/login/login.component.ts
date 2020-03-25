@@ -1,4 +1,4 @@
-//TODO: change validation to email (maybe change it to either user name or email)
+"use strict";
 
 import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/user-model';
@@ -16,8 +16,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private userService: UserService, private router: Router) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onSubmitForm() {
     this.userService.userLoginValidation(this.user).subscribe(

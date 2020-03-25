@@ -1,5 +1,6 @@
+"use strict";
+
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormsModule } from '@angular/forms'
 import { UserService } from 'src/app/services/user.service';
 import { UserModel } from 'src/app/models/user-model';
 import { environment } from 'src/environments/environment';
@@ -67,7 +68,6 @@ export class UserFormComponent implements OnInit {
           this.userService.updateSingleUser(this.userNewData).subscribe(
             res => {
               this.showUserMainPage.emit(true);
-              console.log(res);
             },
             err => console.log(err)
           );
@@ -115,14 +115,11 @@ export class UserFormComponent implements OnInit {
         res => this.showUserMainPage.emit(true),
         err => console.log(err)
       );
-    } else {
-      console.log("don't delete");
     }
   }
 
   deleteUnsavedImages(imageSaved) {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
-    console.log(this.imagesToDelete);
     this.imagesToDelete.forEach(imageName => this.userService.deleteUnsavedImages(imageName).subscribe());
   }
 

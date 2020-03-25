@@ -50,7 +50,6 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
     const studentToAdd = req.body;
-    console.log(studentToAdd);
     studentBl.insertOne(studentToAdd, (e, data) => {
         if (e) {
             console.log(e);
@@ -61,7 +60,6 @@ router.post('/', (req, res) => {
     });
 })
 
-//check if it works
 router.put('/', (req, res) => {
     const studentData = req.body;
     studentBl.updateOne(studentData, (e, data) => {
@@ -73,17 +71,13 @@ router.put('/', (req, res) => {
     })
 });
 
-//check if it works
 router.delete('/:id', (req, res) => {
     const studentToDeleteId = req.params.id;
-    console.log(studentToDeleteId);
     studentBl.deleteOne(studentToDeleteId, (e, data) => {
         if (e) {
             console.log(e);
             return res.status(500).send(e);
         } else {
-            //deleteImageFromFolder();
-            console.log(data);
             return res.send(data);
         }
     })
@@ -94,7 +88,6 @@ router.post('/images', upload, (req, res) => {
         if (e) {
             return res.status(500).end('problem with uploading img');
         } else {
-            console.log('student image added: ' + req.file.filename);
             const resObj = { fileName: req.file.filename }
             return res.send(resObj);
         }

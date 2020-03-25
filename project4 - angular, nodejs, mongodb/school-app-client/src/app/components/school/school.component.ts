@@ -1,3 +1,5 @@
+"use strict";
+
 import { Component, OnInit } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
 import { CourseModel } from 'src/app/models/course-model';
@@ -42,31 +44,10 @@ export class SchoolComponent implements OnInit {
   }
 
   filterForMainContainer(value) {
-    /*     if (value.action === 'add') {
-          this.singleItemToEdit = { name: null, description: null, phone: null, email: null, role: null, image: null, courseStudents: [], courses: [] }
-          this.coursesList.forEach(course => {
-            this.singleItemToEdit.courses.push({
-              id: course._id,
-              name: course.name
-            })
-          });
-        } */
     this._mainContainerFilter = value;
   }
 
-  onPickedListItem(value) {
-    /*     this.singleItemToEdit = value;
-        if (value.courses) {
-          this.courseStudentsOrStudentCourses = value.courses;
-        } else if (value.courseStudents) {
-          this.courseStudentsOrStudentCourses = value.courseStudents;
-        }else{
-          console.log('no value');
-        } */
-  }
-
   onEdit(value) {
-    //this.singleItemToEdit = value.objToEdit;
     this._mainContainerFilter = value.mainContainerFilter;
   }
 

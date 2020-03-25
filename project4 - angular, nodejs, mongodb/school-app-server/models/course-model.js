@@ -1,3 +1,4 @@
+'use strict';
 
 function Course(_id, name, description, email, image) {
     this._id = _id;

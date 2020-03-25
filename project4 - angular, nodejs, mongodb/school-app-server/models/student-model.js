@@ -1,3 +1,4 @@
+'use strict';
 
 function Student(_id, name, phone, email, image) {
     this._id = _id;

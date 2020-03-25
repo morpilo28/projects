@@ -1,3 +1,5 @@
+"use strict";
+
 import { CourseModel } from './course-model';
 
 export interface StudentModel {

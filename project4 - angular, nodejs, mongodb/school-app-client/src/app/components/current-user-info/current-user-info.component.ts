@@ -1,3 +1,5 @@
+"use strict";
+
 import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/user-model';
 import { Router } from '@angular/router';

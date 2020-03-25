@@ -1,3 +1,5 @@
+"use strict";
+
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -21,7 +23,6 @@ export class CourseService {
       this.coursesList.subscribe(res => {
         o.next(res);
       })
-      /* o.complete(); // when the observable doesn't have nothing to listen to */
     });
 
     this.coursesInfo = new BehaviorSubject<CourseModel>(null);
@@ -29,7 +30,6 @@ export class CourseService {
       this.coursesInfo.subscribe(res => {
         o.next(res);
       })
-      /* o.complete(); // when the observable doesn't have nothing to listen to */
     });
   }
 

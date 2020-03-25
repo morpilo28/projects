@@ -1,3 +1,5 @@
+"use strict";
+
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -21,7 +23,6 @@ export class StudentsService {
       this.studentsList.subscribe(res => {
         o.next(res);
       });
-      /* o.complete(); // when the observable doesnt have nothing to listen to */
     });
   
     this.studentsInfo = new BehaviorSubject<StudentModel>(null);
@@ -29,7 +30,6 @@ export class StudentsService {
       this.studentsInfo.subscribe(res => {
         o.next(res);
       });
-      /* o.complete(); // when the observable doesnt have nothing to listen to */
     });
   }
 
@@ -74,7 +74,6 @@ export class StudentsService {
   updateSingleStudent(studentData): Observable<StudentModel> {
     return this.httpClient.put<StudentModel>(`${environment.serverUrl}/student`, studentData).pipe(map(res => {
       this.getUpdateStudentList();
-      console.log(res);
       this.studentsInfo.next(res);
       return res;
     }));

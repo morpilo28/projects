@@ -1,5 +1,4 @@
 'use strict';
-
 const studentCollection = 'student';
 const courseCollection = 'course';
 const dal = require('../dal');
@@ -57,8 +56,6 @@ function updateOne(studentData, cb) {
             console.log(e);
             cb(e);
         } else {
-            console.log('------------------');
-            console.log(studentUpdated);
             const coursesToUpdate = getCoursesToUpdate(studentData);
             delete studentNewData['courses'];
 
@@ -94,7 +91,7 @@ function updateOne(studentData, cb) {
                     }
                 }
                 else if (course.action === 'remove') {
-                    //maybe use find func
+                    //TODO: maybe use find func
                     courseStudents = courseStudents.map((student, i) => {
                         if (studentNewData._id.toString() === student._id.toString()) {
                             courseStudents.splice(i, 1);
@@ -107,10 +104,6 @@ function updateOne(studentData, cb) {
     }
 
     function getCoursesToUpdate(studentData) {
-        //TODO: take the new and old arrays
-        //TODO: check if which courses among them were added and which was remove
-        //TODO: create a new array of 2 keys: id, action (add/remove).
-
         const studentOldCourses = studentData.old.courses;
         let studentNewCourses = studentData.new.courses;
         let coursesToUpdate = [];
@@ -128,7 +121,6 @@ function updateOne(studentData, cb) {
                     break
                 }
             }
-            console.log(isTheSameCourse);
             if (!isTheSameCourse) {
                 course['action'] = 'remove';
                 coursesToUpdate.push(course);
@@ -142,9 +134,6 @@ function updateOne(studentData, cb) {
         dal.update(courseCollection, d, (e, data) => {
             if (e) {
                 console.log('problem with updating the course');
-            }
-            else {
-                console.log('course updated');
             }
         });
     }
@@ -182,8 +171,6 @@ function deleteOne(studentToDeleteId, cb) {
                                 dal.update(courseCollection, course, (e, d) => {
                                     if (e) {
                                         console.log('problem with updating deletion of student from relevant courses');
-                                    } else {
-                                        console.log('courses that students where deleted from were updated');
                                     }
                                 })
                             })
@@ -201,8 +188,6 @@ function deleteImageFromFolder(imageName) {
     fs.unlink(ImageToDelete, (e) => {
         if (e) {
             console.log(e);
-        } else {
-            console.log('image deleted from folder');
         }
     });
 }

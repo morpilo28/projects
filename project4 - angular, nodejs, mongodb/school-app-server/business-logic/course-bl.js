@@ -1,5 +1,4 @@
 'use strict';
-
 const courseCollection = 'course';
 const studentCollection = 'student';
 const dal = require('../dal');
@@ -37,7 +36,6 @@ function insertOne(courseToAdd, cb) {
     })
 }
 
-//TODO: check if works;
 function updateOne(courseNewData, cb) {
     dal.update(courseCollection, courseNewData, (e, courseUpdated) => {
         if (e) {
@@ -52,8 +50,6 @@ function updateOne(courseNewData, cb) {
                         console.log("can't get student");
                     }
                     else {
-                        //TODO: iterate through studentCourses and find the course that needs to be updated
-                        // change it and then update the whole student document
                         if (student) {
                             let studentCourses = student.courses;
                             const foundIndex = studentCourses.findIndex(course => course._id.toString() === courseNewData._id.toString());
@@ -71,21 +67,16 @@ function updateOne(courseNewData, cb) {
             if (e) {
                 console.log('problem with updating the course');
             }
-            else {
-                console.log('course updated');
-            }
         });
     }
 }
 
-//TODO: check if works;
 function deleteOne(courseToDeleteId, cb) {
     dal.getOne(courseCollection, courseToDeleteId, (e, course) => {
         if (e) {
             console.log("can't get course");
         } else {
             const courseImageName = course.image;
-            console.log(course.image);
             dal.deleteDocument(courseCollection, courseToDeleteId, (e, courseDeletedId) => {
                 if (e) {
                     console.log(e);
@@ -105,9 +96,6 @@ function deleteImageFromFolder(imageName) {
     fs.unlink(ImageToDelete, (e) => {
         if (e) {
             console.log('problem with deleting image');
-            console.log(e);
-        } else {
-            console.log('image deleted from folder');
         }
     });
 }

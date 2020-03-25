@@ -1,6 +1,4 @@
 "use strict";
-
-const ObjectId = require('mongodb').ObjectId;
 const collection = 'administrator';
 const dal = require('../dal');
 const fs = require('fs');
@@ -48,7 +46,6 @@ function isUserExist(userToValidate, cb) {
             } else {
                 const token = getToken(userToValidate);
                 deleteObjProp(singleUser[0], 'password');
-                //deleteObjProp(singleUser[0], '_id');
                 deleteObjProp(singleUser[0], 'phone');
                 deleteObjProp(singleUser[0], 'email');
                 singleUser[0]['token'] = token;
@@ -70,7 +67,6 @@ function insertOne(userToAdd, cb) {
     })
 }
 
-//TODO: check if works;
 function updateOne(userToUpdate, cb) {
     dal.update(collection, userToUpdate, (e, userUpdated) => {
         if (e) {
@@ -82,14 +78,12 @@ function updateOne(userToUpdate, cb) {
     });
 }
 
-//TODO: check if works;
 function deleteOne(userToDeleteId, cb) {
     dal.getOne(collection, userToDeleteId, (e, user) => {
         if (e) {
             console.log("can't get user");
         } else {
             const userImageName = user.image;
-            console.log(user.image);
             dal.deleteDocument(collection, userToDeleteId, (e, userDeletedId) => {
                 if (e) {
                     console.log(e);
@@ -113,9 +107,6 @@ function deleteImageFromFolder(imageName) {
     fs.unlink(ImageToDelete, (e) => {
         if (e) {
             console.log('problem with deleting image');
-            console.log(e);
-        } else {
-            console.log('image deleted from folder');
         }
     });
 }

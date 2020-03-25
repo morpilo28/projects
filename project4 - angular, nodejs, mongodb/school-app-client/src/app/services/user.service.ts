@@ -1,5 +1,4 @@
-//TODO: make behavioral subject variables accessible only through observable variables
-//TODO: check if it is enough to write "this.usersList.next(res);" only on the get all users func
+"use strict";
 
 import { Injectable } from '@angular/core';
 import { UserModel } from '../models/user-model';
@@ -28,7 +27,6 @@ export class UserService {
       this.currentUser.subscribe(res => {
         o.next(res);
       });
-      /* o.complete(); // when the observable doesnt have nothing to listen to */
       this.currentUserIdAndToken = JSON.parse(window.localStorage.getItem('userIdAndToken'))
     });
 
@@ -37,7 +35,6 @@ export class UserService {
       this.usersList.subscribe(res => {
         o.next(res);
       });
-      /* o.complete(); // when the observable doesnt have nothing to listen to */
     });
 
     this.userInfo = new BehaviorSubject<UserModel>(null);
@@ -45,11 +42,9 @@ export class UserService {
       this.userInfo.subscribe(res => {
         o.next(res);
       });
-      /* o.complete(); // when the observable doesnt have nothing to listen to */
     });
   }
 
-  //TODO: maybe validation needs to happened on email and password and not user name and password
   userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
       userLogged => {

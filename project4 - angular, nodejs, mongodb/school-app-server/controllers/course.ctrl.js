@@ -59,7 +59,6 @@ router.post('/', (req, res) => {
     });
 })
 
-//check if it works
 router.put('/', (req, res) => {
     const courseNewData = req.body;
     courseBl.updateOne(courseNewData, (e, data) => {
@@ -71,7 +70,6 @@ router.put('/', (req, res) => {
     })
 });
 
-//check if it works
 router.delete('/:id', (req, res) => {
     const courseToDeleteId = req.params.id;
     courseBl.deleteOne(courseToDeleteId, (e, data) => {
@@ -89,7 +87,6 @@ router.post('/images', upload, (req, res) => {
         if (e) {
             return res.status(500).end('problem with uploading img');
         } else {
-            console.log('course image added: ' + req.file.filename);
             const resObj = {fileName:req.file.filename}
             return res.send(resObj);
         }

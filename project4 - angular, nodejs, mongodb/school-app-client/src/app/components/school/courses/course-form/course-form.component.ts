@@ -1,3 +1,5 @@
+"use strict";
+
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
 import { CourseModel } from 'src/app/models/course-model';
@@ -39,7 +41,6 @@ export class CourseFormComponent implements OnInit {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.courseNewData.image = this.image;
       if (this.areAllFieldsFull(this.courseNewData)) {
-        //TODO: check if already exist
         if (!this.isAlreadyExist()) {
           this.deleteUnsavedImages(this.courseNewData.image);
           this.courseService.addSingleCourse(this.courseNewData).subscribe(
@@ -106,14 +107,11 @@ export class CourseFormComponent implements OnInit {
         res => this.showSchoolMainPage.emit(null),
         err => console.log(err)
       );
-    } else {
-      console.log("don't delete");
-    }
+    } 
   }
 
   deleteUnsavedImages(imageSaved) {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
-    console.log(this.imagesToDelete);
     this.imagesToDelete.forEach(imageName => this.courseService.deleteUnsavedImages(imageName).subscribe());
   }
 

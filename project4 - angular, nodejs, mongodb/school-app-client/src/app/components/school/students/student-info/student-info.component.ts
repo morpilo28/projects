@@ -1,3 +1,5 @@
+"use strict";
+
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { StudentModel } from 'src/app/models/student-model';
 import { environment } from 'src/environments/environment';

@@ -1,3 +1,4 @@
+'use strict';
 const express = require('express');
 const router = express.Router();
 const path = require('path');
@@ -8,7 +9,7 @@ var SHA256 = require("crypto-js/sha256");
 const userBl = require('../business-logic/user-bl');
 const dal = require('../dal');
 
-/* check if i can do a general function of uploading the images and import it here*/
+//TODO: check if i can do a general function of uploading the images and import it here
 
 var upload = multer({
     storage: multer.diskStorage({
@@ -53,11 +54,9 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-    //TODO: maybe validation needs to happened on email and password and not user name and password
     const userToValidate = {
         email: req.body.email,
         password: CryptoJS.SHA256(req.body.password).toString(CryptoJS.enc.Hex),
-        //password:req.body.password
     };
 
     userBl.isUserExist(userToValidate, (e, data) => {
@@ -84,7 +83,6 @@ router.post('/register', (req, res) => {
     });
 })
 
-//check if it works
 router.put('/', (req, res) => {
     const userToUpdate = req.body;
     userBl.updateOne(userToUpdate, (e, data) => {
@@ -96,7 +94,6 @@ router.put('/', (req, res) => {
     })
 });
 
-//check if it works
 router.delete('/:id', (req, res) => {
     const userToDeleteId = req.params.id;
     userBl.deleteOne(userToDeleteId, (e, data) => {
@@ -114,7 +111,6 @@ router.post('/images', upload, (req, res) => {
         if (e) {
             return res.status(500).end('problem with uploading img');
         } else {
-            console.log('user image added: ' + req.file.filename);
             const resObj = { fileName: req.file.filename }
             return res.send(resObj);
         }

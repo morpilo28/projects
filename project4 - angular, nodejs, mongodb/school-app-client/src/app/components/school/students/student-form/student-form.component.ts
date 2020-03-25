@@ -1,3 +1,5 @@
+"use strict";
+
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { StudentModel } from 'src/app/models/student-model';
 import { environment } from 'src/environments/environment';
@@ -29,7 +31,7 @@ export class StudentFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.studentService.getStudentInfo().subscribe(res => {
-        this.studentNewData = { ...res }; //check if to do it like this
+        this.studentNewData = { ...res }; 
         this.studentOldData = res;
         this.image = res.image;
       });
@@ -119,8 +121,6 @@ export class StudentFormComponent implements OnInit {
         res => this.showSchoolMainPage.emit(null),
         err => console.log(err)
       );
-    } else {
-      console.log("don't delete");
     }
   }
 
@@ -128,7 +128,6 @@ export class StudentFormComponent implements OnInit {
     this.coursesChecked = [];
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.allCourses = this.allCourses.map((course) => {
-        console.log(this.studentOldData.courses);
         for (let i = 0; i < this.studentOldData.courses.length; i++) {
           if (course._id === this.studentOldData.courses[i]._id) {
             course['isChecked'] = true;

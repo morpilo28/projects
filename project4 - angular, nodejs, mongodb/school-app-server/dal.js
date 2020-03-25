@@ -55,8 +55,8 @@ function insert(collection, documentToAdd, cb) {
             const DB = getDb(client);
             DB.collection(collection).insertOne(documentToAdd, (e, insertedDocument) => {
                 if (e) {
-                    console.log(e);
-                    cb('cant get data from collection');
+                    console.log('cant insert document');
+                    cb('cant insert document');
                 } else {
                     cb(null, insertedDocument.ops[0]);
                     closeMongoConnection(client);
@@ -67,6 +67,7 @@ function insert(collection, documentToAdd, cb) {
 }
 
 function pushToArray(collection, id, objToPush, cb) {
+    //TODO: maybe put push to array func in bl and not in dal (in dal go only to update)
     MongoClient.connect(url, createNewMongoClient(), (e, client) => {
         if (e) {
             console.log('problem connecting to mongoDB');
@@ -93,7 +94,6 @@ function pushToArray(collection, id, objToPush, cb) {
     });
 }
 
-//TODO: check if works;
 function update(collection, documentNewDataToUpdate, cb) {
     MongoClient.connect(url, createNewMongoClient(), (e, client) => {
         if (e) {
@@ -123,7 +123,6 @@ function update(collection, documentNewDataToUpdate, cb) {
     });
 }
 
-//TODO: check if works;
 function deleteDocument(collection, documentIdToDelete, cb) {
     MongoClient.connect(url, createNewMongoClient(), (e, client) => {
         if (e) {
