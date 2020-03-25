@@ -20,7 +20,7 @@ export class StudentFormComponent implements OnInit {
   private allCourses: CourseModel[];
   private coursesChecked;
   private imagesToDelete: string[] = [];
-
+  private studentsList;
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
@@ -37,6 +37,7 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData = { name: null, phone: null, email: null, image: null, courses: [] }
     }
 
+    this.studentService.getStudentsList().subscribe(res => this.studentsList = res);
     this.courseService.getCoursesList().subscribe(res => {
       if (res) {
         this.allCourses = res;
@@ -47,32 +48,37 @@ export class StudentFormComponent implements OnInit {
 
   save() {
     if (this.mainContainerFilter.action === this.actions.add) {
-        this.studentNewData.image = this.image;
-        this.studentNewData.courses = this.coursesChecked;
-        const isAllFull = this.areAllFieldsFull(this.studentNewData);
-        if (isAllFull) {
-          //TODO: check if already exist
+      this.studentNewData.image = this.image;
+      this.studentNewData.courses = this.coursesChecked;
+      if (this.areAllFieldsFull(this.studentNewData)) {
+        if (!this.isAlreadyExist()) {
           this.deleteUnsavedImages(this.studentNewData.image);
           this.studentService.addSingleStudent(this.studentNewData).subscribe(
             res => this.showSchoolMainPage.emit('moreInfo'),
             err => console.log(err)
           );
-        }else{
-          alert('all fields must be filled');
+        } else {
+          alert('student email already exist');
         }
+      } else {
+        alert('all fields must be filled');
+      }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
       const studentData = { old: this.studentOldData, new: this.studentNewData };
-      const isAllFull = this.areAllFieldsFull(this.studentNewData);
-      if(isAllFull){
-        this.imagesToDelete.push(this.studentOldData.image);
-        this.deleteUnsavedImages(this.studentNewData.image);
-        this.studentService.updateSingleStudent(studentData).subscribe(
-          res => this.showSchoolMainPage.emit('moreInfo'),
-          err => console.log(err)
-        );
-      }else{
+      if (this.areAllFieldsFull(this.studentNewData)) {
+        if (!this.isAlreadyExist()) {
+          this.imagesToDelete.push(this.studentOldData.image);
+          this.deleteUnsavedImages(this.studentNewData.image);
+          this.studentService.updateSingleStudent(studentData).subscribe(
+            res => this.showSchoolMainPage.emit('moreInfo'),
+            err => console.log(err)
+          );
+        }else{
+          alert('student email already exist');
+        }
+      } else {
         alert('all fields must be filled');
       }
     }
@@ -172,5 +178,23 @@ export class StudentFormComponent implements OnInit {
       }
     }
     return true;
+  }
+
+  isAlreadyExist() {
+    for (let i = 0; i < this.studentsList.length; i++) {
+      const userFromList = this.studentsList[i];
+      if (this.studentNewData._id) {
+        if (userFromList._id !== this.studentNewData._id) {
+          if (userFromList.email === this.studentNewData.email) {
+            return true;
+          }
+        }
+      } else {
+        if (userFromList.email === this.studentNewData.email) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

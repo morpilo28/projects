@@ -16,6 +16,7 @@ export class CourseFormComponent implements OnInit {
   private baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
   private image;
   private imagesToDelete: string[] = [];
+  private coursesList;
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
@@ -31,32 +32,39 @@ export class CourseFormComponent implements OnInit {
     } else {
       this.courseNewData = { name: null, description: null, image: null, courseStudents: [] }
     }
+    this.courseService.getCoursesList().subscribe(res => this.coursesList = res);
   }
 
   save() {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.courseNewData.image = this.image;
-      const isAllFull = this.areAllFieldsFull(this.courseNewData);
-      if (isAllFull) {
+      if (this.areAllFieldsFull(this.courseNewData)) {
         //TODO: check if already exist
-        this.deleteUnsavedImages(this.courseNewData.image);
-        this.courseService.addSingleCourse(this.courseNewData).subscribe(
-          res => this.showSchoolMainPage.emit('moreInfo'),
-          err => console.log(err)
-        );
+        if (!this.isAlreadyExist()) {
+          this.deleteUnsavedImages(this.courseNewData.image);
+          this.courseService.addSingleCourse(this.courseNewData).subscribe(
+            res => this.showSchoolMainPage.emit('moreInfo'),
+            err => console.log(err)
+          );
+        } else {
+          alert('course name already exist');
+        }
       } else {
         alert('all fields must be filled');
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseNewData.image = this.image;
-      const isAllFull = this.areAllFieldsFull(this.courseNewData);
-      if (isAllFull) {
-        this.imagesToDelete.push(this.courseOldData.image);
-        this.deleteUnsavedImages(this.courseNewData.image);
-        this.courseService.updateSingleCourse(this.courseNewData).subscribe(
-          res => this.showSchoolMainPage.emit('moreInfo'),
-          err => console.log(err)
-        );
+      if (this.areAllFieldsFull(this.courseNewData)) {
+        if (!this.isAlreadyExist()) {
+          this.imagesToDelete.push(this.courseOldData.image);
+          this.deleteUnsavedImages(this.courseNewData.image);
+          this.courseService.updateSingleCourse(this.courseNewData).subscribe(
+            res => this.showSchoolMainPage.emit('moreInfo'),
+            err => console.log(err)
+          );
+        } else {
+          alert('course name already exist');
+        }
       } else {
         alert('all fields must be filled');
       }
@@ -116,5 +124,23 @@ export class CourseFormComponent implements OnInit {
       }
     }
     return true;
+  }
+
+  isAlreadyExist() {
+    for (let i = 0; i < this.coursesList.length; i++) {
+      const courseFromList = this.coursesList[i];
+      if (this.courseNewData._id) {
+        if (courseFromList._id !== this.courseNewData._id) {
+          if (courseFromList.name === this.courseNewData.name) {
+            return true;
+          }
+        }
+      } else {
+        if (courseFromList.name === this.courseNewData.name) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

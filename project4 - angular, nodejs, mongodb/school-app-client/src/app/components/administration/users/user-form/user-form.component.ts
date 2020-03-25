@@ -18,6 +18,7 @@ export class UserFormComponent implements OnInit {
   private userNewData: UserModel = {};
   private image;
   private imagesToDelete: string[] = [];
+  private usersList;
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showUserMainPage: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -34,6 +35,7 @@ export class UserFormComponent implements OnInit {
       this.userNewData = { name: null, phone: null, email: null, role: null, image: null }
     }
     this.userService.getCurrentUser().subscribe(res => this.currentUser = res);
+    this.userService.getUsersList().subscribe(res => this.usersList = res);
   }
 
   onSelectedRole(role) {
@@ -42,32 +44,37 @@ export class UserFormComponent implements OnInit {
 
   save() {
     if (this.mainContainerFilter.action === this.actions.add) {
-        this.userNewData.image = this.image;
-        const isAllFull = this.areAllFieldsFull(this.userNewData);
-        if (isAllFull) {
-          //TODO: check if already exist
+      this.userNewData.image = this.image;
+      if (this.areAllFieldsFull(this.userNewData)) {
+        if (!this.isAlreadyExist()) {
           this.deleteUnsavedImages(this.userNewData.image);
           this.userService.addSingleUser(this.userNewData).subscribe(
             res => this.showUserMainPage.emit(true),
             err => console.log(err)
           );
         } else {
-          alert('all fields must be filled');
+          alert('user email already exist');
         }
+      } else {
+        alert('all fields must be filled');
+      }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
-      const isAllFull = this.areAllFieldsFull(this.userNewData);
-      if (isAllFull) {
-        this.imagesToDelete.push(this.userOldData.image);
-        this.deleteUnsavedImages(this.userNewData.image);
-        this.userService.updateSingleUser(this.userNewData).subscribe(
-          res => {
-            this.showUserMainPage.emit(true);
-            console.log(res);
-          },
-          err => console.log(err)
-        );
-      }else{
+      if (this.areAllFieldsFull(this.userNewData)) {
+        if (!this.isAlreadyExist()) {
+          this.imagesToDelete.push(this.userOldData.image);
+          this.deleteUnsavedImages(this.userNewData.image);
+          this.userService.updateSingleUser(this.userNewData).subscribe(
+            res => {
+              this.showUserMainPage.emit(true);
+              console.log(res);
+            },
+            err => console.log(err)
+          );
+        } else {
+          alert('user email already exist');
+        }
+      } else {
         alert('all fields must be filled');
       }
     }
@@ -128,7 +135,21 @@ export class UserFormComponent implements OnInit {
     return true;
   }
 
-  isAlreadyExist(uniqKey){
-
+  isAlreadyExist() {
+    for (let i = 0; i < this.usersList.length; i++) {
+      const userFromList = this.usersList[i];
+      if (this.userNewData._id) {
+        if (userFromList._id !== this.userNewData._id) {
+          if (userFromList.email === this.userNewData.email) {
+            return true;
+          }
+        }
+      } else {
+        if (userFromList.email === this.userNewData.email) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
