@@ -1,12 +1,11 @@
 <div class="header floatLeft">
   <img src='../assets/images/logo.JPG' class='floatLeft logo' />
-  <nav class='floatLeft navbar'>
-    <span class="bar" [routerLink]='["/login"]'><b>Login</b></span>
-    <span class="bar" [routerLink]='["/school"]'><b>School</b></span>
-    <span class="bar" *ngIf='isAllowed' [routerLink]='["/administration"]'><b>Administration</b></span>
+  <nav *ngIf='isAllowed' class='floatLeft navbar'>
+      <span class="bar" [routerLink]='["/school"]'><b>School</b></span>
+      <span class="bar" [routerLink]='["/administration"]'><b>Administration</b></span>
   </nav>
 </div>
-<app-current-user-info class="floatRight"></app-current-user-info>
+<app-current-user-info></app-current-user-info>
 <hr>
 <br><br>
 <router-outlet></router-outlet>

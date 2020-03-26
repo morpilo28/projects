@@ -1,9 +1,9 @@
 <ng-container *ngIf='currentUser'>
+    <div class="userImg">
+        <img [src]="baseUserImgUrl+currentUser.image" [alt]='currentUser.image' />
+    </div>
     <div class="userDetails">
         <span>{{currentUser.name | titlecase}}, {{currentUser.role | titlecase}}</span><br>
         <span (click)='logout()'><u> Logout</u></span>
-    </div>
-    <div class="userImg">
-        <img [src]="baseUserImgUrl+currentUser.image" [alt]='currentUser.image' />
     </div>
 </ng-container>

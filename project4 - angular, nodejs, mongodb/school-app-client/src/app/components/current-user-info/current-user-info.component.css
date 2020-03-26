@@ -2,25 +2,23 @@
     position: relative;
     /* border: 1px solid black; */
     float: right;
-    width: 25%;
+    width: 45%;
     height: 87px;
 }
 
  .userDetails {
     position: relative;
-    left: 10%;
+    right: 8%;
     top: 12%;
-    width: 54%;
-    float: left;
+    float: right;
     /* border: 1px solid black; */
 }
 
 .userImg {
     position: relative;
-    right: 0;
-    top: 7%;
     float: right;
-    margin-right: 3%;
+    top: 7%;
+    right: 10px;
     /* border: 1px solid black; */
 }
 
