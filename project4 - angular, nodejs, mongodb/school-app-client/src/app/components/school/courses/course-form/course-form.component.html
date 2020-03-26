@@ -1,4 +1,7 @@
 <div *ngIf='mainContainerFilter'>
+    <div *ngIf="mainContainerFilter.action === actions.edit">edit '{{courseNewData.name}}'</div>
+    <div *ngIf="mainContainerFilter.action === actions.add">add course</div>
+    <hr>
     <button (click)="save()">Save</button>
     <button *ngIf="courseOldData && courseOldData.courseStudents.length === 0" (click)='delete(courseNewData._id)'>Delete</button><br>
     <input [(ngModel)]="courseNewData.id" hidden [id]='courseNewData._id' />

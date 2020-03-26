@@ -1,18 +1,18 @@
 <h6>
-    <span> {{title}} </span> <span (click)="onAction(title, 'add')">+</span>
+    <span> {{title}} </span> <span (click)="onAction(title, actions.add)">+</span>
 </h6>
 <div class='listContainer'>
     <ng-container *ngIf="list">
         <ng-container class="itemContainer" *ngFor="let item of list">
             <ng-container
-                *ngIf="((title === 'administrators') && ((currentUserRole === 'manager' && item.role !== 'owner') || (currentUserRole === 'owner'))) || (title !== 'administrators')">
-                <div [id]='item._id' (click)="onItemClicked(title, item._id); onAction(title, 'moreInfo')">
+                *ngIf="((title === titles.administrators) && ((currentUserRole === roles.manager && item.role !== roles.owner) || (currentUserRole === roles.owner))) || (title !== titles.administrators)">
+                <div [id]='item._id' (click)="onItemClicked(title, item._id); onAction(title, actions.moreInfo)">
                     <img class='floatLeft' [src]='baseImgUrl+imgFolder+item.image' [alt]='item.image' width='50'
                         height='50' />
                     <ng-container class="floatLeft">
-                        <span>{{item.name}}</span> <span *ngIf="title === 'administrator'">, {{item.role}}</span><br>
-                        <span *ngIf="title !== 'courses'">{{item.phone}}</span><br>
-                        <span *ngIf="title === 'administrators'">{{item.email}}</span><br>
+                        <span>{{item.name}}</span> <span *ngIf="title === titles.administrators">, {{item.role}}</span><br>
+                        <span *ngIf="title !== titles.courses">{{item.phone}}</span><br>
+                        <span *ngIf="title === titles.administrators">{{item.email}}</span><br>
                     </ng-container>
                 </div>
             </ng-container>

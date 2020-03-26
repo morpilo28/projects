@@ -18,6 +18,9 @@ export class ListComponent implements OnInit {
   private baseImgUrl = (`${environment.serverUrl}/images/`);
   private imgFolder;
   private list;
+  private roles = environment.roles;
+  private actions = environment.actions;
+  private titles = environment.titles;
 
   constructor(private userService: UserService, private studentsService: StudentsService, private courseService: CourseService) { }
 
@@ -33,9 +36,7 @@ export class ListComponent implements OnInit {
         break
       case 'students':
         this.studentsService.getStudentsList().subscribe(
-          res => {
-            this.list = res; 
-          },
+          res => this.list = res,
           err => console.log(err));
         break
       case 'courses':
@@ -53,7 +54,7 @@ export class ListComponent implements OnInit {
   onItemClicked(title, itemId) {
     switch (title) {
       case 'administrators':
-        this.userService.getSingleUser(itemId).subscribe();
+        this.userService.setSingleUser(itemId).subscribe();
         break
       case 'students':
         this.studentsService.setSingleStudent(itemId).subscribe();

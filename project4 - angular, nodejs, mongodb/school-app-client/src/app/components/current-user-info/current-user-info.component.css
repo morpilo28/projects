@@ -1,25 +1,30 @@
 :host {
+    position: relative;
     /* border: 1px solid black; */
     float: right;
-    width: 200px;
+    width: 25%;
+    height: 87px;
 }
 
-.userDetails,.userImg {
+ .userDetails {
     position: relative;
-}
-
-.userDetails {
-    left: 0;
-    top: 20px;
-    width: 60%;
+    left: 10%;
+    top: 12%;
+    width: 54%;
     float: left;
-    margin-left: 10%;
+    /* border: 1px solid black; */
 }
 
 .userImg {
+    position: relative;
     right: 0;
-    bottom: 20px;
-    width: 20%;
+    top: 7%;
     float: right;
-    margin-right: 12%;
+    margin-right: 3%;
+    /* border: 1px solid black; */
+}
+
+img{
+    width: 70px;
+    height: 70px;
 }

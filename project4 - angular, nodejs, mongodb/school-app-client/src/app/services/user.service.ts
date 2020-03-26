@@ -90,7 +90,7 @@ export class UserService {
     }));
   }
 
-  getSingleUser(id): Observable<UserModel> {
+  setSingleUser(id): Observable<UserModel> {
     return this.httpClient.get<UserModel>(`${environment.serverUrl}/user/${id}`).pipe(map(res => {
       this.userInfo.next(res);
       return res;
