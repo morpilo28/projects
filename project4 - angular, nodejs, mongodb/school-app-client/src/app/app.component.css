@@ -9,21 +9,23 @@ hr {
 .logo {
     width: 25%;
     height: 80px;
-    margin-right: 4%;
     min-width: 200px;
     min-height: 80px;
 }
 
 .navbar {
-    margin-top: 5.5%;
+    margin-top: 3%;
 }
 
 .bar {
     border: 1px solid black;
     border-bottom: none;
-    margin-right: 4%;
     background-color: rgba(0, 255, 255,0.4);
-    padding: 1% 5% 1% 5%;
+    padding: 0 5px 0 5px;
+}
+
+.schoolBar{
+    margin-right: 15px;
 }
 
 .header{

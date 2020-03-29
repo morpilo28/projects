@@ -10,7 +10,6 @@ import { UserModel } from './models/user-model';
   styleUrls: ['./app.component.css']
 })
 
- 
 //TODO: check for duplicate code and try to make the project generic
 //TODO: design
 

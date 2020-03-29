@@ -1,11 +1,13 @@
-<div class="header floatLeft">
-  <img src='../assets/images/logo.JPG' class='floatLeft logo' />
-  <nav *ngIf='isAllowed' class='floatLeft navbar'>
-      <span class="bar" [routerLink]='["/school"]'><b>School</b></span>
-      <span class="bar" [routerLink]='["/administration"]'><b>Administration</b></span>
-  </nav>
-</div>
-<app-current-user-info></app-current-user-info>
-<hr>
-<br><br>
+<ng-container *ngIf="currentUser">
+  <div class="header floatLeft">
+    <img src='../assets/images/logo.JPG' class='floatLeft logo' />
+    <nav *ngIf='isAllowed' class='floatLeft navbar'>
+      <div class="schoolBar bar"> <span [routerLink]='["/school"]'><b>School</b></span></div>
+      <div class="adminBar bar"><span [routerLink]='["/administration"]'><b>Administration</b></span></div>
+    </nav>
+  </div>
+  <app-current-user-info></app-current-user-info>
+  <hr>
+</ng-container>
+<br>
 <router-outlet></router-outlet>
