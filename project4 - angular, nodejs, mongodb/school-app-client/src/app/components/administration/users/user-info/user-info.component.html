@@ -1,19 +1,24 @@
 <ng-container *ngIf="currentUser && userInfo">
-    <span>{{userInfo.name}}</span>
-    <ng-container *ngIf="currentUser.name === userInfo.name || currentUser.role !== userInfo.role">
-        <button *ngIf="(currentUser.role  === roles.manager && userInfo.role !== roles.owner) || 
-        (currentUser.role === roles.owner)" (click)="onEdit()">edit</button>
-    </ng-container>
-    <hr>
-    <div>
-        <img class='floatLeft' [src]='baseUserImgUrl+userInfo.image'
-        [alt]='userInfo.image' width='150' height='150' />
-        <ng-container class="floatLeft">
-            <span>{{userInfo.name}}</span>
-            <span>, {{userInfo.role}}</span>
-            <br>
+    <div class="clearfix">
+        <span class="float-left ml-3 mt-2 font-weight-bold">{{userInfo.name | titlecase}}</span>
+        <ng-container *ngIf="currentUser.name === userInfo.name || currentUser.role !== userInfo.role">
+            <button class="float-right mr-3 mt-2 rounded font-weight-bold" *ngIf="(currentUser.role  === roles.manager && userInfo.role !== roles.owner) || 
+            (currentUser.role === roles.owner)" (click)="onEdit()">Edit</button>
         </ng-container>
-        <span>{{userInfo.phone}}</span><br>
-        <span>{{userInfo.email}}</span><br>
+    </div>
+    <hr class="m-2">
+    <div class="clearfix ml-2">
+        <img class='float-left rounded' [src]='baseUserImgUrl+userInfo.image' [alt]='userInfo.image' width='200'
+            height='210' />
+        <div class="float-left ml-3">
+            <label><u>Name:</u> </label>
+            <span class="ml-1 font-weight-bold">{{userInfo.name}}</span><br>
+            <label><u>Role:</u> </label>
+            <span class="ml-1 font-weight-bold">{{userInfo.role}}</span><br>
+            <label><u>Phone:</u> </label>
+            <span class="ml-1 font-weight-bold">{{userInfo.phone}}</span><br>
+            <label><u>Email:</u> </label>
+            <span class="ml-1 font-weight-bold">{{userInfo.email}}</span><br>
+        </div>
     </div>
 </ng-container>

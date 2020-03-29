@@ -1,14 +1,18 @@
 .main {
-    width: 50%;
+    width: 65%;
     background-color: yellow;
-    height: 500px;
+    height: 400px;
     float: right;
 }
 
 .administrators {
-    width: 20%;
-    height: 500px;
+    width: 30%;
+    height: 400px;
     float: left;
     margin: 0 10px 0 10px;
-    background-color: green;
+    /* background-color: green; */
+}
+
+.summary{
+    text-align: center;
 }

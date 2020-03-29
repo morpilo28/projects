@@ -4,6 +4,6 @@
     </div>
     <div class="userDetails">
         <span>{{currentUser.name | titlecase}}, {{currentUser.role | titlecase}}</span><br>
-        <span (click)='logout()'><u> Logout</u></span>
+        <span class="logout" (click)='logout()'><u> Logout</u></span>
     </div>
 </ng-container>

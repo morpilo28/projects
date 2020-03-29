@@ -1,6 +1,7 @@
 <!-- only on start  -->
 <!-- TODO: maybe move it to a separate component -->
-<div class="main" *ngIf="!_mainContainerFilter.action">Administration summary:
+<div class="main summary" *ngIf="!_mainContainerFilter.action">
+    <h2>Administration summary</h2>
     <p>owner: {{administratorsCount.owner}}</p>
     <p>manager: {{administratorsCount.manager}}</p>
     <p>sales: {{administratorsCount.sales}}</p>

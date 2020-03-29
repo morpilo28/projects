@@ -7,17 +7,27 @@ h6 {
 
 img {
     border: 1px solid black;
+    width: 78px;
+    height: 73px;
+    margin-right: 5px;
 }
 
 .floatLeft {
     float: left;
 }
 
-.itemContainer{
+.itemContainer {
     clear: both;
-    margin-bottom: -42px;
+    /* margin-bottom: -42px; */
 }
 
-.listContainer{
-    overflow-y: auto;
+.listContainer {
+    overflow: scroll;
+    height: 340px;
+    /* background-color: yellow; */
+}
+
+.item {
+    /* background-color: purple; */
+    margin-bottom: 4%;
 }
