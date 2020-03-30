@@ -1,13 +1,13 @@
 .main {
     width: 65%;
     background-color: yellow;
-    height: 400px;
+    height: 550px;
     float: right;
 }
 
 .administrators {
     width: 30%;
-    height: 400px;
+    height: 550px;
     float: left;
     margin: 0 10px 0 10px;
     /* background-color: green; */

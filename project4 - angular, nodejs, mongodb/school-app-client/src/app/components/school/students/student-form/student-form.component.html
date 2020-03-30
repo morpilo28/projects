@@ -1,30 +1,38 @@
 <div *ngIf='mainContainerFilter'>
-    <div *ngIf="mainContainerFilter.action === actions.edit">edit '{{studentNewData.name}}'</div>
-    <div *ngIf="mainContainerFilter.action === actions.add">add student</div>
-    <hr>
-    <button (click)="save()">Save</button>
-    <button (click)='delete(studentNewData._id)'>Delete</button><br>
+    <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.edit">Edit
+        '{{studentNewData.name | titlecase}}'</div>
+    <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.add">Add Student</div>
+    <hr class="m-2">
+    <div class="clearfix">
+        <button class="font-weight-bold float-left ml-2" (click)="save()">Save</button>
+        <button class="font-weight-bold float-right mr-2" (click)='delete(studentNewData._id)'>Delete</button><br>
+    </div>
+    <br>
     <input [(ngModel)]="studentNewData.id" hidden [id]='studentNewData._id' />
-    <label>name: <input [(ngModel)]="studentNewData.name" /><br></label>
-    <label>phone:
-        <input [(ngModel)]="studentNewData.phone" [value]="studentNewData.phone" /><br></label>
-    <label>email:
-        <input [(ngModel)]="studentNewData.email" [value]="studentNewData.email" /><br></label>
-    <label>image:
-        <button #imgBtn id="imgPick" style="cursor:pointer" (click)="onChoosingImage(fileInput)">Choose an
-            Image</button>
-        <div *ngIf="image">
-            <img [src]="baseStudentImgUrl+image" [alt]="image" width="50" height="50" />
-        </div> <br>
-        <input #fileInput type="file" id='addedImage' required style="display:none"
-            (change)="onPickedImg(imgBtn, fileInput)" /><br><br>
-    </label>
+    <div><label>Name: <input [(ngModel)]="studentNewData.name" /><br></label></div>
+    <div><label>Phone:
+            <input [(ngModel)]="studentNewData.phone" [value]="studentNewData.phone" /><br></label></div>
+    <div><label>Email:
+            <input [(ngModel)]="studentNewData.email" [value]="studentNewData.email" /><br></label></div>
 
-    <label>courses:
-        <ng-container *ngFor="let course of allCourses">
-            <input type="checkbox" [value]='course.name' [id]='course._id' [attr.data-img] = "course.image" [checked]="course.isChecked"
-                (click)='onClickedCourseBox($event.target)' />
-            <label [for]='course.id'>{{course.name}}</label>
-        </ng-container>
-    </label>
+    <div><label>Image:
+            <button #imgBtn id="imgPick" style="cursor:pointer" (click)="onChoosingImage(fileInput)">Choose an
+                Image</button>
+            <div class="mt-2" *ngIf="image">
+                <img [src]="baseStudentImgUrl+image" [alt]="image" width="200" height="210" />
+            </div>
+            <input #fileInput type="file" id='addedImage' required style="display:none"
+                (change)="onPickedImg(imgBtn, fileInput)" />
+        </label></div>
+
+    <div class="clearfix">
+        <div class="float-left mr-3"><label>Courses:</label></div>
+        <div class="courses overflow-auto float-left">
+            <div *ngFor="let course of allCourses" class="float-left">
+                <input type="checkbox" [value]='course.name' [id]='course._id' [attr.data-img]="course.image"
+                    [checked]="course.isChecked" (click)='onClickedCourseBox($event.target)' />
+                <label class="mr-2 ml-0" [for]='course.id'>{{course.name}}</label>
+            </div>
+        </div>
+    </div>
 </div>

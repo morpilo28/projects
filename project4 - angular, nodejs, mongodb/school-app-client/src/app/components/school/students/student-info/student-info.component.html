@@ -1,16 +1,19 @@
 <ng-container *ngIf="studentInfo">
-    <span>{{studentInfo.name}}</span>
-    <button (click)="onEdit()">edit</button>
-    <hr>
+    <div class="clearfix">
+        <span class="float-left ml-3 mt-2 font-weight-bold">{{studentInfo.name}}</span>
+        <button class="float-right mr-3 mt-2 rounded font-weight-bold" (click)="onEdit()">edit</button>
+    </div>
+    <hr class="m-2">
     <div>
-        <img class='floatLeft' [src]='baseStudentImgUrl+studentInfo.image' [alt]='studentInfo.image' width='150' height='150' />
+        <img class='floatLeft' [src]='baseStudentImgUrl+studentInfo.image' [alt]='studentInfo.image' width='200'
+            height='210' />
         <ng-container class="floatLeft">
             <span>{{studentInfo.name}}</span><br>
             <span>{{studentInfo.phone}}</span><br>
             <span>{{studentInfo.email}}</span><br>
         </ng-container>
         <div *ngFor="let course of studentInfo.courses">
-            <img [src]="baseCourseImgUrl+course.image" [alt]="course.image" width="50" height="50"/>
+            <img [src]="baseCourseImgUrl+course.image" [alt]="course.image" width="50" height="50" />
             <span>{{course.name}}</span>
         </div>
     </div>

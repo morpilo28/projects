@@ -1,4 +1,4 @@
-<div *ngIf='mainContainerFilter'>
+<div class="userForm" *ngIf='mainContainerFilter'>
     <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.edit">Edit
         {{userNewData.name | titlecase}}</div>
     <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.add">Add Admin</div>
@@ -31,7 +31,7 @@
             <button #imgBtn id="imgPick" style="cursor:pointer" (click)="onChoosingImage(fileInput)">Choose an
                 Image</button>
             <div class="mt-2" *ngIf="image">
-                <img [src]="baseUserImgUrl+image" [alt]="image" width="100" height="100" />
+                <img [src]="baseUserImgUrl+image" [alt]="image" width="200" height="210" />
             </div> <br>
             <input #fileInput type="file" id='addedImage' required style="display:none"
                 (change)="onPickedImg(imgBtn, fileInput)" /><br><br>

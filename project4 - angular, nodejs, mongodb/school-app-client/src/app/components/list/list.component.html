@@ -1,18 +1,18 @@
-<h6>
-    <span> {{title}} </span> <span (click)="onAction(title, actions.add)">+</span>
+<h6 class="mb-3">
+    <span class="ml-2"> {{title}} </span> <span class="ml-4" (click)="onAction(title, actions.add)">+</span>
 </h6>
-<div class='listContainer'>
+<div class='listContainer overflow-auto'>
     <ng-container *ngIf="list">
         <ng-container class="itemContainer" *ngFor="let item of list">
             <ng-container
                 *ngIf="((title === titles.administrators) && ((currentUserRole === roles.manager && item.role !== roles.owner) || (currentUserRole === roles.owner))) || (title !== titles.administrators)">
-                <div class="item" [id]='item._id' (click)="onItemClicked(title, item._id); onAction(title, actions.moreInfo)">
-                    <img class='floatLeft' [src]='baseImgUrl+imgFolder+item.image' [alt]='item.image' />
-                    <ng-container class="floatLeft">
-                        <span>{{item.name | titlecase}}</span> <span *ngIf="title === titles.administrators">, {{item.role}}</span><br>
-                        <span *ngIf="title !== titles.courses">{{item.phone}}</span><br>
-                        <span *ngIf="title === titles.administrators">{{item.email}}</span><br>
-                    </ng-container>
+                <div class="d-flex item ml-2 clearfix" [id]='item._id' (click)="onItemClicked(title, item._id); onAction(title, actions.moreInfo)">
+                    <img class='float-left' [src]='baseImgUrl+imgFolder+item.image' [alt]='item.image' />
+                    <div class="float-left align-self-center">
+                        <div><span>{{item.name | titlecase}}</span> <span *ngIf="title === titles.administrators">, {{item.role}}</span></div>
+                        <div *ngIf="title !== titles.courses"><span >{{item.phone}}</span></div>
+                        <div *ngIf="title === titles.administrators"><span >{{item.email}}</span></div>
+                    </div>
                 </div>
             </ng-container>
         </ng-container>

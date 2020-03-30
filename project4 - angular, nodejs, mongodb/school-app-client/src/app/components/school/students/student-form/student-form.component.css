@@ -1,0 +1,13 @@
+hr{
+    border: 0.5px solid black;
+}
+
+label{
+    margin-left: 10px;
+}
+
+.courses{
+    /* border: 1px solid black; */
+    width: 75%;
+    height: 100px;
+}

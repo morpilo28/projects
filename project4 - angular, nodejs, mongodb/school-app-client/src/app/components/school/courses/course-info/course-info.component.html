@@ -3,7 +3,7 @@
     <button *ngIf="currentUser.role !== roles.sales" (click)="onEdit()">edit</button>
     <hr>
     <div>
-        <img class='floatLeft' [src]='baseCourseImgUrl+courseInfo.image' [alt]='courseInfo.image' width='150' height='150' />
+        <img class='floatLeft' [src]='baseCourseImgUrl+courseInfo.image' [alt]='courseInfo.image' width='200' height='210' />
         <ng-container class="floatLeft">
             <span>{{courseInfo.name}}</span>
             <span>, {{courseInfo.courseStudents.length}} students</span>
