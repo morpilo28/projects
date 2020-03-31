@@ -4,17 +4,21 @@
         <button class="float-right mr-3 mt-2 rounded font-weight-bold" (click)="onEdit()">edit</button>
     </div>
     <hr class="m-2">
-    <div>
-        <img class='floatLeft' [src]='baseStudentImgUrl+studentInfo.image' [alt]='studentInfo.image' width='200'
-            height='210' />
-        <ng-container class="floatLeft">
-            <span>{{studentInfo.name}}</span><br>
-            <span>{{studentInfo.phone}}</span><br>
-            <span>{{studentInfo.email}}</span><br>
-        </ng-container>
-        <div *ngFor="let course of studentInfo.courses">
-            <img [src]="baseCourseImgUrl+course.image" [alt]="course.image" width="50" height="50" />
-            <span>{{course.name}}</span>
+    <div class="ml-2">
+        <div class="clearfix mb-3">
+            <img class='float-left rounded' [src]='baseStudentImgUrl+studentInfo.image' [alt]='studentInfo.image'
+                width='200' height='210' />
+            <div class="studentInfo float-left overflow-auto ml-3">
+                <h2>{{studentInfo.name}}</h2>
+                <span>{{studentInfo.phone}}</span><br>
+                <span>{{studentInfo.email}}</span><br>
+            </div>
+        </div>
+        <div class="coursesContainer overflow-auto">
+            <div class="mb-2" *ngFor="let course of studentInfo.courses">
+                <img [src]="baseCourseImgUrl+course.image" [alt]="course.image" width="50" height="50" />
+                <span class="ml-2">{{course.name}}</span>
+            </div>
         </div>
     </div>
 </ng-container>
