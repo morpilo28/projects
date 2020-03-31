@@ -13,3 +13,9 @@ hr {
     width: 55%;
     height: 200px;
 }
+
+.studentsContainer{
+    /* border: 1px solid black; */
+    width: 80%;
+    height: 200px;
+}
