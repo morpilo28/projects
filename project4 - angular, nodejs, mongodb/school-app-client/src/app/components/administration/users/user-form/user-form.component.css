@@ -5,3 +5,8 @@ label{
 hr{
     border: 0.5px solid black;
 }
+
+.labelProp{
+    width: 10%;
+    text-align: right;
+}

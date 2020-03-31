@@ -11,3 +11,12 @@ label{
     width: 75%;
     height: 100px;
 }
+
+.labelProp{
+    width: 9%;
+    text-align: right;
+}
+
+.verticalAlign *{
+    vertical-align: middle;
+}

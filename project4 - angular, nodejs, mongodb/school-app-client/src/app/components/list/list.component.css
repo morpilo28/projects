@@ -16,11 +16,6 @@ img {
     float: left;
 }
 
-.itemContainer {
-    clear: both;
-    /* margin-bottom: -42px; */
-}
-
 .listContainer {
     height: 490px;
     /* background-color: yellow; */
@@ -29,11 +24,14 @@ img {
 .item {
     /* background-color: purple; */
     height: 75px;
+    width: 95%;
+    min-width: 95%;
+    min-height: 75px;
     margin-bottom: 2%;
 }
 
-.addIcon {
-    width: 10px;
-    height: 10px;
-    border: 1px solid black;
+.info {
+    /* border: 1px solid black; */
+    width: 65%;
+    height: 73px;
 }

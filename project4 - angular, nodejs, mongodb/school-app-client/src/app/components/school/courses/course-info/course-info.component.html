@@ -2,7 +2,7 @@
     <div class="clearfix">
         <span class="float-left ml-3 mt-2 font-weight-bold">{{courseInfo.name}}</span>
         <button class="float-right mr-3 mt-2 rounded font-weight-bold" *ngIf="currentUser.role !== roles.sales"
-            (click)="onEdit()">edit</button>
+            (click)="onEdit()">Edit</button>
     </div>
     <hr class="m-2">
     <div class="ml-2">
@@ -10,7 +10,7 @@
             <img class='float-left rounded' [src]='baseCourseImgUrl+courseInfo.image' [alt]='courseInfo.image'
                 width='200' height='210' />
             <div class="courseInfo float-left overflow-auto ml-2">
-                <h2>{{courseInfo.name}}, {{courseInfo.courseStudents.length}} students</h2>
+                <h2>{{courseInfo.name}}<span *ngIf="courseInfo.courseStudents.length !== 0">, {{courseInfo.courseStudents.length}} students</span></h2>
                 <span>{{courseInfo.description}}</span>
             </div>
         </div>

@@ -1,0 +1,12 @@
+hr{
+    border: 0.5px solid black;
+}
+
+.labelProp{
+    width: 20%;
+    text-align: right;
+}
+
+.descriptionBox *{
+    vertical-align: middle;
+}
