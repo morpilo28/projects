@@ -34,7 +34,6 @@ export class CourseService {
   }
 
   getCoursesList(): Observable<CourseModel[]> {
-    this.getUpdateCourseList();
     return this.courseListObservable;
   }
 
@@ -83,7 +82,7 @@ export class CourseService {
     return this.httpClient.post<any>(`${environment.serverUrl}/course/images`, imgFormData);
   }
 
-  private getUpdateCourseList() {
+  getUpdateCourseList() {
     this.getAllCoursesFromDb().subscribe();
   }
 

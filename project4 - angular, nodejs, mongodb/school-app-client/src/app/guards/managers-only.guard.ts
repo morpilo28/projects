@@ -23,7 +23,7 @@ export class ManagersOnlyGuard implements CanActivate {
       } else{
         if (res.role === 'sales') {
           alert('Restricted Area!')
-          this.router.navigate(['/school']);
+          this.router.navigate(['/']);
           this.isAManager = false;
         } else {
           this.isAManager = true;

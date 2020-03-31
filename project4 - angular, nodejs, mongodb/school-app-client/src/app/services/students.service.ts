@@ -38,7 +38,6 @@ export class StudentsService {
   }
 
   getStudentsList(): Observable<StudentModel[]> {
-    this.getUpdateStudentList();
     return this.studentsListObservable;
   }
 
@@ -79,7 +78,7 @@ export class StudentsService {
     }));
   }
 
-  private getUpdateStudentList() {
+  getUpdateStudentList() {
     this.getAllStudentsFromDb().subscribe();
   }
 

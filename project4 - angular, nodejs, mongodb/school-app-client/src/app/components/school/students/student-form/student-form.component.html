@@ -1,6 +1,6 @@
 <div *ngIf='mainContainerFilter'>
     <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.edit">Edit
-        '{{studentNewData.name | titlecase}}'</div>
+        {{studentOldData.name | titlecase}}</div>
     <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.add">Add Student</div>
     <hr class="m-2">
     <div class="clearfix">

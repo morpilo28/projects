@@ -1,5 +1,5 @@
 <div *ngIf='mainContainerFilter'>
-    <div *ngIf="mainContainerFilter.action === actions.edit">edit '{{courseNewData.name}}'</div>
+    <div *ngIf="mainContainerFilter.action === actions.edit">edit {{courseOldData.name}}</div>
     <div *ngIf="mainContainerFilter.action === actions.add">add course</div>
     <hr>
     <button (click)="save()">Save</button>

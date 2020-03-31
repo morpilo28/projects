@@ -45,19 +45,23 @@ export class UserService {
     });
   }
 
+  getCurrentUserIdAndToken() {
+    return this.getCurrentUserIdAndToken;
+  }
+
   userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
       userLogged => {
         const userWithoutId = { ...userLogged };
         delete userWithoutId['_id'];
-        this.setCurrentUserInLocalStorage('user',userWithoutId);
+        this.setCurrentUserInLocalStorage('user', userWithoutId);
         this.currentUser.next(userWithoutId);
-        this.setCurrentUserInLocalStorage('userIdAndToken',userLogged);;
+        this.setCurrentUserInLocalStorage('userIdAndToken', userLogged);;
         return true;
       }));
   }
 
-  setCurrentUserInLocalStorage(name, user){
+  setCurrentUserInLocalStorage(name, user) {
     window.localStorage.setItem(name, JSON.stringify(user));
   }
 
@@ -74,7 +78,6 @@ export class UserService {
   }
 
   getUsersList(): Observable<UserModel[]> {
-    this.getUpdateUserList();
     return this.usersListObservable;
   }
 
@@ -120,19 +123,19 @@ export class UserService {
   }
 
   private updateIfCurrentUser(res: UserModel) {
-    if(this.currentUserIdAndToken._id.toString() === res._id.toString()) {
+    if (this.currentUserIdAndToken._id.toString() === res._id.toString()) {
       const updatedCurrentUser = {
         name: res.name,
         role: res.role,
         image: res.image,
         token: this.currentUserIdAndToken.token,
       };
-      this.setCurrentUserInLocalStorage('user',updatedCurrentUser);
+      this.setCurrentUserInLocalStorage('user', updatedCurrentUser);
       this.currentUser.next(updatedCurrentUser);
     }
   }
 
-  private getUpdateUserList() {
+  getUpdateUserList() {
     this.getAllUsersFromDb().subscribe();
   }
 

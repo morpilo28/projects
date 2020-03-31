@@ -33,22 +33,31 @@ export class ListComponent implements OnInit {
         this.userService.getUsersList().subscribe(
           res => this.list = res,
           err => console.log(err));
+        if (!this.list) {
+          this.userService.getUpdateUserList();
+        }
         break
       case 'students':
         this.studentsService.getStudentsList().subscribe(
           res => this.list = res,
           err => console.log(err));
+          if (!this.list) {
+            this.studentsService.getUpdateStudentList();
+          }
         break
       case 'courses':
         this.courseService.getCoursesList().subscribe(
           res => this.list = res,
           err => console.log(err));
+          if (!this.list) {
+            this.courseService.getUpdateCourseList();
+          }
         break
     }
   }
 
   onAction(title, action) {
-    this.mainContainerFilter.emit({title: title, action: action});
+    this.mainContainerFilter.emit({ title: title, action: action });
   }
 
   onItemClicked(title, itemId) {

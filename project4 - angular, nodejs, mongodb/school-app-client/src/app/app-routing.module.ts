@@ -10,9 +10,8 @@ import { ManagersOnlyGuard } from './guards/managers-only.guard';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'school', component: SchoolComponent, canActivate: [IsLoggedGuard] },
+  { path: '', component: SchoolComponent, canActivate: [IsLoggedGuard] },
   { path: 'administration', component: AdministrationComponent, canActivate: [IsLoggedGuard, ManagersOnlyGuard] },
-  { path: '', redirectTo: '/school', pathMatch: 'full',  canActivate: [IsLoggedGuard] }
 ];
 
 @NgModule({
