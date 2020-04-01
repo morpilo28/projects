@@ -1,12 +1,12 @@
+<app-list class="courses w-25 h-25" title='courses' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
+<app-list class="students w-25" title='students' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
+
 <!-- only on start -->
 <div class="main w-50 text-center" *ngIf="!_mainContainerFilter.action">
     <p>Total of School: </p>
     <p>courses: {{coursesCount}}</p>
     <p>students: {{studentsCount}}</p>
 </div>
-
-<app-list class="courses w-25 h-25" title='courses' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
-<app-list class="students w-25" title='students' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
 
 <ng-container *ngIf="_mainContainerFilter.title === 'courses'">
     <!-- only on add -->

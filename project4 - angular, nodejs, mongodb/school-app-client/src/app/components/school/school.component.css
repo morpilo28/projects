@@ -1,9 +1,7 @@
 .courses,
 .students {
-    /* width: 23%; */
     height: 550px;
     float: left;
-    /* margin: 0 10px 0 10px; */
 }
 
 .courses {

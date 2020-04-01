@@ -8,14 +8,26 @@ hr {
     height: 200px;
 }
 
-.courseInfo{
+.courseInfo {
     /* border: 1px solid black; */
     width: 55%;
     height: 200px;
 }
 
-.studentsContainer{
+.studentsContainer {
     /* border: 1px solid black; */
     width: 80%;
     height: 200px;
+}
+
+.courseName {
+    height: 30px;
+    width: 80%;
+    overflow: auto;
+}
+
+.studentName{
+    height: 50px;
+    /* border: 1px solid black; */
+    width: 80%;
 }

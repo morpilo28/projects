@@ -1,24 +1,33 @@
 <ng-container *ngIf="currentUser && userInfo">
     <div class="clearfix">
-        <span class="float-left ml-3 mt-2 font-weight-bold">{{userInfo.name | titlecase}}</span>
+        <span class="float-left ml-3 mt-2 font-weight-bold overflow-auto userName">{{userInfo.name | titlecase}}</span>
         <ng-container *ngIf="currentUser.name === userInfo.name || currentUser.role !== userInfo.role">
             <button class="float-right mr-3 mt-2 rounded font-weight-bold" *ngIf="(currentUser.role  === roles.manager && userInfo.role !== roles.owner) || 
             (currentUser.role === roles.owner)" (click)="onEdit()">Edit</button>
         </ng-container>
     </div>
     <hr class="m-2">
-    <div class="clearfix ml-2">
+    <div class="clearfix m-4 overflow-auto">
         <img class='float-left rounded' [src]='baseUserImgUrl+userInfo.image' [alt]='userInfo.image' width='200'
             height='210' />
         <div class="userInfo float-left overflow-auto ml-3">
-            <label><u>Name:</u> </label>
-            <span class="ml-1 font-weight-bold">{{userInfo.name}}</span><br>
-            <label><u>Role:</u> </label>
-            <span class="ml-1 font-weight-bold">{{userInfo.role}}</span><br>
-            <label><u>Phone:</u> </label>
-            <span class="ml-1 font-weight-bold">{{userInfo.phone}}</span><br>
-            <label><u>Email:</u> </label>
-            <span class="ml-1 font-weight-bold">{{userInfo.email}}</span><br>
+            <h2 class="ml-1 font-weight-bold">{{userInfo.name}}</h2>
+            <span class="ml-1">{{userInfo.role}}</span><br>
+            <span class="ml-1">{{userInfo.phone}}</span><br>
+            <span class="ml-1">{{userInfo.email}}</span><br>
         </div>
     </div>
 </ng-container>
+
+<!-- 
+
+     <div class="clearfix mb-3">
+            <img class='float-left rounded' [src]='baseStudentImgUrl+studentInfo.image' [alt]='studentInfo.image'
+                width='200' height='210' />
+            <div class="studentInfo float-left overflow-auto ml-3">
+                <h2>{{studentInfo.name}}</h2>
+                <span>{{studentInfo.phone}}</span><br>
+                <span>{{studentInfo.email}}</span><br>
+            </div>
+        </div>
+ -->

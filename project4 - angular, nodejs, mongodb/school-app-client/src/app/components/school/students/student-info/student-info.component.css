@@ -1,15 +1,26 @@
 hr {
-    border: 0.5px solid black;
+  border: 0.5px solid black;
 }
 
 .coursesContainer {
-    /* border: 1px solid black; */
-    width: 80%;
-    height: 200px;
+  /* border: 1px solid black; */
+  width: 80%;
+  height: 200px;
 }
 
-.studentInfo{
+.studentInfo {
   /* border: 1px solid black; */
   width: 55%;
   height: 200px;
+}
+
+.studentName {
+  height: 30px;
+  width: 80%;
+}
+
+.courseName{
+  height: 50px;
+    /* border: 1px solid black; */
+    width: 80%;
 }
