@@ -34,10 +34,10 @@ app.use((req, res, next) => {
                 jwt.verify(token, SECRET_KEY_FOR_JWT);
                 next();
             } catch (ex) {
-                res.status(401).send('Not authorize request');
+                res.status(401).send('Unauthorized request');
             }
         } else {
-            res.status(401).send("Request doesn't have a header authorization");
+            res.status(401).send("Request doesn't have an authorization header");
         }
     }
 })
@@ -49,4 +49,3 @@ app.use('/student', studentController);
 app.listen(process.env.PORT || PORT, () => {
     console.log(`Listening on port ${process.env.PORT || PORT}!`);
 });
-

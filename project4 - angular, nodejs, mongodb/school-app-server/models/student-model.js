@@ -1,11 +1,12 @@
 'use strict';
 
-function Student(_id, name, phone, email, image) {
-    this._id = _id;
-    this.name = name;
-    this.phone = phone;
-    this.email = email;
-    this.image = image;
+function Student(obj) {
+    this._id = obj._id;
+    this.name = obj.name;
+    this.phone = obj.phone;
+    this.email = obj.email;
+    this.image = obj.image;
+    this.courses = obj.courses;
 }
 
 module.exports = {

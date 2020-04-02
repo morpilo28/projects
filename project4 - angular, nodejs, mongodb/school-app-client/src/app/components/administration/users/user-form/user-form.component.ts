@@ -33,7 +33,7 @@ export class UserFormComponent implements OnInit {
         this.image = res.image;
       });
     } else {
-      this.userNewData = { name: null, phone: null, email: null, role: null, image: null }
+      this.userNewData = {name: null, phone: null, email: null, role: null, image: null, password:null}
     }
     this.userService.getCurrentUser().subscribe(res => this.currentUser = res);
     this.userService.getUsersList().subscribe(res => this.usersList = res);
@@ -89,11 +89,12 @@ export class UserFormComponent implements OnInit {
   onPickedImg(imgBtn, fileInput) {
     const imgFile = fileInput.files[0];
     if (imgFile) {
-      imgBtn.innerHTML = 'Change Image';
+      
       const formData = this.createFormData(imgFile);
       this.userService.uploadUserImg(formData).subscribe(
         res => {
           this.image = res.fileName;
+          imgBtn.innerHTML = 'Change Image';
           this.imagesToDelete.push(res.fileName);
         },
         err => console.log(err));

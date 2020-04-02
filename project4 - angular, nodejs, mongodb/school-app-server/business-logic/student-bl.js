@@ -5,14 +5,18 @@ const dal = require('../dal');
 const fs = require('fs');
 const path = require('path').resolve(__dirname, '..');
 const imgFolder = 'studentImages';
+const studentModel = require('../models/student-model');
+const courseModel = require('../models/course-model');
+
 
 function get(cb) {
-    dal.get(studentCollection, (e, d) => {
+    dal.get(studentCollection, (e, allStudents) => {
         if (e) {
             console.log(e);
             cb(e);
         } else {
-            cb(null, d);
+            allStudents = modelVariable(allStudents, studentModel.Student);
+            cb(null, allStudents);
         }
     });
 }
@@ -22,24 +26,29 @@ function getOne(id, cb) {
         if (e) {
             console.log("can't get student");
         } else {
+            student = modelVariable(student, studentModel.Student);
             cb(null, student);
         }
     });
 }
 
 function insertOne(studentToAdd, cb) {
+    studentToAdd = modelVariable(studentToAdd, studentModel.Student);
     dal.insert(studentCollection, studentToAdd, (e, studentInserted) => {
         if (e) {
             console.log("can't insert student");
         } else {
-            const studentToAddToCourse = { ...studentToAdd };
+            studentInserted = modelVariable(studentInserted, studentModel.Student);
+            let studentToAddToCourse = { ...studentToAdd };
+            studentToAddToCourse = modelVariable(studentToAddToCourse, studentModel.Student);
             delete studentToAddToCourse['courses'];
             for (let i = 0; i < studentToAdd.courses.length; i++) {
                 dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse, (e, singleCourse) => {
                     if (e) {
                         cb("can't insert student into his checked courses");
                     } else {
-                        console.log('inserter student into checked course');
+                        singleCourse = modelVariable(singleCourse, courseModel.Course);
+                        console.log('student was inserted into his checked course');
                     }
                 });
             }
@@ -49,13 +58,16 @@ function insertOne(studentToAdd, cb) {
 }
 
 function updateOne(studentData, cb) {
-    const studentNewData = studentData.new;
-    const studentOldData = studentData.old;
+    let studentNewData = studentData.new;
+    let studentOldData = studentData.old;
+    studentNewData = modelVariable(studentNewData, studentModel.Student);
+    studentOldData = modelVariable(studentOldData, studentModel.Student);
     dal.update(studentCollection, studentNewData, (e, studentUpdated) => {
         if (e) {
             console.log(e);
             cb(e);
         } else {
+            studentUpdated = modelVariable(studentUpdated, studentModel.Student);
             const coursesToUpdate = getCoursesToUpdate(studentData);
             delete studentNewData['courses'];
 
@@ -144,6 +156,7 @@ function deleteOne(studentToDeleteId, cb) {
         if (e) {
             console.log("can't get student");
         } else {
+            student = modelVariable(student, studentModel.Student);
             const studentImageName = student.image;
             dal.deleteDocument(studentCollection, studentToDeleteId, (e, studentDeletedId) => {
                 if (e) {
@@ -156,6 +169,7 @@ function deleteOne(studentToDeleteId, cb) {
                         if (e) {
                             console.log('problem with getting courses list');
                         } else {
+                            allCourses = modelVariable(allCourses, courseModel.Course);
                             let coursesToUpdate = [];
                             for (let i = 0; i < allCourses.length; i++) {
                                 const singleCourseStudents = allCourses[i].courseStudents;
@@ -190,6 +204,17 @@ function deleteImageFromFolder(imageName) {
             console.log(e);
         }
     });
+}
+
+function modelVariable(toModel, modelType) {
+    if (Array.isArray(toModel)) {
+        toModel = toModel.map((element) => {
+            return new modelType(element);
+        });
+        return toModel;
+    } else {
+        return new modelType(toModel);
+    }
 }
 
 module.exports = {

@@ -1,13 +1,13 @@
 'use strict';
-  
-function User(_id, name, role, phone, email, password, image) {
-    this._id = _id;
-    this.name = name;
-    this.role = role;
-    this.phone = phone;
-    this.email = email;
-    this.password = password;
-    this.image = image;
+
+function User(obj) {
+    this._id = obj._id;
+    this.name = obj.name;
+    this.role = obj.role;
+    this.phone = obj.phone;
+    this.email = obj.email;
+    this.password = obj.password;
+    this.image = obj.image;
 }
 
 module.exports = {

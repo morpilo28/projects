@@ -5,12 +5,18 @@ const dal = require('../dal');
 const fs = require('fs');
 const path = require('path').resolve(__dirname, '..');
 const imgFolder = 'courseImages';
+const studentModel = require('../models/student-model');
+const courseModel = require('../models/course-model');
+
+//singleCourse = modelVariable(singleCourse, courseModel.Course);
+//allStudents = modelVariable(allStudents, studentModel.Student);
 
 function get(cb) {
     dal.get(courseCollection, (e, allCourses) => {
         if (e) {
             cb(e);
         } else {
+            allCourses = modelVariable(allCourses, courseModel.Course);
             cb(null, allCourses);
         }
     });
@@ -21,27 +27,32 @@ function getOne(id, cb) {
         if (e) {
             cb("can't get course")
         } else {
+            course = modelVariable(course, courseModel.Course);
             cb(null, course);
         }
     });
 }
 
 function insertOne(courseToAdd, cb) {
+    courseToAdd = modelVariable(courseToAdd, courseModel.Course);
     dal.insert(courseCollection, courseToAdd, (e, courseInserted) => {
         if (e) {
             cb("can't insert course")
         } else {
+            courseInserted = modelVariable(courseInserted, courseModel.Course);
             cb(null, courseInserted);
         }
     })
 }
 
 function updateOne(courseNewData, cb) {
+    courseNewData = modelVariable(courseNewData, courseModel.Course);
     dal.update(courseCollection, courseNewData, (e, courseUpdated) => {
         if (e) {
             console.log(e);
             cb(e);
         } else {
+            courseUpdated = modelVariable(courseUpdated, courseModel.Course);
             const studentsToUpdate = courseNewData.courseStudents;
             delete courseUpdated['courseStudents'];
             studentsToUpdate.forEach(student => {
@@ -50,6 +61,7 @@ function updateOne(courseNewData, cb) {
                         console.log("can't get student");
                     }
                     else {
+                        student = modelVariable(student, studentModel.Student);
                         if (student) {
                             let studentCourses = student.courses;
                             const foundIndex = studentCourses.findIndex(course => course._id.toString() === courseNewData._id.toString());
@@ -73,6 +85,7 @@ function updateOne(courseNewData, cb) {
 
 function deleteOne(courseToDeleteId, cb) {
     dal.getOne(courseCollection, courseToDeleteId, (e, course) => {
+        course = modelVariable(course, courseModel.Course);
         if (e) {
             console.log("can't get course");
         } else {
@@ -98,6 +111,17 @@ function deleteImageFromFolder(imageName) {
             console.log('problem with deleting image');
         }
     });
+}
+
+function modelVariable(toModel, modelType) {
+    if (Array.isArray(toModel)) {
+        toModel = toModel.map((element) => {
+            return new modelType(element);
+        });
+        return toModel;
+    } else {
+        return new modelType(toModel);
+    }
 }
 
 module.exports = {

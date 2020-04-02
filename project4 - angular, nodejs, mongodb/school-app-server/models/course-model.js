@@ -1,10 +1,11 @@
 'use strict';
 
-function Course(_id, name, description, email, image) {
-    this._id = _id;
-    this.name = name;
-    this.description = description;
-    this.image = image;
+function Course(obj) {
+    this._id = obj._id;
+    this.name = obj.name;
+    this.description = obj.description;
+    this.image = obj.image;
+    this.courseStudents = obj.courseStudents;
 }
 
 module.exports = {

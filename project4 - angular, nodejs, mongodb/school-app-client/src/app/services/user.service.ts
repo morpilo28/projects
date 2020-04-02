@@ -116,6 +116,7 @@ export class UserService {
 
   updateSingleUser(newUserData): Observable<UserModel> {
     return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
+      console.log(res);
       this.getUpdateUserList();
       this.updateIfCurrentUser(res);
       return res;

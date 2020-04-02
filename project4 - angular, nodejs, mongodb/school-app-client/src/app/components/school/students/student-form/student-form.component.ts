@@ -95,11 +95,12 @@ export class StudentFormComponent implements OnInit {
   onPickedImg(imgBtn, fileInput) {
     const imgFile = fileInput.files[0];
     if (imgFile) {
-      imgBtn.innerHTML = 'Change Image';
+      
       const formData = this.createFormData(imgFile);
       this.studentService.uploadStudentImg(formData).subscribe(
         res => {
           this.image = res.fileName;
+          imgBtn.innerHTML = 'Change Image';
           this.imagesToDelete.push(res.fileName);
         },
         err => console.log(err));

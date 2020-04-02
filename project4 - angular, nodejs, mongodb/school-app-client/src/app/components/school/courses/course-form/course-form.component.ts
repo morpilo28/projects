@@ -84,8 +84,8 @@ export class CourseFormComponent implements OnInit {
       const formData = this.createFormData(imgFile);
       this.courseService.uploadCourseImg(formData).subscribe(
         res => {
-          imgBtn.innerHTML = 'Change Image';
           this.image = res.fileName;
+          imgBtn.innerHTML = 'Change Image';
           this.imagesToDelete.push(res.fileName);
         },
         err => console.log(err));

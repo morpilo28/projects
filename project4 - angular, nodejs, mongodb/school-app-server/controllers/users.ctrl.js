@@ -9,8 +9,6 @@ var SHA256 = require("crypto-js/sha256");
 const userBl = require('../business-logic/user-bl');
 const dal = require('../dal');
 
-//TODO: check if i can do a general function of uploading the images and import it here
-
 var upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, callback) { callback(null, path.join(__dirname, '/../images/userImages')); },
@@ -89,6 +87,7 @@ router.put('/', (req, res) => {
         if (e) {
             return res.status(500).send();
         } else {
+            console.log(data);
             return res.send(data);
         }
     })
@@ -117,7 +116,7 @@ router.post('/images', upload, (req, res) => {
     })
 })
 
-router.delete('/images/:imgName', (req,res)=>{
+router.delete('/images/:imgName', (req, res) => {
     const imageName = req.params.imgName;
     userBl.deleteImageFromFolder(imageName);
 })
