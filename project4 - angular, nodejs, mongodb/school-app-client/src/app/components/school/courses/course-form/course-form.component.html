@@ -1,5 +1,5 @@
 <div *ngIf='mainContainerFilter'>
-    <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.edit">Edit
+    <div class="ml-3 mt-2 font-weight-bold overflow-auto courseName" *ngIf="mainContainerFilter.action === actions.edit">Edit
         {{courseOldData.name | titlecase}}</div>
     <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.add">Add Course</div>
     <hr class="m-2">
@@ -26,14 +26,11 @@
                 an Image</button>
         </div>
         <div *ngIf="image">
-            <img [src]="baseCourseImgUrl+image" [alt]="image" width="200" height="210" />
+            <img class="rounded" [src]="baseCourseImgUrl+image" [alt]="image" width="200" height="210" />
         </div>
         <input #fileInput type="file" id='addedImage' required style="display:none"
             (change)="onPickedImg(imgBtn, fileInput)" />
     </div>
 
-    <p class="ml-2 font-weight-bold" *ngIf="mainContainerFilter.action !== actions.add">total {{courseOldData.courseStudents.length}}
-        students taking
-        this
-        course </p>
+    <p class="ml-2 font-weight-bold" *ngIf="mainContainerFilter.action !== actions.add">Sum of students taking this course: {{courseOldData.courseStudents.length}}</p>
 </div>

@@ -31,7 +31,7 @@ export class StudentFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.studentService.getStudentInfo().subscribe(res => {
-        this.studentNewData = { ...res }; 
+        this.studentNewData = { ...res };
         this.studentOldData = res;
         this.image = res.image;
       });
@@ -61,6 +61,7 @@ export class StudentFormComponent implements OnInit {
           );
         } else {
           alert('student email already exist');
+          this.studentNewData.email = null;
         }
       } else {
         alert('all fields must be filled');
@@ -77,8 +78,9 @@ export class StudentFormComponent implements OnInit {
             res => this.showSchoolMainPage.emit('moreInfo'),
             err => console.log(err)
           );
-        }else{
+        } else {
           alert('student email already exist');
+          this.studentNewData.email = this.studentOldData.email;
         }
       } else {
         alert('all fields must be filled');
@@ -102,9 +104,11 @@ export class StudentFormComponent implements OnInit {
         },
         err => console.log(err));
     } else {
-      imgBtn.innerHTML = 'Choose an Image';
       if (this.studentOldData) {
         this.image = this.studentOldData.image;
+      }else{
+        this.image = null;
+        imgBtn.innerHTML = 'Choose an Image';
       }
     }
   }

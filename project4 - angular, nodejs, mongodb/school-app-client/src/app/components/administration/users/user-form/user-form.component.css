@@ -7,6 +7,12 @@ hr{
 }
 
 .labelProp{
-    width: 10%;
+    width: 7%;
     text-align: right;
+}
+
+.userName{
+   /* border: 1px solid black; */
+   height: 30px;
+   width: 95%;  
 }

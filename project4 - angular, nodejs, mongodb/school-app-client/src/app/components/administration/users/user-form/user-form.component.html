@@ -1,5 +1,5 @@
 <div class="userForm" *ngIf='mainContainerFilter'>
-    <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.edit">Edit
+    <div class="ml-3 mt-2 font-weight-bold overflow-auto userName" *ngIf="mainContainerFilter.action === actions.edit">Edit
         {{userOldData.name | titlecase}}</div>
     <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.add">Add Admin</div>
     <hr class="m-2">
@@ -45,7 +45,7 @@
                 Image</button>
         </div>
         <div *ngIf="image">
-            <img [src]="baseUserImgUrl+image" [alt]="image" width="200" height="210" />
+            <img class="rounded" [src]="baseUserImgUrl+image" [alt]="image" width="200" height="210" />
         </div>
         <input #fileInput type="file" id='addedImage' required style="display:none"
             (change)="onPickedImg(imgBtn, fileInput)" />

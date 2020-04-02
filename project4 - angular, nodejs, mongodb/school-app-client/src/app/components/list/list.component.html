@@ -10,7 +10,6 @@
                     (click)="onItemClicked(title, item._id); onAction(title, actions.moreInfo)">
                     <img class='float-left' [src]='baseImgUrl+imgFolder+item.image' [alt]='item.image' />
                     <div class="info float-left overflow-auto">
-                        <!-- align-self-center -->
                         <div>
                             {{item.name | titlecase}} 
                             <ng-container *ngIf="title === titles.administrators">, {{item.role}}</ng-container>

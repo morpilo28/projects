@@ -1,8 +1,10 @@
 .main {
-    width: 65%;
+    width: 60%;
     background-color: yellow;
     height: 550px;
     float: right;
+    margin-right: 2%;
+    margin-top: 1%;
 }
 
 .administrators {
@@ -15,4 +17,6 @@
 
 .summary{
     text-align: center;
+    border: 1px solid black;
+    padding-top: 10em;
 }

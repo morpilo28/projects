@@ -5,16 +5,28 @@
 }
 
 .courses {
-    background-color: green;
+    /* background-color: green; */
 }
 
 .students {
-    background-color: blue;
+    /* background-color: blue; */
+}
+
+.students,.courses{
+    width: 23%;
 }
 
 .main {
-    /* width: 50%; */
+    width: 50%;
     background-color: yellow;
     height: 550px;
     float: right;
+    margin-right: 2%;
+}
+
+
+.summary{
+    text-align: center;
+    border: 1px solid black;
+    padding-top: 10em;
 }

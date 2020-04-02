@@ -31,7 +31,8 @@ img {
 }
 
 .info {
-    /* border: 1px solid black; */
     width: 60%;
-    height: 73px;
+    height:73px;
+    min-width: 60%;
+    min-height: 73px;
 }

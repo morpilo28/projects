@@ -1,15 +1,16 @@
+<!-- user's list -->
+<app-list class="administrators" title='administrators' (mainContainerFilter)='filterForMainContainer($event)'>
+</app-list>
+
 <!-- only on start  -->
 <!-- TODO: maybe move it to a separate component -->
-<div class="main summary" *ngIf="!_mainContainerFilter.action">
-    <h2>Administration summary</h2>
-    <p>owner: {{administratorsCount.owner}}</p>
-    <p>manager: {{administratorsCount.manager}}</p>
-    <p>sales: {{administratorsCount.sales}}</p>
-    <p>Total of {{totalUsers}} administrators</p>
+<div class="main summary rounded" *ngIf="!_mainContainerFilter.action">
+        <h2 class="mb-4">Administration summary</h2>
+        <p>Owner: <strong>{{administratorsCount.owner}}</strong></p>
+        <p>Manager: <strong>{{administratorsCount.manager}}</strong></p>
+        <p>Sales: <strong>{{administratorsCount.sales}}</strong></p>
+        <p>Total of <strong><u>{{totalUsers}}</u></strong> administrators</p>
 </div>
-
-<!-- user's list -->
-<app-list class="administrators" title='administrators' (mainContainerFilter)='filterForMainContainer($event)'></app-list>
 
 <!-- on add user -->
 <app-user-form class="main" *ngIf="_mainContainerFilter.action === 'add'" [mainContainerFilter]='_mainContainerFilter'

@@ -49,6 +49,7 @@ export class CourseFormComponent implements OnInit {
           );
         } else {
           alert('course name already exist');
+          this.courseNewData.name= null;
         }
       } else {
         alert('all fields must be filled');
@@ -65,6 +66,7 @@ export class CourseFormComponent implements OnInit {
           );
         } else {
           alert('course name already exist');
+          this.courseNewData.name = this.courseOldData.name;
         }
       } else {
         alert('all fields must be filled');
@@ -79,18 +81,20 @@ export class CourseFormComponent implements OnInit {
   onPickedImg(imgBtn, fileInput) {
     const imgFile = fileInput.files[0];
     if (imgFile) {
-      imgBtn.innerHTML = 'Change Image';
       const formData = this.createFormData(imgFile);
       this.courseService.uploadCourseImg(formData).subscribe(
         res => {
+          imgBtn.innerHTML = 'Change Image';
           this.image = res.fileName;
           this.imagesToDelete.push(res.fileName);
         },
         err => console.log(err));
     } else {
-      imgBtn.innerHTML = 'Choose an Image';
       if (this.courseOldData) {
         this.image = this.courseOldData.image;
+      }else{
+        this.image = null;
+        imgBtn.innerHTML = 'Choose an Image';
       }
     }
   }

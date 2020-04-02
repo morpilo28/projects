@@ -16,8 +16,8 @@
         </div>
         <div class="studentsContainer overflow-auto">
             <div class="mb-2 clearfix" *ngFor="let student of courseInfo.courseStudents">
-                <img class="float-left" [src]="baseStudentImgUrl+student.image" [alt]="student.image" width="50" height="50" />
-                <div class="float-left studentName overflow-auto">{{student.name}}</div>
+                <img class="float-left rounded" [src]="baseStudentImgUrl+student.image" [alt]="student.image" width="50" height="50" />
+                <div class="float-left studentName overflow-auto ml-2">{{student.name}}</div>
             </div>
         </div>
     </div>

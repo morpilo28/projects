@@ -3,10 +3,16 @@ hr{
 }
 
 .labelProp{
-    width: 20%;
+    width: 16%;
     text-align: right;
 }
 
 .descriptionBox *{
     vertical-align: middle;
+}
+
+.courseName{
+    /* border: 1px solid black; */
+    height: 30px;
+    width: 95%;
 }

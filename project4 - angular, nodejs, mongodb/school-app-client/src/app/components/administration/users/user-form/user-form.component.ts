@@ -55,6 +55,7 @@ export class UserFormComponent implements OnInit {
           );
         } else {
           alert('user email already exist');
+          this.userNewData.email = null;
         }
       } else {
         alert('all fields must be filled');
@@ -73,6 +74,7 @@ export class UserFormComponent implements OnInit {
           );
         } else {
           alert('user email already exist');
+          this.userNewData.email = this.userOldData.email;
         }
       } else {
         alert('all fields must be filled');
