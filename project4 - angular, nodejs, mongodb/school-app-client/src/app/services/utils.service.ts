@@ -23,4 +23,34 @@ export class UtilsService {
       return false;
     }
   }
+
+  isAlreadyExist(list, newData, field) {
+    for (let i = 0; i < list.length; i++) {
+      const dataFromList = list[i];
+      if (newData._id) {
+        if (dataFromList._id !== newData._id) {
+          if (this.validateByField(field, dataFromList, newData)) {
+            return true;
+          };
+        }
+      } else {
+        if (this.validateByField(field, dataFromList, newData)) {
+          return true;
+        };
+      }
+    }
+    return false;
+  }
+
+  validateByField(field, dataFromList, newData) {
+    if (field === 'email') {
+      if (dataFromList.email === newData.email) {
+        return true;
+      }
+    } else if (field === 'name') {
+      if (dataFromList.name === newData.name) {
+        return true;
+      }
+    }
+  }
 }

@@ -42,7 +42,7 @@ export class CourseFormComponent implements OnInit {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.courseNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
-        if (!this.isAlreadyExist()) {
+        if (!this.utilsService.isAlreadyExist(this.coursesList, this.courseNewData, 'name')) {
           this.deleteUnsavedImages(this.courseNewData.image);
           this.courseService.addSingleCourse(this.courseNewData).subscribe(
             res => this.showSchoolMainPage.emit('moreInfo'),
@@ -58,7 +58,7 @@ export class CourseFormComponent implements OnInit {
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
-        if (!this.isAlreadyExist()) {
+        if (!this.utilsService.isAlreadyExist(this.coursesList, this.courseNewData, 'name')) {
           this.imagesToDelete.push(this.courseOldData.image);
           this.deleteUnsavedImages(this.courseNewData.image);
           this.courseService.updateSingleCourse(this.courseNewData).subscribe(
@@ -118,23 +118,5 @@ export class CourseFormComponent implements OnInit {
   deleteUnsavedImages(imageSaved) {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
     this.imagesToDelete.forEach(imageName => this.courseService.deleteUnsavedImages(imageName).subscribe());
-  }
-
-  isAlreadyExist() {
-    for (let i = 0; i < this.coursesList.length; i++) {
-      const courseFromList = this.coursesList[i];
-      if (this.courseNewData._id) {
-        if (courseFromList._id !== this.courseNewData._id) {
-          if (courseFromList.name === this.courseNewData.name) {
-            return true;
-          }
-        }
-      } else {
-        if (courseFromList.name === this.courseNewData.name) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 }

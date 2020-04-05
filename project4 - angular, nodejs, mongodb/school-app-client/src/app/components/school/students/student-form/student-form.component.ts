@@ -54,7 +54,7 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked; // different
       if (this.utilsService.areAllFieldsFull(this.studentNewData)) {
-        if (!this.isAlreadyExist()) {
+        if (!this.utilsService.isAlreadyExist(this.studentsList, this.studentNewData, 'email')) {
           this.deleteUnsavedImages(this.studentNewData.image);
           this.studentService.addSingleStudent(this.studentNewData).subscribe(
             res => this.showSchoolMainPage.emit('moreInfo'),
@@ -72,7 +72,7 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.courses = this.coursesChecked;
       const studentData = { old: this.studentOldData, new: this.studentNewData };
       if (this.utilsService.areAllFieldsFull(this.studentNewData)) {
-        if (!this.isAlreadyExist()) {
+        if (!this.utilsService.isAlreadyExist(this.studentsList, this.studentNewData, 'email')) {
           this.imagesToDelete.push(this.studentOldData.image);
           this.deleteUnsavedImages(this.studentNewData.image);
           this.studentService.updateSingleStudent(studentData).subscribe(
@@ -174,23 +174,5 @@ export class StudentFormComponent implements OnInit {
   deleteUnsavedImages(imageSaved) {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
     this.imagesToDelete.forEach(imageName => this.studentService.deleteUnsavedImages(imageName).subscribe());
-  }
-
-  isAlreadyExist() {
-    for (let i = 0; i < this.studentsList.length; i++) {
-      const userFromList = this.studentsList[i];
-      if (this.studentNewData._id) {
-        if (userFromList._id !== this.studentNewData._id) {
-          if (userFromList.email === this.studentNewData.email) {
-            return true;
-          }
-        }
-      } else {
-        if (userFromList.email === this.studentNewData.email) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 }

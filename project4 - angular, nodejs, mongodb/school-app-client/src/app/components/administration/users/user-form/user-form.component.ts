@@ -48,7 +48,7 @@ export class UserFormComponent implements OnInit {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.userNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
-        if (!this.isAlreadyExist()) {
+        if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
           this.deleteUnsavedImages(this.userNewData.image);
           this.userService.addSingleUser(this.userNewData).subscribe(
             res => this.showUserMainPage.emit(true),
@@ -64,7 +64,7 @@ export class UserFormComponent implements OnInit {
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
-        if (!this.isAlreadyExist()) {
+        if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
           this.imagesToDelete.push(this.userOldData.image);
           this.deleteUnsavedImages(this.userNewData.image);
           this.userService.updateSingleUser(this.userNewData).subscribe(
@@ -127,21 +127,4 @@ export class UserFormComponent implements OnInit {
     this.imagesToDelete.forEach(imageName => this.userService.deleteUnsavedImages(imageName).subscribe());
   }
 
-  isAlreadyExist() {
-    for (let i = 0; i < this.usersList.length; i++) {
-      const userFromList = this.usersList[i];
-      if (this.userNewData._id) {
-        if (userFromList._id !== this.userNewData._id) {
-          if (userFromList.email === this.userNewData.email) {
-            return true;
-          }
-        }
-      } else {
-        if (userFromList.email === this.userNewData.email) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
 }
