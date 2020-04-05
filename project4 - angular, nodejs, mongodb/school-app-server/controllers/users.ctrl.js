@@ -3,9 +3,10 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const multer = require('multer');
+const imgFolder = 'userImages';
+const deleteUtils = require('../utils/deleteImage');
 var CryptoJS = require("crypto-js");
 var SHA256 = require("crypto-js/sha256");
-
 const userBl = require('../business-logic/user-bl');
 const dal = require('../dal');
 
@@ -117,7 +118,13 @@ router.post('/images', upload, (req, res) => {
 
 router.delete('/images/:imgName', (req, res) => {
     const imageName = req.params.imgName;
-    userBl.deleteImageFromFolder(imageName);
+    deleteUtils.deleteImageFromFolder(imageName, imgFolder, (e,d)=>{
+        if(e){
+            return res.status(500).end('problem with deleting user img');
+        }else{
+            return res.send(d);
+        }
+    });
 })
 
 module.exports = router;

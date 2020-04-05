@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const multer = require('multer');
+const imgFolder = 'courseImages';
+const deleteUtils = require('../utils/deleteImage');
 const courseBl = require('../business-logic/course-bl');
 
 var upload = multer({
@@ -95,7 +97,13 @@ router.post('/images', upload, (req, res) => {
 
 router.delete('/images/:imgName', (req,res)=>{
     const imageName = req.params.imgName;
-    courseBl.deleteImageFromFolder(imageName);
+    deleteUtils.deleteImageFromFolder(imageName, imgFolder, (e,d)=>{
+        if(e){
+            return res.status(500).end('problem with deleting course img');
+        }else{
+            return res.send(d);
+        }
+    });
 })
 
 module.exports = router;

@@ -2,9 +2,8 @@
 const courseCollection = 'course';
 const studentCollection = 'student';
 const dal = require('../dal');
-const fs = require('fs');
-const path = require('path').resolve(__dirname, '..');
 const imgFolder = 'courseImages';
+const deleteUtils = require('../utils/deleteImage');
 const studentModel = require('../models/student-model');
 const courseModel = require('../models/course-model');
 
@@ -96,14 +95,20 @@ function deleteOne(courseToDeleteId, cb) {
                     cb(e);
                 } else {
                     //TODO: maybe make it sync func or put cb after deleting image
-                    deleteImageFromFolder(courseImageName);
+                    deleteUtils.deleteImageFromFolder(courseImageName, imgFolder, (e, d) => {
+                        if(e){
+                            console.log(e);
+                        }else{
+                            console.log('course img deleted');
+                        }
+                     });
                     cb(null, courseDeletedId);
                 }
             });
         }
     })
 }
-
+/* 
 function deleteImageFromFolder(imageName) {
     let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
     fs.unlink(ImageToDelete, (e) => {
@@ -111,7 +116,7 @@ function deleteImageFromFolder(imageName) {
             console.log('problem with deleting course image');
         }
     });
-}
+} */
 
 function modelVariable(toModel, modelType) {
     if (Array.isArray(toModel)) {
@@ -130,5 +135,5 @@ module.exports = {
     insertOne: insertOne,
     updateOne: updateOne,
     deleteOne: deleteOne,
-    deleteImageFromFolder: deleteImageFromFolder,
+    // deleteImageFromFolder: deleteImageFromFolder,
 }
