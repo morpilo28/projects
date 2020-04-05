@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { StudentsService } from 'src/app/services/students.service';
 import { CourseModel } from 'src/app/models/course-model';
 import { CourseService } from 'src/app/services/course.service';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-student-form',
@@ -26,7 +27,7 @@ export class StudentFormComponent implements OnInit {
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private studentService: StudentsService, private courseService: CourseService) { }
+  constructor(private studentService: StudentsService, private courseService: CourseService, private utilsService:UtilsService) { }
 
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
@@ -51,8 +52,8 @@ export class StudentFormComponent implements OnInit {
   save() {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.studentNewData.image = this.image;
-      this.studentNewData.courses = this.coursesChecked;
-      if (this.areAllFieldsFull(this.studentNewData)) {
+      this.studentNewData.courses = this.coursesChecked; // different
+      if (this.utilsService.areAllFieldsFull(this.studentNewData)) {
         if (!this.isAlreadyExist()) {
           this.deleteUnsavedImages(this.studentNewData.image);
           this.studentService.addSingleStudent(this.studentNewData).subscribe(
@@ -70,7 +71,7 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
       const studentData = { old: this.studentOldData, new: this.studentNewData };
-      if (this.areAllFieldsFull(this.studentNewData)) {
+      if (this.utilsService.areAllFieldsFull(this.studentNewData)) {
         if (!this.isAlreadyExist()) {
           this.imagesToDelete.push(this.studentOldData.image);
           this.deleteUnsavedImages(this.studentNewData.image);
@@ -173,15 +174,6 @@ export class StudentFormComponent implements OnInit {
   deleteUnsavedImages(imageSaved) {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
     this.imagesToDelete.forEach(imageName => this.studentService.deleteUnsavedImages(imageName).subscribe());
-  }
-
-  areAllFieldsFull(formItems) {
-    for (var key in formItems) {
-      if (formItems[key] === null || formItems[key] === undefined || formItems[key] === "") {
-        return false;
-      }
-    }
-    return true;
   }
 
   isAlreadyExist() {

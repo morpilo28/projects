@@ -4,6 +4,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { UserModel } from 'src/app/models/user-model';
 import { environment } from 'src/environments/environment';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-user-form',
@@ -23,7 +24,7 @@ export class UserFormComponent implements OnInit {
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showUserMainPage: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private utilsService:UtilsService) { }
 
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
@@ -46,7 +47,7 @@ export class UserFormComponent implements OnInit {
   save() {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.userNewData.image = this.image;
-      if (this.areAllFieldsFull(this.userNewData)) {
+      if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.isAlreadyExist()) {
           this.deleteUnsavedImages(this.userNewData.image);
           this.userService.addSingleUser(this.userNewData).subscribe(
@@ -62,7 +63,7 @@ export class UserFormComponent implements OnInit {
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
-      if (this.areAllFieldsFull(this.userNewData)) {
+      if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.isAlreadyExist()) {
           this.imagesToDelete.push(this.userOldData.image);
           this.deleteUnsavedImages(this.userNewData.image);
@@ -124,15 +125,6 @@ export class UserFormComponent implements OnInit {
   deleteUnsavedImages(imageSaved) {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
     this.imagesToDelete.forEach(imageName => this.userService.deleteUnsavedImages(imageName).subscribe());
-  }
-
-  areAllFieldsFull(formItems) {
-    for (var key in formItems) {
-      if (formItems[key] === null || formItems[key] === undefined || formItems[key] === "") {
-        return false;
-      }
-    }
-    return true;
   }
 
   isAlreadyExist() {

@@ -4,6 +4,7 @@ import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
 import { CourseModel } from 'src/app/models/course-model';
 import { environment } from 'src/environments/environment';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-course-form',
@@ -22,7 +23,7 @@ export class CourseFormComponent implements OnInit {
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private courseService: CourseService) { }
+  constructor(private courseService: CourseService, private utilsService:UtilsService) { }
 
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
@@ -40,7 +41,7 @@ export class CourseFormComponent implements OnInit {
   save() {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.courseNewData.image = this.image;
-      if (this.areAllFieldsFull(this.courseNewData)) {
+      if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
         if (!this.isAlreadyExist()) {
           this.deleteUnsavedImages(this.courseNewData.image);
           this.courseService.addSingleCourse(this.courseNewData).subscribe(
@@ -49,14 +50,14 @@ export class CourseFormComponent implements OnInit {
           );
         } else {
           alert('course name already exist');
-          this.courseNewData.name= null;
+          this.courseNewData.name = null;
         }
       } else {
         alert('all fields must be filled');
       }
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseNewData.image = this.image;
-      if (this.areAllFieldsFull(this.courseNewData)) {
+      if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
         if (!this.isAlreadyExist()) {
           this.imagesToDelete.push(this.courseOldData.image);
           this.deleteUnsavedImages(this.courseNewData.image);
@@ -92,7 +93,7 @@ export class CourseFormComponent implements OnInit {
     } else {
       if (this.courseOldData) {
         this.image = this.courseOldData.image;
-      }else{
+      } else {
         this.image = null;
         imgBtn.innerHTML = 'Choose an Image';
       }
@@ -111,21 +112,12 @@ export class CourseFormComponent implements OnInit {
         res => this.showSchoolMainPage.emit(null),
         err => console.log(err)
       );
-    } 
+    }
   }
 
   deleteUnsavedImages(imageSaved) {
     this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
     this.imagesToDelete.forEach(imageName => this.courseService.deleteUnsavedImages(imageName).subscribe());
-  }
-
-  areAllFieldsFull(formItems) {
-    for (var key in formItems) {
-      if (formItems[key] === null || formItems[key] === undefined || formItems[key] === "") {
-        return false;
-      }
-    }
-    return true;
   }
 
   isAlreadyExist() {
