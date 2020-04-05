@@ -5,6 +5,8 @@ const path = require('path');
 const multer = require('multer');
 const studentBl = require('../business-logic/student-bl');
 const courseBl = require('../business-logic/course-bl');
+const imgFolder = 'studentImages';
+const deleteUtils = require('../utils/deleteImage');
 
 var upload = multer({
     storage: multer.diskStorage({
@@ -96,7 +98,13 @@ router.post('/images', upload, (req, res) => {
 
 router.delete('/images/:imgName', (req,res)=>{
     const imageName = req.params.imgName;
-    studentBl.deleteImageFromFolder(imageName);
+    deleteUtils.deleteImageFromFolder(imageName, imgFolder, (e,d)=>{
+        if(e){
+            return res.status(500).end('problem with deleting student img');
+        }else{
+            return res.send(d);
+        }
+    });
 })
 
 module.exports = router;

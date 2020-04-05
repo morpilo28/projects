@@ -49,7 +49,7 @@ export class UserFormComponent implements OnInit {
       this.userNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
-          this.deleteUnsavedImages(this.userNewData.image);
+          this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
           this.userService.addSingleUser(this.userNewData).subscribe(
             res => this.showUserMainPage.emit(true),
             err => console.log(err)
@@ -66,7 +66,7 @@ export class UserFormComponent implements OnInit {
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
           this.imagesToDelete.push(this.userOldData.image);
-          this.deleteUnsavedImages(this.userNewData.image);
+          this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
           this.userService.updateSingleUser(this.userNewData).subscribe(
             res => {
               this.showUserMainPage.emit(true);
@@ -120,11 +120,6 @@ export class UserFormComponent implements OnInit {
         err => console.log(err)
       );
     }
-  }
-
-  deleteUnsavedImages(imageSaved) {
-    this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
-    this.imagesToDelete.forEach(imageName => this.userService.deleteUnsavedImages(imageName).subscribe());
   }
 
 }

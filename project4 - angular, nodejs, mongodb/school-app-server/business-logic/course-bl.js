@@ -108,7 +108,7 @@ function deleteImageFromFolder(imageName) {
     let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
     fs.unlink(ImageToDelete, (e) => {
         if (e) {
-            console.log('problem with deleting image');
+            console.log('problem with deleting course image');
         }
     });
 }

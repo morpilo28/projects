@@ -99,7 +99,6 @@ function deleteOne(userToDeleteId, cb) {
                     cb(e);
                 } else {
                     //TODO: maybe make it sync func or put cb after deleting image
-                    console.log(userDeletedId);
                     deleteImageFromFolder(userImageName);
                     cb(null, userDeletedId);
                 }
@@ -116,7 +115,7 @@ function deleteImageFromFolder(imageName) {
     let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
     fs.unlink(ImageToDelete, (e) => {
         if (e) {
-            console.log('problem with deleting image');
+            console.log('problem with deleting user image');
         }
     });
 }

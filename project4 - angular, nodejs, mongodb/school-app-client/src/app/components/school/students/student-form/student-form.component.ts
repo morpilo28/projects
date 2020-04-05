@@ -55,7 +55,7 @@ export class StudentFormComponent implements OnInit {
       this.studentNewData.courses = this.coursesChecked; // different
       if (this.utilsService.areAllFieldsFull(this.studentNewData)) {
         if (!this.utilsService.isAlreadyExist(this.studentsList, this.studentNewData, 'email')) {
-          this.deleteUnsavedImages(this.studentNewData.image);
+          this.utilsService.deleteUnsavedImages(this.studentNewData.image, this.imagesToDelete, this.studentService)
           this.studentService.addSingleStudent(this.studentNewData).subscribe(
             res => this.showSchoolMainPage.emit('moreInfo'),
             err => console.log(err)
@@ -74,7 +74,7 @@ export class StudentFormComponent implements OnInit {
       if (this.utilsService.areAllFieldsFull(this.studentNewData)) {
         if (!this.utilsService.isAlreadyExist(this.studentsList, this.studentNewData, 'email')) {
           this.imagesToDelete.push(this.studentOldData.image);
-          this.deleteUnsavedImages(this.studentNewData.image);
+          this.utilsService.deleteUnsavedImages(this.studentNewData.image, this.imagesToDelete, this.studentService)
           this.studentService.updateSingleStudent(studentData).subscribe(
             res => this.showSchoolMainPage.emit('moreInfo'),
             err => console.log(err)
@@ -169,10 +169,5 @@ export class StudentFormComponent implements OnInit {
         }
       })
     }
-  }
-
-  deleteUnsavedImages(imageSaved) {
-    this.imagesToDelete = this.imagesToDelete.filter(image => image !== imageSaved);
-    this.imagesToDelete.forEach(imageName => this.studentService.deleteUnsavedImages(imageName).subscribe());
   }
 }

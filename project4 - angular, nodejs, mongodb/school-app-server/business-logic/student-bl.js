@@ -2,11 +2,10 @@
 const studentCollection = 'student';
 const courseCollection = 'course';
 const dal = require('../dal');
-const fs = require('fs');
-const path = require('path').resolve(__dirname, '..');
 const imgFolder = 'studentImages';
 const studentModel = require('../models/student-model');
 const courseModel = require('../models/course-model');
+const deleteUtils = require('../utils/deleteImage');
 
 
 function get(cb) {
@@ -164,7 +163,7 @@ function deleteOne(studentToDeleteId, cb) {
                     cb('problem with deleting student');
                 } else {
                     //TODO: maybe make it sync func or put cb after deleting image
-                    deleteImageFromFolder(studentImageName);
+                    deleteUtils.deleteImageFromFolder(studentImageName, imgFolder, (e, d) => { });
                     dal.get(courseCollection, (e, allCourses) => {
                         if (e) {
                             console.log('problem with getting courses list');
@@ -197,15 +196,6 @@ function deleteOne(studentToDeleteId, cb) {
     });
 }
 
-function deleteImageFromFolder(imageName) {
-    let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
-    fs.unlink(ImageToDelete, (e) => {
-        if (e) {
-            console.log(e);
-        }
-    });
-}
-
 function modelVariable(toModel, modelType) {
     if (Array.isArray(toModel)) {
         toModel = toModel.map((element) => {
@@ -223,5 +213,4 @@ module.exports = {
     insertOne: insertOne,
     updateOne: updateOne,
     deleteOne: deleteOne,
-    deleteImageFromFolder: deleteImageFromFolder,
 }

@@ -53,4 +53,12 @@ export class UtilsService {
       }
     }
   }
+
+  deleteUnsavedImages(imageSaved, imagesToDelete, service) {
+    imagesToDelete = imagesToDelete.filter(image => image !== imageSaved);
+    imagesToDelete.forEach(imageName => service.deleteUnsavedImages(imageName).subscribe(
+      res => console.log(res),
+      err => console.log(err)
+    ));
+  }
 }
