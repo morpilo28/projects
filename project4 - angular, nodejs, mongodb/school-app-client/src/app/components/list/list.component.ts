@@ -22,6 +22,7 @@ export class ListComponent implements OnInit {
   private roles = environment.roles;
   private actions = environment.actions;
   private titles = environment.titles;
+  private note: string;
 
   constructor(private userService: UserService, private studentsService: StudentsService, private courseService: CourseService, private utilsService: UtilsService) { }
 
@@ -39,21 +40,30 @@ export class ListComponent implements OnInit {
       case 'administrators':
         this.utilsService.getList(this.userService, (e, res) => {
           if (e) console.log(e);
-          else if (res) this.list = res;
+          else if (res) {
+            this.list = res;
+            this.note = res.length === 0? 'No users in the system' : null
+          }
           else this.userService.updateList();
         });
         break;
       case 'students':
         this.utilsService.getList(this.studentsService, (e, res) => {
           if (e) console.log(e);
-          else if (res) this.list = res;
+          else if (res) {
+            this.list = res;
+            this.note = res.length === 0? 'No students in the system' : null;
+          }
           else this.studentsService.updateList();
         });
         break;
       case 'courses':
         this.utilsService.getList(this.courseService, (e, res) => {
           if (e) console.log(e);
-          else if (res) this.list = res;
+          else if (res) {
+            this.list = res;
+            this.note = res.length === 0? 'No courses in the system' : null;
+          }
           else this.courseService.updateList();
         });
         break;
@@ -67,13 +77,13 @@ export class ListComponent implements OnInit {
   onItemClicked(title, itemId) {
     switch (title) {
       case 'administrators':
-        this.utilsService.setInfo(this.userService,itemId);
+        this.utilsService.setInfo(this.userService, itemId);
         break
       case 'students':
-        this.utilsService.setInfo(this.studentsService,itemId);  
+        this.utilsService.setInfo(this.studentsService, itemId);
         break
       case 'courses':
-        this.utilsService.setInfo(this.courseService,itemId);  
+        this.utilsService.setInfo(this.courseService, itemId);
         break
     }
   }

@@ -23,9 +23,10 @@ app.use((req, res, next) => {
 
     const allowed = {
         onLogin: req.method === 'POST' && req.path === '/user/login',
+        imgSrc: req.method === 'GET' && (req.path.indexOf('images') > -1)
     }
 
-    if (allowed.onLogin) {
+    if (allowed.onLogin || allowed.imgSrc) {
         next();
     } else {
         if (req.headers.authorization) {

@@ -1,6 +1,7 @@
 <h6 class="mb-3">
     <span class="ml-2"> {{title}} </span> <span class="ml-4" (click)="onAction(title, actions.add)">+</span>
 </h6>
+<p>{{note}}</p>
 <div class='listContainer overflow-auto'>
     <ng-container *ngIf="list">
         <ng-container *ngFor="let item of list">
