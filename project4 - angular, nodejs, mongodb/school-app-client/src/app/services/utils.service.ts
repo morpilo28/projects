@@ -66,13 +66,38 @@ export class UtilsService {
     fileInput.click();
   }
 
+  onPickedImg(imgFile, service, cb) {
+    const formData = this.createFormData(imgFile);
+    service.uploadImg(formData).subscribe(
+      res => {
+        cb(null, {
+          imgName: res.fileName,
+          btnText: 'Change Image',
+        });
+      },
+      err => cb(err));
+  }
+
+  createFormData(imgFile) {
+    const formData = new FormData();
+    formData.append('imgFile', imgFile);
+    return formData;
+  }
+
   delete(id, itemDeletedName, itemDeletedKind, service, cb) {
     if (confirm(`Are you sure you want to delete this ${itemDeletedKind} (${itemDeletedName})?`)) {
       service.delete(id).subscribe(
-        res =>
-          cb(null, res),
+        res => cb(null, res),
         err => cb(err)
       );
     }
   }
+
+  insert(service, newData, cb) {
+    service.insert(newData).subscribe(
+      res => cb(null, res),
+      err => cb(err)
+    );
+  }
+
 }

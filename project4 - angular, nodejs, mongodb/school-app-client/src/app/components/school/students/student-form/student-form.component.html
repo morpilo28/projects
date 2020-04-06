@@ -23,15 +23,14 @@
     <div class="mb-3 ml-2">
         <div class="clearfix">
             <div class="labelProp float-left mr-2">Image</div>
-            <button class="mb-2 float-left rounded font-weight-bold" #imgBtn id="imgPick" style="cursor:pointer"
-                (click)="onChoosingImage(fileInput)">Choose an
-                Image</button>
+            <button class="mb-2 float-left rounded font-weight-bold" id="imgPick" style="cursor:pointer"
+                (click)="onImageBtn(fileInput)">{{imgBtnText}}</button>
         </div>
         <div *ngIf="image">
             <img class="rounded" [src]="baseStudentImgUrl+image" [alt]="image" width="200" height="210" />
         </div>
         <input #fileInput type="file" id='addedImage' required style="display:none"
-            (change)="onPickedImg(imgBtn, fileInput)" />
+            (change)="onPickedImg(fileInput)" />
     </div>
 
     <div class="clearfix coursesBox overflow-auto">

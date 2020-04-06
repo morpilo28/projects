@@ -19,22 +19,24 @@ export class UserFormComponent implements OnInit {
   private baseUserImgUrl = (`${environment.baseImgUrl}/userImages/`);
   private userNewData: UserModel = {};
   private image;
+  private imgBtnText: string = "Choose an Image"
   private imagesToDelete: string[] = [];
   private usersList;
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showUserMainPage: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  constructor(private userService: UserService, private utilsService:UtilsService) { }
+  constructor(private userService: UserService, private utilsService: UtilsService) { }
 
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
+      this.imgBtnText = 'Change Image';
       this.userService.getUserInfo().subscribe(res => {
         this.userNewData = { ...res };
         this.userOldData = res;
         this.image = res.image;
       });
     } else {
-      this.userNewData = {name: null, phone: null, email: null, role: null, image: null, password:null}
+      this.userNewData = { name: null, phone: null, email: null, role: null, image: null, password: null }
     }
     this.userService.getCurrentUser().subscribe(res => this.currentUser = res);
     this.userService.getUsersList().subscribe(res => this.usersList = res);
@@ -50,17 +52,19 @@ export class UserFormComponent implements OnInit {
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
           this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
-          this.userService.addSingleUser(this.userNewData).subscribe(
-            res => this.showUserMainPage.emit(true),
-            err => console.log(err)
-          );
+          this.utilsService.insert(this.userService, this.userNewData, (e,res)=>{
+            if(e) console.log(e);
+            else this.showUserMainPage.emit(true);
+          })
+          // this.userService.addSingleUser(this.userNewData).subscribe(
+          //   res => this.showUserMainPage.emit(true),
+          //   err => console.log(err)
+          // );
         } else {
           alert('user email already exist');
           this.userNewData.email = null;
         }
-      } else {
-        alert('all fields must be filled');
-      }
+      } else alert('all fields must be filled');
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
@@ -83,34 +87,28 @@ export class UserFormComponent implements OnInit {
     }
   }
 
-  onChoosingImage(fileInput) {
-    fileInput.click();
+  onImageBtn(fileInput) {
+    this.utilsService.onChoosingImage(fileInput);
   }
 
-  onPickedImg(imgBtn, fileInput) {
+  onPickedImg(fileInput) {
     const imgFile = fileInput.files[0];
     if (imgFile) {
-      
-      const formData = this.createFormData(imgFile);
-      this.userService.uploadUserImg(formData).subscribe(
-        res => {
-          this.image = res.fileName;
-          imgBtn.innerHTML = 'Change Image';
-          this.imagesToDelete.push(res.fileName);
-        },
-        err => console.log(err));
+      this.utilsService.onPickedImg(imgFile, this.userService, (e, res) => {
+        if (e) console.log(e);
+        else {
+          this.image = res.imgName;
+          this.imgBtnText = res.btnText;
+          this.imagesToDelete.push(res.imgName);
+        }
+      })
     } else {
-      imgBtn.innerHTML = 'Choose an Image';
-      if (this.userOldData) {
-        this.image = this.userOldData.image;
+      if (this.userOldData) this.image = this.userOldData.image;
+      else {
+        this.image = null;
+        this.imgBtnText = 'Choose an Image';
       }
     }
-  }
-
-  createFormData(imgFile) {
-    const formData = new FormData();
-    formData.append('imgFile', imgFile);
-    return formData;
   }
 
   delete(id) {
@@ -119,5 +117,4 @@ export class UserFormComponent implements OnInit {
       else this.showUserMainPage.emit(true);
     })
   }
-
 }

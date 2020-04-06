@@ -55,7 +55,7 @@ export class StudentsService {
     }));
   }
 
-  addSingleStudent(studentToAdd): Observable<StudentModel> {
+  insert(studentToAdd): Observable<StudentModel> {
     return this.httpClient.post<StudentModel>(`${environment.serverUrl}/student`, studentToAdd).pipe(map(res => {
       this.getUpdateStudentList();
       this.studentsInfo.next(res);
@@ -82,7 +82,7 @@ export class StudentsService {
     this.getAllStudentsFromDb().subscribe();
   }
 
-  uploadStudentImg(imgFormData): Observable<any> {
+  uploadImg(imgFormData): Observable<any> {
     return this.httpClient.post<any>(`${environment.serverUrl}/student/images`, imgFormData);
   }
 

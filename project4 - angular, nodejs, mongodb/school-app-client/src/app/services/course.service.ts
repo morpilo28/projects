@@ -55,7 +55,7 @@ export class CourseService {
     }));
   }
 
-  addSingleCourse(courseToAdd): Observable<CourseModel> {
+  insert(courseToAdd): Observable<CourseModel> {
     return this.httpClient.post<CourseModel>(`${environment.serverUrl}/course`, courseToAdd).pipe(map(res => {
       this.getUpdateCourseList();
       this.coursesInfo.next(res);
@@ -78,7 +78,7 @@ export class CourseService {
     }));
   }
 
-  uploadCourseImg(imgFormData): Observable<any> {
+  uploadImg(imgFormData): Observable<any> {
     return this.httpClient.post<any>(`${environment.serverUrl}/course/images`, imgFormData);
   }
 

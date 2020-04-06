@@ -100,7 +100,7 @@ export class UserService {
     }));
   }
 
-  addSingleUser(userToAdd): Observable<UserModel> {
+  insert(userToAdd): Observable<UserModel> {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/register`, userToAdd).pipe(map(res => {
       this.getUpdateUserList();
       return res;
@@ -140,7 +140,7 @@ export class UserService {
     this.getAllUsersFromDb().subscribe();
   }
 
-  uploadUserImg(imgFormData): Observable<any> {
+  uploadImg(imgFormData): Observable<any> {
     return this.httpClient.post<any>(`${environment.serverUrl}/user/images`, imgFormData);
   }
 
