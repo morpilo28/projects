@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { CourseService } from 'src/app/services/course.service';
 import { UserModel } from 'src/app/models/user-model';
 import { UserService } from 'src/app/services/user.service';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-course-info',
@@ -23,11 +24,17 @@ export class CourseInfoComponent implements OnInit {
   //TODO: change any to type of something
   @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private courseService: CourseService, private userService: UserService) { }
+  constructor(private courseService: CourseService, private userService: UserService, private utilsService: UtilsService) { }
 
   ngOnInit() {
-    this.courseService.getInfo().subscribe(res => this.courseInfo = res);
-    this.userService.getCurrentUser().subscribe(res => this.currentUser = res);
+    this.utilsService.getInfo(this.courseService, (e, res) => {
+      if(e) console.log(e);
+      else this.courseInfo = res;
+    });
+    this.userService.getCurrentUser().subscribe(
+      res=> this.currentUser = res,
+      err=> console.log(err)
+      );
   }
 
   onEdit() {

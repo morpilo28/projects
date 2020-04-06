@@ -11,7 +11,7 @@ import { BehaviorSubject, Observable, pipe } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-  private currentUserIdAndToken: UserModel;
+  private currentUserWithId: UserModel;
   private currentUser: BehaviorSubject<UserModel>;
   private currentUserObservable: Observable<UserModel>
 
@@ -27,7 +27,7 @@ export class UserService {
       this.currentUser.subscribe(res => {
         o.next(res);
       });
-      this.currentUserIdAndToken = JSON.parse(window.localStorage.getItem('userIdAndToken'))
+      this.currentUserWithId = JSON.parse(window.localStorage.getItem('userWithId'))
     });
 
     this.usersList = new BehaviorSubject<UserModel[]>(null);
@@ -45,40 +45,20 @@ export class UserService {
     });
   }
 
-  getCurrentUserIdAndToken() {
-    return this.getCurrentUserIdAndToken;
-  }
-
   userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
       userLogged => {
-        const userWithoutId = { ...userLogged };
+        let userWithoutId = { ...userLogged };
         delete userWithoutId['_id'];
-        this.setCurrentUserInLocalStorage('user', userWithoutId);
+        this.setLocalStorage('user', userWithoutId);
         this.currentUser.next(userWithoutId);
-        this.setCurrentUserInLocalStorage('userIdAndToken', userLogged);;
+        this.setLocalStorage('userWithId', userLogged);;
         return true;
       }));
   }
 
-  setCurrentUserInLocalStorage(name, user) {
+  setLocalStorage(name, user) {
     window.localStorage.setItem(name, JSON.stringify(user));
-  }
-
-  setLocalCurrentUser() {
-    this.currentUser.next(JSON.parse(window.localStorage.getItem('user')));
-  }
-
-  getCurrentUser(): Observable<UserModel> {
-    return this.currentUserObservable;
-  }
-
-  getInfo(): Observable<UserModel> {
-    return this.userInfoObservable;
-  }
-
-  getList(): Observable<UserModel[]> {
-    return this.usersListObservable;
   }
 
   clearLocalStorage() {
@@ -86,14 +66,47 @@ export class UserService {
     this.currentUser.next(null);
   }
 
-  getAllUsersFromDb(): Observable<UserModel[]> {
+  getCurrentUser(): Observable<UserModel> {
+    return this.currentUserObservable;
+  }
+
+  setCurrentUser() {
+    this.currentUser.next(JSON.parse(window.localStorage.getItem('user')));
+  }
+
+  private updateCurrentUser(res: UserModel) {
+    if (this.currentUserWithId._id.toString() === res._id.toString()) {
+      const updatedCurrentUser = {
+        name: res.name,
+        role: res.role,
+        image: res.image,
+        token: this.currentUserWithId.token,
+      };
+      this.setLocalStorage('user', updatedCurrentUser);
+      this.currentUser.next(updatedCurrentUser);
+    }
+  }
+
+  getList(): Observable<UserModel[]> {
+    return this.usersListObservable;
+  }
+
+  setList(): Observable<UserModel[]> {
     return this.httpClient.get<UserModel[]>(`${environment.serverUrl}/user`).pipe(map(res => {
       this.usersList.next(res);
       return res;
     }));
   }
 
-  setSingleUser(id): Observable<UserModel> {
+  updateList() {
+    this.setList().subscribe();
+  }
+
+  getInfo(): Observable<UserModel> {
+    return this.userInfoObservable;
+  }
+
+  setInfo(id): Observable<UserModel> {
     return this.httpClient.get<UserModel>(`${environment.serverUrl}/user/${id}`).pipe(map(res => {
       this.userInfo.next(res);
       return res;
@@ -102,14 +115,14 @@ export class UserService {
 
   insert(userToAdd): Observable<UserModel> {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/register`, userToAdd).pipe(map(res => {
-      this.getUpdateUserList();
+      this.updateList();
       return res;
     }));
   }
 
   delete(userId): Observable<UserModel> {
     return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
-      this.getUpdateUserList();
+      this.updateList();
       return res;
     }));
   }
@@ -117,27 +130,10 @@ export class UserService {
   update(newUserData): Observable<UserModel> {
     return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
       console.log(res);
-      this.getUpdateUserList();
-      this.updateIfCurrentUser(res);
+      this.updateList();
+      this.updateCurrentUser(res);
       return res;
     }));
-  }
-
-  private updateIfCurrentUser(res: UserModel) {
-    if (this.currentUserIdAndToken._id.toString() === res._id.toString()) {
-      const updatedCurrentUser = {
-        name: res.name,
-        role: res.role,
-        image: res.image,
-        token: this.currentUserIdAndToken.token,
-      };
-      this.setCurrentUserInLocalStorage('user', updatedCurrentUser);
-      this.currentUser.next(updatedCurrentUser);
-    }
-  }
-
-  getUpdateUserList() {
-    this.getAllUsersFromDb().subscribe();
   }
 
   uploadImg(imgFormData): Observable<any> {

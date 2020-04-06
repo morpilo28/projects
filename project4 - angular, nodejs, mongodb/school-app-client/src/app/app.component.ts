@@ -3,8 +3,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from './services/user.service';
 import { UserModel } from './models/user-model';
-import { CourseService } from './services/course.service';
-import { StudentsService } from './services/students.service';
 
 @Component({
   selector: 'app-root',
@@ -20,8 +18,8 @@ export class AppComponent implements OnInit {
   title = 'school-app';
   private currentUser: UserModel;
 
-  constructor(private userService: UserService, private courseService: CourseService, private studentService: StudentsService) {
-    this.userService.setLocalCurrentUser();
+  constructor(private userService: UserService) {
+    this.userService.setCurrentUser();
     this.userService.getCurrentUser().subscribe(res => {
       this.currentUser = res;
       this.isAllowed = (!res || res.role === 'sales') ? false : true;

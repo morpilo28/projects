@@ -122,11 +122,25 @@ export class UtilsService {
     );
   }
 
-  getList(service, cb){
-    debugger
+  getList(service, cb) {
     service.getList().subscribe(
       res => cb(null, res),
       err => cb(err)
     );
+  }
+
+  getImgFolderName(title) {
+    switch (title) {
+      case 'administrators':
+        return 'userImages/';
+      case 'students':
+        return 'studentImages/';
+      case 'courses':
+        return 'courseImages/';
+    }
+  }
+
+  setInfo(service, itemId) {
+    service.setInfo(itemId).subscribe();
   }
 }

@@ -39,7 +39,10 @@ export class UserFormComponent implements OnInit {
         }
       })
     } else this.userNewData = { name: null, phone: null, email: null, role: null, image: null, password: null }
-    this.userService.getCurrentUser().subscribe(res => this.currentUser = res);
+    this.userService.getCurrentUser().subscribe(
+      res => this.currentUser = res,
+      err => console.log(err)
+    );
     this.utilsService.getList(this.userService, (e, res) => {
       if (e) console.log(e);
       else this.usersList = res;
@@ -56,8 +59,8 @@ export class UserFormComponent implements OnInit {
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
           this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
-          this.utilsService.insert(this.userService, this.userNewData, (e,res)=>{
-            if(e) console.log(e);
+          this.utilsService.insert(this.userService, this.userNewData, (e, res) => {
+            if (e) console.log(e);
             else this.showUserMainPage.emit(true);
           })
         } else {
@@ -72,7 +75,7 @@ export class UserFormComponent implements OnInit {
           this.imagesToDelete.push(this.userOldData.image);
           this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
           this.utilsService.update(this.userService, this.userNewData, (e, res) => {
-            if(e) console.log(e);
+            if (e) console.log(e);
             else this.showUserMainPage.emit(true);
           });
         } else {

@@ -37,18 +37,22 @@ export class CourseService {
     return this.courseListObservable;
   }
 
-  private getAllCoursesFromDb(): Observable<CourseModel[]> {
+  private setList(): Observable<CourseModel[]> {
     return this.httpClient.get<CourseModel[]>(`${environment.serverUrl}/course`).pipe(map(res => {
       this.coursesList.next(res);
       return res;
     }));
   }
 
+  updateList():void {
+    this.setList().subscribe();
+  }
+
   getInfo(): Observable<CourseModel> {
     return this.coursesInfoObservable;
   }
 
-  setSingleCourse(id): Observable<CourseModel> {
+  setInfo(id): Observable<CourseModel> {
     return this.httpClient.get<CourseModel>(`${environment.serverUrl}/course/${id}`).pipe(map(res => {
       this.coursesInfo.next(res);
       return res;
@@ -57,7 +61,7 @@ export class CourseService {
 
   insert(courseToAdd): Observable<CourseModel> {
     return this.httpClient.post<CourseModel>(`${environment.serverUrl}/course`, courseToAdd).pipe(map(res => {
-      this.getUpdateCourseList();
+      this.updateList();
       this.coursesInfo.next(res);
       return res;
     }));
@@ -65,14 +69,14 @@ export class CourseService {
 
   delete(courseId): Observable<CourseModel> {
     return this.httpClient.delete<CourseModel>(`${environment.serverUrl}/course/${courseId}`).pipe(map(res => {
-      this.getUpdateCourseList();
+      this.updateList();
       return res;
     }));
   }
 
   update(newCourseData): Observable<CourseModel> {
     return this.httpClient.put<CourseModel>(`${environment.serverUrl}/course`, newCourseData).pipe(map(res => {
-      this.getUpdateCourseList();
+      this.updateList();
       this.coursesInfo.next(res);
       return res;
     }));
@@ -80,10 +84,6 @@ export class CourseService {
 
   uploadImg(imgFormData): Observable<any> {
     return this.httpClient.post<any>(`${environment.serverUrl}/course/images`, imgFormData);
-  }
-
-  getUpdateCourseList() {
-    this.getAllCoursesFromDb().subscribe();
   }
 
   deleteUnsavedImages(imageName):Observable<any>{

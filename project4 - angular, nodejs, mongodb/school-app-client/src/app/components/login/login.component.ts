@@ -4,8 +4,6 @@ import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/user-model';
 import { UserService } from 'src/app/services/user.service';
 import { Router } from '@angular/router';
-import { CourseService } from 'src/app/services/course.service';
-import { StudentsService } from 'src/app/services/students.service';
 
 @Component({
   selector: 'app-login',
@@ -13,10 +11,10 @@ import { StudentsService } from 'src/app/services/students.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  public user: UserModel = { email: '', password: '' }
-  public note: string = '';
+  public user: UserModel = { email: null, password: null }
+  public note: string = null;
 
-  constructor(private userService: UserService, private courseService: CourseService, private studentService: StudentsService, private router: Router) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit() { }
 
@@ -28,8 +26,8 @@ export class LoginComponent implements OnInit {
       err => {
         window.localStorage.clear();
         this.note = 'No user has been found!';
-        this.user.email = '';
-        this.user.password = '';
+        this.user.email = null;
+        this.user.password = null;
       });
   }
 }

@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/models/user-model';
 import { UserService } from 'src/app/services/user.service';
 import { environment } from 'src/environments/environment';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-administration',
@@ -21,17 +22,16 @@ export class AdministrationComponent implements OnInit {
   private roles = environment.roles;
   private totalUsers: number;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private utilsService: UtilsService) { }
 
   ngOnInit() {
-    this.userService.getList().subscribe(
-      res => {
-        if (res) {
-          this.usersList = res;
-          this.getAdministratorsCount();
-        }
-      },
-      err => console.log(err));
+    this.utilsService.getList(this.userService, (e, res) => {
+      if (e) console.log(e);
+      else if (res) {
+        this.usersList = res;
+        this.getAdministratorsCount();
+      };
+    })
   }
 
   filterForMainContainer(value) {
@@ -42,8 +42,8 @@ export class AdministrationComponent implements OnInit {
     this._mainContainerFilter = value.mainContainerFilter;
   }
 
-  onActionFinished(showUserMainPage) {
-    if (showUserMainPage) {
+  componentLoading(component) {
+    if (component) {
       this._mainContainerFilter.action = null;
       this.getAdministratorsCount();
     }

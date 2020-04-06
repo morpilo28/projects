@@ -14,7 +14,7 @@
 
 <!-- on add user -->
 <app-user-form class="main" *ngIf="_mainContainerFilter.action === 'add'" [mainContainerFilter]='_mainContainerFilter'
-    (showUserMainPage)="onActionFinished($event)">
+    (showUserMainPage)="componentLoading($event)">
 </app-user-form>
 
 <!-- on more info -->
@@ -23,5 +23,5 @@
 
 <!-- on edit  user -->
 <app-user-form class="main" *ngIf="_mainContainerFilter.action === 'edit'" [mainContainerFilter]='_mainContainerFilter'
-    (showUserMainPage)="onActionFinished($event)">
+    (showUserMainPage)="componentLoading($event)">
 </app-user-form>

@@ -4,6 +4,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { StudentModel } from 'src/app/models/student-model';
 import { environment } from 'src/environments/environment';
 import { StudentsService } from 'src/app/services/students.service';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-student-info',
@@ -20,10 +21,13 @@ export class StudentInfoComponent implements OnInit {
   //TODO: change any to type of something
   @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private studentService: StudentsService) { }
+  constructor(private studentService: StudentsService, private utilsService: UtilsService) { }
 
   ngOnInit() {
-    this.studentService.getInfo().subscribe(res => this.studentInfo = res);
+    this.utilsService.getInfo(this.studentService, (e, res) => {
+      if(e) console.log(e);
+      else this.studentInfo = res;
+    });
   }
 
   onEdit() {

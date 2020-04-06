@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
 export class StudentsService {
   private studentsList: BehaviorSubject<StudentModel[]>;
   private studentsListObservable: Observable<StudentModel[]>;
-  
+
   private studentsInfo: BehaviorSubject<StudentModel>;
   private studentsInfoObservable: Observable<StudentModel>;
 
@@ -24,7 +24,7 @@ export class StudentsService {
         o.next(res);
       });
     });
-  
+
     this.studentsInfo = new BehaviorSubject<StudentModel>(null);
     this.studentsInfoObservable = new Observable((o) => {
       this.studentsInfo.subscribe(res => {
@@ -33,22 +33,26 @@ export class StudentsService {
     });
   }
 
-  getInfo():Observable<StudentModel>{
-    return this.studentsInfoObservable;
-  }
-
   getList(): Observable<StudentModel[]> {
     return this.studentsListObservable;
   }
 
-  private getAllStudentsFromDb(): Observable<StudentModel[]> {
+  private setList(): Observable<StudentModel[]> {
     return this.httpClient.get<StudentModel[]>(`${environment.serverUrl}/student`).pipe(map(res => {
       this.studentsList.next(res);
       return res;
     }));
   }
 
-  setSingleStudent(id): Observable<StudentModel> {
+  updateList(): void {
+    this.setList().subscribe();
+  }
+
+  getInfo(): Observable<StudentModel> {
+    return this.studentsInfoObservable;
+  }
+
+  setInfo(id): Observable<StudentModel> {
     return this.httpClient.get<StudentModel>(`${environment.serverUrl}/student/${id}`).pipe(map(res => {
       this.studentsInfo.next(res);
       return res;
@@ -57,7 +61,7 @@ export class StudentsService {
 
   insert(studentToAdd): Observable<StudentModel> {
     return this.httpClient.post<StudentModel>(`${environment.serverUrl}/student`, studentToAdd).pipe(map(res => {
-      this.getUpdateStudentList();
+      this.updateList();
       this.studentsInfo.next(res);
       return res;
     }));
@@ -65,28 +69,24 @@ export class StudentsService {
 
   delete(studentId): Observable<StudentModel> {
     return this.httpClient.delete<StudentModel>(`${environment.serverUrl}/student/${studentId}`).pipe(map(res => {
-      this.getUpdateStudentList();
+      this.updateList();
       return res;
     }));
   }
 
   update(studentData): Observable<StudentModel> {
     return this.httpClient.put<StudentModel>(`${environment.serverUrl}/student`, studentData).pipe(map(res => {
-      this.getUpdateStudentList();
+      this.updateList();
       this.studentsInfo.next(res);
       return res;
     }));
-  }
-
-  getUpdateStudentList() {
-    this.getAllStudentsFromDb().subscribe();
   }
 
   uploadImg(imgFormData): Observable<any> {
     return this.httpClient.post<any>(`${environment.serverUrl}/student/images`, imgFormData);
   }
 
-  deleteUnsavedImages(imageName):Observable<any>{
+  deleteUnsavedImages(imageName): Observable<any> {
     return this.httpClient.delete<any>(`${environment.serverUrl}/student/images/${imageName}`);
   }
 }

@@ -5,6 +5,7 @@ import { CourseService } from 'src/app/services/course.service';
 import { CourseModel } from 'src/app/models/course-model';
 import { StudentsService } from 'src/app/services/students.service';
 import { StudentModel } from 'src/app/models/student-model';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-school',
@@ -20,27 +21,23 @@ export class SchoolComponent implements OnInit {
   private singleItemToEdit;
   private courseStudentsOrStudentCourses;
 
-
-  constructor(private courseService: CourseService, private studentsService: StudentsService) { }
+  constructor(private courseService: CourseService, private studentsService: StudentsService, private utilsService: UtilsService) { }
 
   ngOnInit() {
-    this.courseService.getList().subscribe(
-      res => {
-        if (res) {
-          this.coursesList = res;
-          this.coursesCount = res.length;
-        }
-      },
-      err => console.log(err));
-    this.studentsService.getList().subscribe(
-      res => {
-        if (res) {
-          this.studentsList = res;
-          this.studentsCount = res.length;
-        }
-      },
-      err => console.log(err)
-    )
+    this.utilsService.getList(this.courseService, (e, res) => {
+      if (e) console.log(e);
+      else if (res) {
+        this.coursesList = res;
+        this.coursesCount = res.length;
+      };
+    });
+    this.utilsService.getList(this.studentsService, (e, res) => {
+      if (e) console.log(e);
+      else if (res) {
+        this.studentsList = res;
+        this.studentsCount = res.length;
+      };
+    });
   }
 
   filterForMainContainer(value) {
