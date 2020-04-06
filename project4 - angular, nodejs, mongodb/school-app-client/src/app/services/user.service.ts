@@ -77,7 +77,7 @@ export class UserService {
     return this.userInfoObservable;
   }
 
-  getUsersList(): Observable<UserModel[]> {
+  getList(): Observable<UserModel[]> {
     return this.usersListObservable;
   }
 

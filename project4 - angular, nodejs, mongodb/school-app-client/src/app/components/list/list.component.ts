@@ -30,7 +30,7 @@ export class ListComponent implements OnInit {
 
     switch (this.title) {
       case 'administrators':
-        this.userService.getUsersList().subscribe(
+        this.userService.getList().subscribe(
           res => this.list = res,
           err => console.log(err));
         if (!this.list) {
@@ -38,7 +38,7 @@ export class ListComponent implements OnInit {
         }
         break
       case 'students':
-        this.studentsService.getStudentsList().subscribe(
+        this.studentsService.getList().subscribe(
           res => this.list = res,
           err => console.log(err));
           if (!this.list) {
@@ -46,7 +46,7 @@ export class ListComponent implements OnInit {
           }
         break
       case 'courses':
-        this.courseService.getCoursesList().subscribe(
+        this.courseService.getList().subscribe(
           res => this.list = res,
           err => console.log(err));
           if (!this.list) {

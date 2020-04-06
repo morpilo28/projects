@@ -40,7 +40,10 @@ export class UserFormComponent implements OnInit {
       })
     } else this.userNewData = { name: null, phone: null, email: null, role: null, image: null, password: null }
     this.userService.getCurrentUser().subscribe(res => this.currentUser = res);
-    this.userService.getUsersList().subscribe(res => this.usersList = res);
+    this.utilsService.getList(this.userService, (e, res) => {
+      if (e) console.log(e);
+      else this.usersList = res;
+    })
   }
 
   onSelectedRole(role) {

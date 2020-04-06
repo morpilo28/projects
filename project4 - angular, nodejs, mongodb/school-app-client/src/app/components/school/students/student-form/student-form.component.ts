@@ -42,13 +42,17 @@ export class StudentFormComponent implements OnInit {
         }
       })
     } else this.studentNewData = { name: null, phone: null, email: null, image: null, courses: [] }
-    this.studentService.getStudentsList().subscribe(res => this.studentsList = res);
-    this.courseService.getCoursesList().subscribe(res => {
-      if (res) {
+    this.utilsService.getList(this.studentService, (e, res) => {
+      if (e) console.log(e);
+      else this.studentsList = res;
+    })
+    this.utilsService.getList(this.courseService, (e, res) => {
+      if (e) console.log(e);
+      else {
         this.allCourses = res;
         this.isStudentEnrolledInCourse();
       }
-    });
+    })
   }
 
   save() {

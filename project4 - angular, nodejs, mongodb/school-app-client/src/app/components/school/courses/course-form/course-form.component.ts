@@ -38,7 +38,10 @@ export class CourseFormComponent implements OnInit {
         }
       })
     } else this.courseNewData = { name: null, description: null, image: null, courseStudents: [] }
-    this.courseService.getCoursesList().subscribe(res => this.coursesList = res);
+    this.utilsService.getList(this.courseService, (e, res) => {
+      if (e) console.log(e);
+      else this.coursesList = res;
+    })
   }
 
   save() {

@@ -24,7 +24,7 @@ export class AdministrationComponent implements OnInit {
   constructor(private userService: UserService) { }
 
   ngOnInit() {
-    this.userService.getUsersList().subscribe(
+    this.userService.getList().subscribe(
       res => {
         if (res) {
           this.usersList = res;

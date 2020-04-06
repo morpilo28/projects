@@ -121,4 +121,12 @@ export class UtilsService {
       err => cb(err)
     );
   }
+
+  getList(service, cb){
+    debugger
+    service.getList().subscribe(
+      res => cb(null, res),
+      err => cb(err)
+    );
+  }
 }

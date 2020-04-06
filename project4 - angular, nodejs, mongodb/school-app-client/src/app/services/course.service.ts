@@ -33,7 +33,7 @@ export class CourseService {
     });
   }
 
-  getCoursesList(): Observable<CourseModel[]> {
+  getList(): Observable<CourseModel[]> {
     return this.courseListObservable;
   }
 

@@ -37,7 +37,7 @@ export class StudentsService {
     return this.studentsInfoObservable;
   }
 
-  getStudentsList(): Observable<StudentModel[]> {
+  getList(): Observable<StudentModel[]> {
     return this.studentsListObservable;
   }
 

@@ -24,7 +24,7 @@ export class SchoolComponent implements OnInit {
   constructor(private courseService: CourseService, private studentsService: StudentsService) { }
 
   ngOnInit() {
-    this.courseService.getCoursesList().subscribe(
+    this.courseService.getList().subscribe(
       res => {
         if (res) {
           this.coursesList = res;
@@ -32,7 +32,7 @@ export class SchoolComponent implements OnInit {
         }
       },
       err => console.log(err));
-    this.studentsService.getStudentsList().subscribe(
+    this.studentsService.getList().subscribe(
       res => {
         if (res) {
           this.studentsList = res;
