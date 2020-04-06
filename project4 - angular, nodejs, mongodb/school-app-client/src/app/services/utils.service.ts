@@ -61,4 +61,18 @@ export class UtilsService {
       err => console.log(err)
     ));
   }
+
+  onChoosingImage(fileInput) {
+    fileInput.click();
+  }
+
+  delete(id, itemDeletedName, itemDeletedKind, service, cb) {
+    if (confirm(`Are you sure you want to delete this ${itemDeletedKind} (${itemDeletedName})?`)) {
+      service.delete(id).subscribe(
+        res =>
+          cb(null, res),
+        err => cb(err)
+      );
+    }
+  }
 }

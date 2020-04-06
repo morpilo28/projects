@@ -23,7 +23,7 @@ export class CourseFormComponent implements OnInit {
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private courseService: CourseService, private utilsService:UtilsService) { }
+  constructor(private courseService: CourseService, private utilsService: UtilsService) { }
 
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
@@ -107,12 +107,9 @@ export class CourseFormComponent implements OnInit {
   }
 
   delete(id) {
-    if (confirm(`Are you sure you want to delete this course (${this.courseOldData.name})?`)) {
-      this.courseService.deleteCourse(id).subscribe(
-        res => this.showSchoolMainPage.emit(null),
-        err => console.log(err)
-      );
-    }
+    this.utilsService.delete(id, this.courseOldData.name, 'course', this.courseService, (err, res) => {
+      if (err) console.log(err);
+      else this.showSchoolMainPage.emit(null);
+    })
   }
-
 }

@@ -114,12 +114,10 @@ export class UserFormComponent implements OnInit {
   }
 
   delete(id) {
-    if (confirm(`Are you sure you want to delete this user (${this.userOldData.name})?`)) {
-      this.userService.deleteUser(id).subscribe(
-        res => this.showUserMainPage.emit(true),
-        err => console.log(err)
-      );
-    }
+    this.utilsService.delete(id, this.userOldData.name, 'user', this.userService, (err, res) => {
+      if (err) console.log(err);
+      else this.showUserMainPage.emit(true);
+    })
   }
 
 }

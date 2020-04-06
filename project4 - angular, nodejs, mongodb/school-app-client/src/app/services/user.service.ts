@@ -107,7 +107,7 @@ export class UserService {
     }));
   }
 
-  deleteUser(userId): Observable<UserModel> {
+  delete(userId): Observable<UserModel> {
     return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
       this.getUpdateUserList();
       return res;

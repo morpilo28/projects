@@ -27,7 +27,7 @@ export class StudentFormComponent implements OnInit {
   @Input() mainContainerFilter: { title: string, action: string };
   @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private studentService: StudentsService, private courseService: CourseService, private utilsService:UtilsService) { }
+  constructor(private studentService: StudentsService, private courseService: CourseService, private utilsService: UtilsService) { }
 
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
@@ -90,13 +90,12 @@ export class StudentFormComponent implements OnInit {
   }
 
   onChoosingImage(fileInput) {
-    fileInput.click();
+    this.utilsService.onChoosingImage(fileInput);
   }
 
   onPickedImg(imgBtn, fileInput) {
     const imgFile = fileInput.files[0];
     if (imgFile) {
-      
       const formData = this.createFormData(imgFile);
       this.studentService.uploadStudentImg(formData).subscribe(
         res => {
@@ -108,7 +107,7 @@ export class StudentFormComponent implements OnInit {
     } else {
       if (this.studentOldData) {
         this.image = this.studentOldData.image;
-      }else{
+      } else {
         this.image = null;
         imgBtn.innerHTML = 'Choose an Image';
       }
@@ -122,12 +121,10 @@ export class StudentFormComponent implements OnInit {
   }
 
   delete(id) {
-    if (confirm(`Are you sure you want to delete this student (${this.studentOldData.name})?`)) {
-      this.studentService.deleteStudent(id).subscribe(
-        res => this.showSchoolMainPage.emit(null),
-        err => console.log(err)
-      );
-    }
+    this.utilsService.delete(id, this.studentOldData.name, 'student', this.studentService, (err, res) => {
+      if (err) console.log(err);
+      else this.showSchoolMainPage.emit(null);
+    })
   }
 
   private isStudentEnrolledInCourse() {

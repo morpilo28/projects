@@ -63,7 +63,7 @@ export class StudentsService {
     }));
   }
 
-  deleteStudent(studentId): Observable<StudentModel> {
+  delete(studentId): Observable<StudentModel> {
     return this.httpClient.delete<StudentModel>(`${environment.serverUrl}/student/${studentId}`).pipe(map(res => {
       this.getUpdateStudentList();
       return res;

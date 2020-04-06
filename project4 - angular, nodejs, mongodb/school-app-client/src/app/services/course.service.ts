@@ -63,7 +63,7 @@ export class CourseService {
     }));
   }
 
-  deleteCourse(courseId): Observable<CourseModel> {
+  delete(courseId): Observable<CourseModel> {
     return this.httpClient.delete<CourseModel>(`${environment.serverUrl}/course/${courseId}`).pipe(map(res => {
       this.getUpdateCourseList();
       return res;
