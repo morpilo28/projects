@@ -22,7 +22,7 @@ export class UserInfoComponent implements OnInit {
   constructor(private users: UserService) {}
 
   ngOnInit() {
-    this.users.getUserInfo().subscribe(res => this.userInfo = res);
+    this.users.getInfo().subscribe(res => this.userInfo = res);
     this.users.getCurrentUser().subscribe(res=> this.currentUser = res);
   }
 

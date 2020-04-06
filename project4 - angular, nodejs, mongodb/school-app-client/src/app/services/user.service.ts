@@ -73,7 +73,7 @@ export class UserService {
     return this.currentUserObservable;
   }
 
-  getUserInfo(): Observable<UserModel> {
+  getInfo(): Observable<UserModel> {
     return this.userInfoObservable;
   }
 
@@ -114,7 +114,7 @@ export class UserService {
     }));
   }
 
-  updateSingleUser(newUserData): Observable<UserModel> {
+  update(newUserData): Observable<UserModel> {
     return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
       console.log(res);
       this.getUpdateUserList();

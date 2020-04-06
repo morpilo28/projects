@@ -44,7 +44,7 @@ export class CourseService {
     }));
   }
 
-  getCourseInfo(): Observable<CourseModel> {
+  getInfo(): Observable<CourseModel> {
     return this.coursesInfoObservable;
   }
 
@@ -70,7 +70,7 @@ export class CourseService {
     }));
   }
 
-  updateSingleCourse(newCourseData): Observable<CourseModel> {
+  update(newCourseData): Observable<CourseModel> {
     return this.httpClient.put<CourseModel>(`${environment.serverUrl}/course`, newCourseData).pipe(map(res => {
       this.getUpdateCourseList();
       this.coursesInfo.next(res);

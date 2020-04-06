@@ -42,6 +42,14 @@ export class UtilsService {
     return false;
   }
 
+  alreadyExistAlert(title, field) {
+    alert(`${title} ${field} already exist`);
+  }
+
+  emptyFieldAlert() {
+    alert('all fields must be filled');
+  }
+
   validateByField(field, dataFromList, newData) {
     if (field === 'email') {
       if (dataFromList.email === newData.email) {
@@ -100,4 +108,17 @@ export class UtilsService {
     );
   }
 
+  update(service, data, cb) {
+    service.update(data).subscribe(
+      res => cb(null, res),
+      err => cb(err)
+    );
+  }
+
+  getInfo(service, cb) {
+    service.getInfo().subscribe(
+      res => cb(null, res),
+      err => cb(err)
+    );
+  }
 }

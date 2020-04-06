@@ -23,7 +23,7 @@ export class StudentInfoComponent implements OnInit {
   constructor(private studentService: StudentsService) { }
 
   ngOnInit() {
-    this.studentService.getStudentInfo().subscribe(res => this.studentInfo = res);
+    this.studentService.getInfo().subscribe(res => this.studentInfo = res);
   }
 
   onEdit() {

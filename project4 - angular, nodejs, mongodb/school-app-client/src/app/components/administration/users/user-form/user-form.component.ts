@@ -30,14 +30,15 @@ export class UserFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.imgBtnText = 'Change Image';
-      this.userService.getUserInfo().subscribe(res => {
-        this.userNewData = { ...res };
-        this.userOldData = res;
-        this.image = res.image;
-      });
-    } else {
-      this.userNewData = { name: null, phone: null, email: null, role: null, image: null, password: null }
-    }
+      this.utilsService.getInfo(this.userService, (e, res) => {
+        if (e) console.log(e);
+        else {
+          this.userNewData = { ...res };
+          this.userOldData = res;
+          this.image = res.image;
+        }
+      })
+    } else this.userNewData = { name: null, phone: null, email: null, role: null, image: null, password: null }
     this.userService.getCurrentUser().subscribe(res => this.currentUser = res);
     this.userService.getUsersList().subscribe(res => this.usersList = res);
   }
@@ -56,34 +57,26 @@ export class UserFormComponent implements OnInit {
             if(e) console.log(e);
             else this.showUserMainPage.emit(true);
           })
-          // this.userService.addSingleUser(this.userNewData).subscribe(
-          //   res => this.showUserMainPage.emit(true),
-          //   err => console.log(err)
-          // );
         } else {
-          alert('user email already exist');
+          this.utilsService.alreadyExistAlert('user', 'email');
           this.userNewData.email = null;
         }
-      } else alert('all fields must be filled');
+      } else this.utilsService.emptyFieldAlert();
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.userNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
           this.imagesToDelete.push(this.userOldData.image);
           this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
-          this.userService.updateSingleUser(this.userNewData).subscribe(
-            res => {
-              this.showUserMainPage.emit(true);
-            },
-            err => console.log(err)
-          );
+          this.utilsService.update(this.userService, this.userNewData, (e, res) => {
+            if(e) console.log(e);
+            else this.showUserMainPage.emit(true);
+          });
         } else {
-          alert('user email already exist');
+          this.utilsService.alreadyExistAlert('user', 'email');
           this.userNewData.email = this.userOldData.email;
         }
-      } else {
-        alert('all fields must be filled');
-      }
+      } else this.utilsService.emptyFieldAlert();
     }
   }
 

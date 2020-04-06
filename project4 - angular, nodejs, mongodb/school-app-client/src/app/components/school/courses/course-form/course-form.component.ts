@@ -29,14 +29,15 @@ export class CourseFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.imgBtnText = 'Change Image';
-      this.courseService.getCourseInfo().subscribe(res => {
-        this.courseNewData = { ...res };
-        this.courseOldData = res;
-        this.image = res.image;
-      });
-    } else {
-      this.courseNewData = { name: null, description: null, image: null, courseStudents: [] }
-    }
+      this.utilsService.getInfo(this.courseService, (e, res) => {
+        if (e) console.log(e);
+        else {
+          this.courseNewData = { ...res };
+          this.courseOldData = res;
+          this.image = res.image;
+        }
+      })
+    } else this.courseNewData = { name: null, description: null, image: null, courseStudents: [] }
     this.courseService.getCoursesList().subscribe(res => this.coursesList = res);
   }
 
@@ -50,32 +51,26 @@ export class CourseFormComponent implements OnInit {
             if(e) console.log(e);
             else this.showSchoolMainPage.emit('moreInfo');
           })
-          // this.courseService.addSingleCourse(this.courseNewData).subscribe(
-          //   res => this.showSchoolMainPage.emit('moreInfo'),
-          //   err => console.log(err)
-          // );
         } else {
-          alert('course name already exist');
+          this.utilsService.alreadyExistAlert('course', 'name');
           this.courseNewData.name = null;
         }
-      } else alert('all fields must be filled');
+      } else this.utilsService.emptyFieldAlert();
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.courseNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
         if (!this.utilsService.isAlreadyExist(this.coursesList, this.courseNewData, 'name')) {
           this.imagesToDelete.push(this.courseOldData.image);
           this.utilsService.deleteUnsavedImages(this.courseNewData.image, this.imagesToDelete, this.courseService)
-          this.courseService.updateSingleCourse(this.courseNewData).subscribe(
-            res => this.showSchoolMainPage.emit('moreInfo'),
-            err => console.log(err)
-          );
+          this.utilsService.update(this.courseService, this.courseNewData, (e, res) => {
+            if(e) console.log(e);
+            else this.showSchoolMainPage.emit('moreInfo');
+          });
         } else {
-          alert('course name already exist');
+          this.utilsService.alreadyExistAlert('course', 'name');
           this.courseNewData.name = this.courseOldData.name;
         }
-      } else {
-        alert('all fields must be filled');
-      }
+      } else this.utilsService.emptyFieldAlert();
     }
   }
 

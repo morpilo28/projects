@@ -33,13 +33,15 @@ export class StudentFormComponent implements OnInit {
   ngOnInit() {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.imgBtnText = 'Change Image';
-      this.studentService.getStudentInfo().subscribe(res => {
-        this.studentNewData = { ...res };
-        this.studentOldData = res;
-        this.image = res.image;
-      });
+      this.utilsService.getInfo(this.studentService, (e, res) => {
+        if (e) console.log(e);
+        else {
+          this.studentNewData = { ...res };
+          this.studentOldData = res;
+          this.image = res.image;
+        }
+      })
     } else this.studentNewData = { name: null, phone: null, email: null, image: null, courses: [] }
-    
     this.studentService.getStudentsList().subscribe(res => this.studentsList = res);
     this.courseService.getCoursesList().subscribe(res => {
       if (res) {
@@ -52,23 +54,19 @@ export class StudentFormComponent implements OnInit {
   save() {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.studentNewData.image = this.image;
-      this.studentNewData.courses = this.coursesChecked; // different
+      this.studentNewData.courses = this.coursesChecked;
       if (this.utilsService.areAllFieldsFull(this.studentNewData)) {
         if (!this.utilsService.isAlreadyExist(this.studentsList, this.studentNewData, 'email')) {
           this.utilsService.deleteUnsavedImages(this.studentNewData.image, this.imagesToDelete, this.studentService)
-          this.utilsService.insert(this.studentService, this.studentNewData, (e,res)=>{
-            if(e) console.log(e);
+          this.utilsService.insert(this.studentService, this.studentNewData, (e, res) => {
+            if (e) console.log(e);
             else this.showSchoolMainPage.emit('moreInfo');
           })
-          // this.studentService.addSingleStudent(this.studentNewData).subscribe(
-          //   res => this.showSchoolMainPage.emit('moreInfo'),
-          //   err => console.log(err)
-          // );
         } else {
-          alert('student email already exist');
+          this.utilsService.alreadyExistAlert('student', 'email');
           this.studentNewData.email = null;
         }
-      } else alert('all fields must be filled');      
+      } else this.utilsService.emptyFieldAlert();
     } else if (this.mainContainerFilter.action === this.actions.edit) {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
@@ -77,15 +75,15 @@ export class StudentFormComponent implements OnInit {
         if (!this.utilsService.isAlreadyExist(this.studentsList, this.studentNewData, 'email')) {
           this.imagesToDelete.push(this.studentOldData.image);
           this.utilsService.deleteUnsavedImages(this.studentNewData.image, this.imagesToDelete, this.studentService)
-          this.studentService.updateSingleStudent(studentData).subscribe(
-            res => this.showSchoolMainPage.emit('moreInfo'),
-            err => console.log(err)
-          );
+          this.utilsService.update(this.studentService, studentData, (e, res) => {
+            if (e) console.log(e);
+            else this.showSchoolMainPage.emit('moreInfo');
+          });
         } else {
-          alert('student email already exist');
+          this.utilsService.alreadyExistAlert('student', 'email');
           this.studentNewData.email = this.studentOldData.email;
         }
-      } else alert('all fields must be filled');      
+      } else this.utilsService.emptyFieldAlert();
     }
   }
 
@@ -118,7 +116,7 @@ export class StudentFormComponent implements OnInit {
     const courseImage = event.dataset.img;
 
     if (isChecked) this.coursesChecked.push({ _id: courseId, name: courseName, image: courseImage });
-     else {
+    else {
       this.coursesChecked.map((checkedCourse, i) => {
         if (checkedCourse._id === courseId) this.coursesChecked.splice(i, 1);
       })
