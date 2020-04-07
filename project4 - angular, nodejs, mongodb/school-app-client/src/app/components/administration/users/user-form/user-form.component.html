@@ -13,23 +13,23 @@
     <input [(ngModel)]="userNewData._id" hidden [id]='userNewData._id' />
     <div>
         <label class="labelProp ml-2 mr-2" for="name">Name </label>
-        <input id="name" [(ngModel)]="userNewData.name" />
+        <input (keyup.enter)='save()' id="name" [(ngModel)]="userNewData.name" />
     </div>
     <div *ngIf="mainContainerFilter.action === actions.add">
         <label class="labelProp ml-2 mr-2" for="pass">Password</label>
-        <input id="pass" [(ngModel)]="userNewData.password" />
+        <input (keyup.enter)='save()' id="pass" [(ngModel)]="userNewData.password" />
     </div>
     <div>
         <label class="labelProp ml-2 mr-2" for="phone">Phone</label>
-        <input id="phone" [(ngModel)]="userNewData.phone" />
+        <input (keyup.enter)='save()' id="phone" [(ngModel)]="userNewData.phone" />
     </div>
     <div>
         <label class="labelProp ml-2 mr-2" for="email">Email</label>
-        <input id="email" [(ngModel)]="userNewData.email" />
+        <input (keyup.enter)='save()' id="email" [(ngModel)]="userNewData.email" />
     </div>
     <div *ngIf="userNewData.role !== currentUser.role">
         <label class="labelProp ml-2 mr-2" for="role">Role</label>
-        <select id="role" (change)="onSelectedRole($event.target.value)">
+        <select id="role" (keydown.enter)='save()' (change)="onSelectedRole($event.target.value)">
             <option [selected]="mainContainerFilter.action === actions.add" disabled></option>
             <option [selected]="userNewData.role == roles.sales">sales</option>
             <option *ngIf="currentUser.role === roles.owner" [selected]="userNewData.role === roles.manager">manager

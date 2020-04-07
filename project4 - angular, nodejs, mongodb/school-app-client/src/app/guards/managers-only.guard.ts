@@ -15,20 +15,14 @@ export class ManagersOnlyGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
     this.userService.getCurrentUser().subscribe(res => {
-      if (res === null) {
-        this.router.navigate(['/login']);
-        this.isAManager = false;
-      } else{
+      if (res) {
         if (res.role === 'sales') {
-          alert('Restricted Area!')
-          this.router.navigate(['/']);
+          alert('Restricted Area!');
           this.isAManager = false;
-        } else {
-          this.isAManager = true;
-        }
-      } 
+          this.router.navigate(['/']);
+        } else this.isAManager = true;
+      } else this.isAManager = false;
     });
     return this.isAManager;
   }

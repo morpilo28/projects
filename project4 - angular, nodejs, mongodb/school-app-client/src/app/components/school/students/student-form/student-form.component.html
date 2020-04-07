@@ -10,14 +10,14 @@
     <input [(ngModel)]="studentNewData.id" hidden [id]='studentNewData._id' />
     <div>
         <label class="labelProp ml-2 mr-2" for="name">Name</label>
-        <input id="name" [(ngModel)]="studentNewData.name" /></div>
+        <input  (keyup.enter)='save()' id="name" [(ngModel)]="studentNewData.name" /></div>
     <div>
         <label class="labelProp ml-2 mr-2" for="phone">Phone</label>
-        <input id="phone" [(ngModel)]="studentNewData.phone" [value]="studentNewData.phone" />
+        <input  (keyup.enter)='save()' id="phone" [(ngModel)]="studentNewData.phone" [value]="studentNewData.phone" />
     </div>
     <div>
         <label class="labelProp ml-2 mr-2" for="email">Email</label>
-        <input id="email" [(ngModel)]="studentNewData.email" [value]="studentNewData.email" />
+        <input  (keyup.enter)='save()' id="email" [(ngModel)]="studentNewData.email" [value]="studentNewData.email" />
     </div>
 
     <div class="mb-3 ml-2">

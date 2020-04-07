@@ -12,7 +12,7 @@
     <input [(ngModel)]="courseNewData.id" hidden [id]='courseNewData._id' />
     <div>
         <label class="labelProp ml-2 mr-2" for="name">Name </label>
-        <input id="name" [(ngModel)]="courseNewData.name" />
+        <input (keyup.enter)='save()' id="name" [(ngModel)]="courseNewData.name" />
     </div>
     <div class="descriptionBox mb-2">
         <label class="labelProp ml-2 mr-2" for="description">Description </label>

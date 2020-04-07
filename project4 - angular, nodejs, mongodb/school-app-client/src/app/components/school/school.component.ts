@@ -8,7 +8,6 @@ import { StudentModel } from 'src/app/models/student-model';
 import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
-  selector: 'app-school',
   templateUrl: './school.component.html',
   styleUrls: ['./school.component.css']
 })
