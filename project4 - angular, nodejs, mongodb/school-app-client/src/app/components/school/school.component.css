@@ -6,10 +6,12 @@
 
 .courses {
     /* background-color: green; */
+    /* border: 1px solid black; */
 }
 
 .students {
     /* background-color: blue; */
+    /* border: 1px solid black; */
 }
 
 .students,.courses{
@@ -23,7 +25,6 @@
     float: right;
     margin-right: 2%;
 }
-
 
 .summary{
     text-align: center;

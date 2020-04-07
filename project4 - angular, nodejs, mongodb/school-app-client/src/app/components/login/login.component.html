@@ -1,7 +1,7 @@
 <div class='logo'><img src='../assets/images/logo.JPG' /></div>
 <div class="login-form">
   <div class="loginForm">
-    <p>{{note}}</p>
+    <p class="text-danger">{{note}}</p>
       <h2 class="text-center">Log in</h2>       
       <div class="form-group">
           <input (keyup.enter)='onSubmitForm()' class="form-control"  [(ngModel)]='user.email' type="email" placeholder="Email">
