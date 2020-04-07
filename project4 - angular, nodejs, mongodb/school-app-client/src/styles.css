@@ -30,3 +30,7 @@
 ::-webkit-scrollbar-thumb:hover {
     background: aquamarine;
 }
+
+div:focus{
+    outline: none;
+    }
