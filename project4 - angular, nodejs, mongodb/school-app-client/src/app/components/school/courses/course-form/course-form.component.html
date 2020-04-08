@@ -1,4 +1,4 @@
-<div *ngIf='mainContainerFilter' tabindex="0"  (keyup.enter)='save()'>
+<div *ngIf='mainContainerFilter'>
     <div class="ml-3 mt-2 font-weight-bold overflow-auto courseName" *ngIf="mainContainerFilter.action === actions.edit">Edit
         {{courseOldData.name | titlecase}}</div>
     <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.add">Add Course</div>
@@ -9,7 +9,7 @@
             *ngIf="courseOldData && courseOldData.courseStudents.length === 0"
             (click)='delete(courseNewData._id)'>Delete</button>
     </div>
-    <input [(ngModel)]="courseNewData.id" hidden [id]='courseNewData._id' />
+    <input [(ngModel)]="courseNewData._id" hidden [id]='courseNewData._id' />
     <div>
         <label class="labelProp ml-2 mr-2" for="name">Name </label>
         <input (keyup.enter)='save()' id="name" [(ngModel)]="courseNewData.name" />

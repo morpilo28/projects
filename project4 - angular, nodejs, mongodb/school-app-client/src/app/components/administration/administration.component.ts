@@ -5,6 +5,7 @@ import { UserModel } from 'src/app/models/user-model';
 import { UserService } from 'src/app/services/user.service';
 import { environment } from 'src/environments/environment';
 import { UtilsService } from 'src/app/services/utils.service';
+import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
 
 @Component({
   templateUrl: './administration.component.html',
@@ -15,15 +16,15 @@ import { UtilsService } from 'src/app/services/utils.service';
 //TODO: design page and check everything again
 
 export class AdministrationComponent implements OnInit {
-  private usersList: UserModel[] = [];
-  private _mainContainerFilter = { title: null, action: null };
-  private administratorsCount: { owner: number, manager: number, sales: number } = { owner: 0, manager: 0, sales: 0 };
+  public _mainContainerFilter: MainContainerFilterModel = { title: null, action: null };
+  public administratorsCount: { owner: number, manager: number, sales: number } = { owner: 0, manager: 0, sales: 0 };
+  public totalUsers: number;
   private roles = environment.roles;
-  private totalUsers: number;
+  private usersList: UserModel[] = [];
 
   constructor(private userService: UserService, private utilsService: UtilsService) { }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.utilsService.getList(this.userService, (e, res) => {
       if (e) console.log(e);
       else if (res) {
@@ -33,22 +34,22 @@ export class AdministrationComponent implements OnInit {
     })
   }
 
-  filterForMainContainer(value) {
+  public filterForMainContainer(value: MainContainerFilterModel): void {
     this._mainContainerFilter = value;
   }
 
-  onEdit(value) {
-    this._mainContainerFilter = value.mainContainerFilter;
+  public onEdit(value: MainContainerFilterModel): void {
+    this._mainContainerFilter = value;
   }
 
-  componentLoading(component) {
+  public componentLoading(component: boolean): void {
     if (component) {
       this._mainContainerFilter.action = null;
       this.getAdministratorsCount();
     }
   }
 
-  private getAdministratorsCount() {
+  private getAdministratorsCount(): void {
     this.administratorsCount = { owner: 0, manager: 0, sales: 0 };
     this.totalUsers = this.usersList.length;
     for (let i = 0; i < this.usersList.length; i++) {

@@ -12,13 +12,13 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./course-form.component.css']
 })
 export class CourseFormComponent implements OnInit {
-  private courseOldData: CourseModel;
-  private courseNewData: CourseModel = {};
+  public courseOldData: CourseModel;
+  public courseNewData: CourseModel = {};
   private roles = environment.roles;
-  private actions = environment.actions;
-  private baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
-  private image;
-  private imgBtnText:string = "Choose an Image"
+  public actions = environment.actions;
+  public baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
+  public image;
+  public imgBtnText:string = "Choose an Image"
   private imagesToDelete: string[] = [];
   private coursesList;
   @Input() mainContainerFilter: { title: string, action: string };

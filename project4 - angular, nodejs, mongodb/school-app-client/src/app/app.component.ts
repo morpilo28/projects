@@ -14,9 +14,9 @@ import { UserModel } from './models/user-model';
 //TODO: design
 
 export class AppComponent implements OnInit {
-  private isAllowed: boolean;
+  public isAllowed: boolean;
   title = 'school-app';
-  private currentUser: UserModel;
+  public currentUser: UserModel;
 
   constructor(private userService: UserService) {
     this.userService.setCurrentUser();

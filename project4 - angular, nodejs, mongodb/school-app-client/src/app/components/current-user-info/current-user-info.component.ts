@@ -12,8 +12,8 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./current-user-info.component.css']
 })
 export class CurrentUserInfoComponent implements OnInit {
-  currentUser: UserModel;
-  private baseUserImgUrl = (`${environment.baseImgUrl}/userImages/`);
+  public currentUser: UserModel;
+  public baseUserImgUrl = (`${environment.baseImgUrl}/userImages/`);
 
   constructor(private userService: UserService, private router: Router) { }
 

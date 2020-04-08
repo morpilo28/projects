@@ -5,6 +5,7 @@ import { UserService } from 'src/app/services/user.service';
 import { UserModel } from 'src/app/models/user-model';
 import { environment } from 'src/environments/environment';
 import { UtilsService } from 'src/app/services/utils.service';
+import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
 
 @Component({
   selector: 'app-user-form',
@@ -12,22 +13,22 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./user-form.component.css']
 })
 export class UserFormComponent implements OnInit {
-  private userOldData: UserModel;
-  private currentUser: UserModel;
-  private roles = environment.roles;
-  private actions = environment.actions;
-  private baseUserImgUrl = (`${environment.baseImgUrl}/userImages/`);
-  private userNewData: UserModel = {};
-  private image;
-  private imgBtnText: string = "Choose an Image"
-  private imagesToDelete: string[] = [];
-  private usersList;
-  @Input() mainContainerFilter: { title: string, action: string };
+  @Input() mainContainerFilter: MainContainerFilterModel;
   @Output() showUserMainPage: EventEmitter<boolean> = new EventEmitter<boolean>();
+  public userOldData: UserModel;
+  public userNewData: UserModel = {};
+  public currentUser: UserModel;
+  public roles = environment.roles;
+  public actions = environment.actions;
+  public baseUserImgUrl: string = (`${environment.baseImgUrl}/userImages/`);
+  public image: string;
+  public imgBtnText: string = "Choose an Image"
+  private imagesToDelete: string[] = [];
+  private usersList: UserModel[];
 
   constructor(private userService: UserService, private utilsService: UtilsService) { }
 
-  ngOnInit() {
+  public ngOnInit():void {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.imgBtnText = 'Change Image';
       this.utilsService.getInfo(this.userService, (e, res) => {
@@ -49,11 +50,11 @@ export class UserFormComponent implements OnInit {
     })
   }
 
-  onSelectedRole(role) {
+  public onSelectedRole(role:string):void {
     this.userNewData.role = role;
   }
 
-  save() {
+  public save():void {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.userNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
@@ -86,11 +87,11 @@ export class UserFormComponent implements OnInit {
     }
   }
 
-  onImageBtn(fileInput) {
+  public onImageBtn(fileInput):void {
     this.utilsService.onChoosingImage(fileInput);
   }
 
-  onPickedImg(fileInput) {
+  public onPickedImg(fileInput):void {
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.userService, (e, res) => {
@@ -110,7 +111,7 @@ export class UserFormComponent implements OnInit {
     }
   }
 
-  delete(id) {
+  public delete(id:string):void {
     this.utilsService.delete(id, this.userOldData.name, 'user', this.userService, (err, res) => {
       if (err) console.log(err);
       else this.showUserMainPage.emit(true);

@@ -14,9 +14,9 @@ import { UtilsService } from 'src/app/services/utils.service';
 export class SchoolComponent implements OnInit {
   private coursesList: CourseModel[] = [];
   private studentsList: StudentModel[] = [];
-  private coursesCount: number = 0;
-  private studentsCount: number = 0;
-  private _mainContainerFilter = { title: null, action: null };
+  public coursesCount: number = 0;
+  public studentsCount: number = 0;
+  public _mainContainerFilter = { title: null, action: null };
   private singleItemToEdit;
   private courseStudentsOrStudentCourses;
 

@@ -15,12 +15,12 @@ import { UtilsService } from 'src/app/services/utils.service';
 })
 export class CourseInfoComponent implements OnInit {
   @Input() mainContainerFilter: { title: string, action: string };
-  private currentUser: UserModel;
-  private courseInfo: CourseModel;
-  private roles = environment.roles;
+  public currentUser: UserModel;
+  public courseInfo: CourseModel;
+  public roles = environment.roles;
   private actions = environment.actions;
-  private baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
-  private baseStudentImgUrl = (`${environment.baseImgUrl}/studentImages/`);
+  public baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
+  public baseStudentImgUrl = (`${environment.baseImgUrl}/studentImages/`);
   //TODO: change any to type of something
   @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
 

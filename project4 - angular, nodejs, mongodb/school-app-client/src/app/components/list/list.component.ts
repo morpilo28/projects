@@ -13,16 +13,16 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./list.component.css']
 })
 export class ListComponent implements OnInit {
-  private currentUserRole: string;
   @Input() title;
+  public baseImgUrl = (`${environment.baseImgUrl}/`);
+  public currentUserRole: string;
+  public imgFolder;
+  public list;
+  public roles = environment.roles;
+  public actions = environment.actions;
+  public titles = environment.titles;
+  public note: string;
   @Output() mainContainerFilter: EventEmitter<any> = new EventEmitter<any>();
-  private baseImgUrl = (`${environment.baseImgUrl}/`);
-  private imgFolder;
-  private list;
-  private roles = environment.roles;
-  private actions = environment.actions;
-  private titles = environment.titles;
-  private note: string;
 
   constructor(private userService: UserService, private studentsService: StudentsService, private courseService: CourseService, private utilsService: UtilsService) { }
 

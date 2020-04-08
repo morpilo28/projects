@@ -14,15 +14,15 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./student-form.component.css']
 })
 export class StudentFormComponent implements OnInit {
-  private studentOldData: StudentModel;
-  private studentNewData: StudentModel = {};
+  public studentOldData: StudentModel;
+  public studentNewData: StudentModel = {};
   private roles = environment.roles;
-  private actions = environment.actions;
-  private baseStudentImgUrl = (`${environment.baseImgUrl}/studentImages/`);
-  private image;
-  private imgBtnText: string = "Choose an Image"
+  public actions = environment.actions;
+  public baseStudentImgUrl = (`${environment.baseImgUrl}/studentImages/`);
+  public image;
+  public imgBtnText: string = "Choose an Image"
   private imagesToDelete: string[] = [];
-  private allCourses: CourseModel[];
+  public allCourses: CourseModel[];
   private coursesChecked;
   private studentsList;
   @Input() mainContainerFilter: { title: string, action: string };
