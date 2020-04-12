@@ -13,7 +13,8 @@ const userController = require('./controllers/users.ctrl');
 const courseController = require('./controllers/course.ctrl');
 const studentController = require('./controllers/student.ctrl');
 
-//TODO: add middleware for token validation
+// const dbStarter = require('./install.db');
+// dbStarter.createDb();
 
 app.use(cors());
 app.use(bodyParser.json());

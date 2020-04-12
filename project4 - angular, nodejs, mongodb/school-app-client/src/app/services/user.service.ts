@@ -11,7 +11,7 @@ import { BehaviorSubject, Observable, pipe } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-  private currentUserWithId: UserModel;
+  private userTokenAndId: UserModel;
   private currentUser: BehaviorSubject<UserModel>;
   private currentUserObservable: Observable<UserModel>
 
@@ -27,8 +27,8 @@ export class UserService {
       this.currentUser.subscribe(res => {
         o.next(res);
       });
-      this.currentUserWithId = JSON.parse(window.localStorage.getItem('userWithId'))
     });
+    this.userTokenAndId = JSON.parse(window.localStorage.getItem('user'));
 
     this.usersList = new BehaviorSubject<UserModel[]>(null);
     this.usersListObservable = new Observable((o) => {
@@ -47,12 +47,9 @@ export class UserService {
 
   public userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
-      userLogged => {
-        let userWithoutId = { ...userLogged };
-        delete userWithoutId['_id'];
-        this.setLocalStorage('user', userWithoutId);
-        this.currentUser.next(userWithoutId);
-        this.setLocalStorage('userWithId', userLogged);;
+      userValidated => {
+        this.setLocalStorage('user', { _id: userValidated._id, token: userValidated.token });
+        this.currentUser.next(userValidated);
         return true;
       }));
   }
@@ -67,7 +64,17 @@ export class UserService {
   }
 
   public setCurrentUser() {
-    this.currentUser.next(JSON.parse(window.localStorage.getItem('user')));
+    const localStorageData = JSON.parse(window.localStorage.getItem('user'));
+    this.currentUser.next(localStorageData);
+    if (localStorageData) {
+      this.setInfo(localStorageData._id).subscribe(
+        res => {
+          res['token'] = this.userTokenAndId.token;
+          this.currentUser.next(res);
+        },
+        err => console.log(err)
+      )
+    } else this.currentUser.next(null);
   }
 
   public getList(): Observable<UserModel[]> {
@@ -124,15 +131,9 @@ export class UserService {
   }
 
   private updateCurrentUser(res: UserModel) {
-    if (this.currentUserWithId._id.toString() === res._id.toString()) {
-      const updatedCurrentUser = {
-        name: res.name,
-        role: res.role,
-        image: res.image,
-        token: this.currentUserWithId.token,
-      };
-      this.setLocalStorage('user', updatedCurrentUser);
-      this.currentUser.next(updatedCurrentUser);
+    if (this.userTokenAndId._id.toString() === res._id.toString()) {
+      res['token'] = this.userTokenAndId.token;
+      this.currentUser.next(res);
     }
   }
 
@@ -142,9 +143,4 @@ export class UserService {
       return res;
     }));
   }
-
-
-
-
-
 }
