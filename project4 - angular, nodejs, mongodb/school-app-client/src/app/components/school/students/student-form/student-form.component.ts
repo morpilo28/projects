@@ -7,6 +7,7 @@ import { StudentsService } from 'src/app/services/students.service';
 import { CourseModel } from 'src/app/models/course-model';
 import { CourseService } from 'src/app/services/course.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
 
 @Component({
   selector: 'app-student-form',
@@ -14,23 +15,22 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./student-form.component.css']
 })
 export class StudentFormComponent implements OnInit {
-  @Input() mainContainerFilter: { title: string, action: string };
-  @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
+  @Input() mainContainerFilter: MainContainerFilterModel;
+  @Output() showSchoolMainPage: EventEmitter<MainContainerFilterModel> = new EventEmitter<MainContainerFilterModel>();
   public studentOldData: StudentModel;
   public studentNewData: StudentModel = {};
-  private roles = environment.roles;
-  public actions = environment.actions;
-  public baseStudentImgUrl = (`${environment.baseImgUrl}/studentImages/`);
-  public image;
-  public imgBtnText: string = "Choose an Image"
-  private imagesToDelete: string[] = [];
+  public image: string;
+  public imgBtnText: string = "Choose an Image";
   public allCourses: CourseModel[];
-  private coursesChecked;
-  private studentsList;
+  public baseStudentImgUrl: string = (`${environment.baseImgUrl}/studentImages/`);
+  public actions = environment.actions;
+  private coursesChecked: CourseModel[];
+  private studentsList: StudentModel[];
+  private imagesToDelete: string[] = [];
 
   constructor(private studentService: StudentsService, private courseService: CourseService, private utilsService: UtilsService) { }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.imgBtnText = 'Change Image';
       this.utilsService.getInfo(this.studentService, (e, res) => {
@@ -42,6 +42,7 @@ export class StudentFormComponent implements OnInit {
         }
       })
     } else this.studentNewData = { name: null, phone: null, email: null, image: null, courses: [] }
+    
     this.utilsService.getList(this.studentService, (e, res) => {
       if (e) console.log(e);
       else this.studentsList = res;
@@ -55,7 +56,7 @@ export class StudentFormComponent implements OnInit {
     })
   }
 
-  save() {
+  public save(): void {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.studentNewData.image = this.image;
       this.studentNewData.courses = this.coursesChecked;
@@ -64,7 +65,7 @@ export class StudentFormComponent implements OnInit {
           this.utilsService.deleteUnsavedImages(this.studentNewData.image, this.imagesToDelete, this.studentService)
           this.utilsService.insert(this.studentService, this.studentNewData, (e, res) => {
             if (e) console.log(e);
-            else this.showSchoolMainPage.emit('moreInfo');
+            else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
           })
         } else {
           this.utilsService.alreadyExistAlert('student', 'email');
@@ -81,7 +82,7 @@ export class StudentFormComponent implements OnInit {
           this.utilsService.deleteUnsavedImages(this.studentNewData.image, this.imagesToDelete, this.studentService)
           this.utilsService.update(this.studentService, studentData, (e, res) => {
             if (e) console.log(e);
-            else this.showSchoolMainPage.emit('moreInfo');
+            else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
           });
         } else {
           this.utilsService.alreadyExistAlert('student', 'email');
@@ -91,29 +92,7 @@ export class StudentFormComponent implements OnInit {
     }
   }
 
-  private isStudentEnrolledInCourse() {
-    this.coursesChecked = [];
-    if (this.mainContainerFilter.action === this.actions.edit) {
-      this.allCourses = this.allCourses.map((course) => {
-        for (let i = 0; i < this.studentOldData.courses.length; i++) {
-          if (course._id === this.studentOldData.courses[i]._id) {
-            course['isChecked'] = true;
-            this.coursesChecked.push({ _id: course._id, name: course.name, image: course.image });
-            break;
-          }
-          else course['isChecked'] = false;
-        }
-        return course;
-      });
-    } else if (this.mainContainerFilter.action === this.actions.add) {
-      this.allCourses = this.allCourses.map((course) => {
-        course['isChecked'] = false;
-        return course;
-      });
-    }
-  }
-
-  onClickedCourseBox(event) {
+  public onClickedCourseBox(event): void {
     const isChecked = event.checked;
     const courseId = event.id;
     const courseName = event.value;
@@ -127,11 +106,11 @@ export class StudentFormComponent implements OnInit {
     }
   }
 
-  onImageBtn(fileInput) {
+  public onImageBtn(fileInput): void {
     this.utilsService.onChoosingImage(fileInput);
   }
 
-  onPickedImg(fileInput) {
+  public onPickedImg(fileInput): void {
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.studentService, (e, res) => {
@@ -151,10 +130,32 @@ export class StudentFormComponent implements OnInit {
     }
   }
 
-  delete(id) {
+  public delete(id: string): void {
     this.utilsService.delete(id, this.studentOldData.name, 'student', this.studentService, (err, res) => {
       if (err) console.log(err);
-      else this.showSchoolMainPage.emit(null);
+      else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: null });
     })
+  }
+
+  private isStudentEnrolledInCourse(): void {
+    this.coursesChecked = [];
+    if (this.mainContainerFilter.action === this.actions.edit) {
+      this.allCourses = this.allCourses.map((course) => {
+        for (let i = 0; i < this.studentOldData.courses.length; i++) {
+          if (course._id === this.studentOldData.courses[i]._id) {
+            course['isChecked'] = true;
+            this.coursesChecked.push({ _id: course._id, name: course.name, image: course.image });
+            break;
+          }
+          else course['isChecked'] = false;
+        }
+        return course;
+      });
+    } else if (this.mainContainerFilter.action === this.actions.add) {
+      this.allCourses = this.allCourses.map((course) => {
+        course['isChecked'] = false;
+        return course;
+      });
+    }
   }
 }

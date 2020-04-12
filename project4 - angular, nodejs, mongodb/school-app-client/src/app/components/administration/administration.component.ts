@@ -19,8 +19,8 @@ export class AdministrationComponent implements OnInit {
   public mainContainerFilter: MainContainerFilterModel = { title: null, action: null };
   public administratorsCount: { owner: number, manager: number, sales: number } = { owner: 0, manager: 0, sales: 0 };
   public totalUsers: number;
-  private roles = environment.roles;
   private usersList: UserModel[] = [];
+  private roles = environment.roles;
 
   constructor(private userService: UserService, private utilsService: UtilsService) { }
 

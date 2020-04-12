@@ -10,6 +10,7 @@ import { UserService } from '../services/user.service';
 })
 export class ManagersOnlyGuard implements CanActivate {
   private isAManager: boolean = false;;
+  
   constructor(private userService: UserService, private router: Router) { }
 
   canActivate(

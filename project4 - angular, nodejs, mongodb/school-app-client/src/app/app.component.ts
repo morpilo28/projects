@@ -15,7 +15,6 @@ import { UserModel } from './models/user-model';
 
 export class AppComponent implements OnInit {
   public isAllowed: boolean;
-  title = 'school-app';
   public currentUser: UserModel;
 
   constructor(private userService: UserService) {

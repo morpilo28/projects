@@ -33,33 +33,26 @@ export class StudentsService {
     });
   }
 
-  getList(): Observable<StudentModel[]> {
+  public getList(): Observable<StudentModel[]> {
     return this.studentsListObservable;
   }
 
-  private setList(): Observable<StudentModel[]> {
-    return this.httpClient.get<StudentModel[]>(`${environment.serverUrl}/student`).pipe(map(res => {
-      this.studentsList.next(res);
-      return res;
-    }));
-  }
-
-  updateList(): void {
+  public updateList(): void {
     this.setList().subscribe();
   }
 
-  getInfo(): Observable<StudentModel> {
+  public getInfo(): Observable<StudentModel> {
     return this.studentsInfoObservable;
   }
 
-  setInfo(id): Observable<StudentModel> {
-    return this.httpClient.get<StudentModel>(`${environment.serverUrl}/student/${id}`).pipe(map(res => {
+  public setInfo(studentId: string): Observable<StudentModel> {
+    return this.httpClient.get<StudentModel>(`${environment.serverUrl}/student/${studentId}`).pipe(map(res => {
       this.studentsInfo.next(res);
       return res;
     }));
   }
 
-  insert(studentToAdd): Observable<StudentModel> {
+  public insert(studentToAdd: StudentModel): Observable<StudentModel> {
     return this.httpClient.post<StudentModel>(`${environment.serverUrl}/student`, studentToAdd).pipe(map(res => {
       this.updateList();
       this.studentsInfo.next(res);
@@ -67,14 +60,14 @@ export class StudentsService {
     }));
   }
 
-  delete(studentId): Observable<StudentModel> {
+  public delete(studentId: string): Observable<StudentModel> {
     return this.httpClient.delete<StudentModel>(`${environment.serverUrl}/student/${studentId}`).pipe(map(res => {
       this.updateList();
       return res;
     }));
   }
 
-  update(studentData): Observable<StudentModel> {
+  public update(studentData: { old: StudentModel, new: StudentModel }): Observable<StudentModel> {
     return this.httpClient.put<StudentModel>(`${environment.serverUrl}/student`, studentData).pipe(map(res => {
       this.updateList();
       this.studentsInfo.next(res);
@@ -82,11 +75,18 @@ export class StudentsService {
     }));
   }
 
-  uploadImg(imgFormData): Observable<any> {
+  public uploadImg(imgFormData): Observable<any> {
     return this.httpClient.post<any>(`${environment.serverUrl}/student/images`, imgFormData);
   }
 
-  deleteUnsavedImages(imageName): Observable<any> {
+  public deleteUnsavedImages(imageName:string): Observable<any> {
     return this.httpClient.delete<any>(`${environment.serverUrl}/student/images/${imageName}`);
+  }
+  
+  private setList(): Observable<StudentModel[]> {
+    return this.httpClient.get<StudentModel[]>(`${environment.serverUrl}/student`).pipe(map(res => {
+      this.studentsList.next(res);
+      return res;
+    }));
   }
 }

@@ -13,18 +13,18 @@ import { environment } from 'src/environments/environment';
 })
 export class CurrentUserInfoComponent implements OnInit {
   public currentUser: UserModel;
-  public baseUserImgUrl = (`${environment.baseImgUrl}/userImages/`);
+  public baseUserImgUrl: string = (`${environment.baseImgUrl}/userImages/`);
 
   constructor(private userService: UserService, private router: Router) { }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.userService.getCurrentUser().subscribe(
       res => this.currentUser = res,
       err => console.log(err)
     );
   }
 
-  logout() {
+  public logout(): void {
     this.router.navigate(['/login']);
     this.userService.clearLocalStorage();
   }

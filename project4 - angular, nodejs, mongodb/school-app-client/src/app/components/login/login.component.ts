@@ -15,9 +15,9 @@ export class LoginComponent implements OnInit {
 
   constructor(private userService: UserService, private router: Router) { }
 
-  ngOnInit() { }
+  public ngOnInit():void { }
 
-  onSubmitForm() {
+  public onSubmitForm():void {
     this.userService.userLoginValidation(this.user).subscribe(
       isUserLogged => {
         this.router.navigate(['/']);

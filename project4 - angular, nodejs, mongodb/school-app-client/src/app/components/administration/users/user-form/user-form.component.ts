@@ -18,11 +18,11 @@ export class UserFormComponent implements OnInit {
   public userOldData: UserModel;
   public userNewData: UserModel = {};
   public currentUser: UserModel;
-  public roles = environment.roles;
-  public actions = environment.actions;
-  public baseUserImgUrl: string = (`${environment.baseImgUrl}/userImages/`);
   public image: string;
   public imgBtnText: string = "Choose an Image"
+  public baseUserImgUrl: string = (`${environment.baseImgUrl}/userImages/`);
+  public roles = environment.roles;
+  public actions = environment.actions;
   private imagesToDelete: string[] = [];
   private usersList: UserModel[];
 

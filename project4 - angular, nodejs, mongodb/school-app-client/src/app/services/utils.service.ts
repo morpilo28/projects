@@ -7,7 +7,7 @@ export class UtilsService {
 
   constructor() { }
 
-  areAllFieldsFull(formItems) {
+  public areAllFieldsFull(formItems) {
     if (formItems) {
       for (var key in formItems) {
         if (formItems[key] === null || formItems[key] === undefined) {
@@ -24,7 +24,7 @@ export class UtilsService {
     }
   }
 
-  isAlreadyExist(list, newData, field) {
+  public isAlreadyExist(list, newData, field) {
     for (let i = 0; i < list.length; i++) {
       const dataFromList = list[i];
       if (newData._id) {
@@ -42,27 +42,15 @@ export class UtilsService {
     return false;
   }
 
-  alreadyExistAlert(title, field) {
+  public alreadyExistAlert(title, field) {
     alert(`${title} ${field} already exist`);
   }
 
-  emptyFieldAlert() {
+  public emptyFieldAlert() {
     alert('all fields must be filled');
   }
 
-  validateByField(field, dataFromList, newData) {
-    if (field === 'email') {
-      if (dataFromList.email === newData.email) {
-        return true;
-      }
-    } else if (field === 'name') {
-      if (dataFromList.name === newData.name) {
-        return true;
-      }
-    }
-  }
-
-  deleteUnsavedImages(imageSaved, imagesToDelete, service) {
+  public deleteUnsavedImages(imageSaved, imagesToDelete, service) {
     imagesToDelete = imagesToDelete.filter(image => image !== imageSaved);
     imagesToDelete.forEach(imageName => service.deleteUnsavedImages(imageName).subscribe(
       res => console.log(res),
@@ -70,11 +58,11 @@ export class UtilsService {
     ));
   }
 
-  onChoosingImage(fileInput) {
+  public onChoosingImage(fileInput) {
     fileInput.click();
   }
 
-  onPickedImg(imgFile, service, cb) {
+  public onPickedImg(imgFile, service, cb) {
     const formData = this.createFormData(imgFile);
     service.uploadImg(formData).subscribe(
       res => {
@@ -86,13 +74,7 @@ export class UtilsService {
       err => cb(err));
   }
 
-  createFormData(imgFile) {
-    const formData = new FormData();
-    formData.append('imgFile', imgFile);
-    return formData;
-  }
-
-  delete(id, itemDeletedName, itemDeletedKind, service, cb) {
+  public delete(id, itemDeletedName, itemDeletedKind, service, cb) {
     if (confirm(`Are you sure you want to delete this ${itemDeletedKind} (${itemDeletedName})?`)) {
       service.delete(id).subscribe(
         res => cb(null, res),
@@ -101,35 +83,35 @@ export class UtilsService {
     }
   }
 
-  insert(service, newData, cb) {
+  public insert(service, newData, cb) {
     service.insert(newData).subscribe(
       res => cb(null, res),
       err => cb(err)
     );
   }
 
-  update(service, data, cb) {
+  public update(service, data, cb) {
     service.update(data).subscribe(
       res => cb(null, res),
       err => cb(err)
     );
   }
 
-  getInfo(service, cb) {
+  public getInfo(service, cb) {
     service.getInfo().subscribe(
       res => cb(null, res),
       err => cb(err)
     );
   }
 
-  getList(service, cb) {
+  public getList(service, cb) {
     service.getList().subscribe(
       res => cb(null, res),
       err => cb(err)
     );
   }
 
-  getImgFolderName(title) {
+  public getImgFolderName(title) {
     switch (title) {
       case 'administrators':
         return 'userImages/';
@@ -140,7 +122,29 @@ export class UtilsService {
     }
   }
 
-  setInfo(service, itemId) {
+  public setInfo(service, itemId) {
     service.setInfo(itemId).subscribe();
+  }
+
+  public updateList(service) {
+    service.updateList();
+  }
+
+  private validateByField(field, dataFromList, newData) {
+    if (field === 'email') {
+      if (dataFromList.email === newData.email) {
+        return true;
+      }
+    } else if (field === 'name') {
+      if (dataFromList.name === newData.name) {
+        return true;
+      }
+    }
+  }
+
+  private createFormData(imgFile) {
+    const formData = new FormData();
+    formData.append('imgFile', imgFile);
+    return formData;
   }
 }

@@ -7,6 +7,9 @@ import { StudentsService } from 'src/app/services/students.service';
 import { environment } from 'src/environments/environment';
 import { UtilsService } from 'src/app/services/utils.service';
 import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
+import { UserModel } from 'src/app/models/user-model';
+import { StudentModel } from 'src/app/models/student-model';
+import { CourseModel } from 'src/app/models/course-model';
 
 @Component({
   selector: 'app-list',
@@ -19,11 +22,11 @@ export class ListComponent implements OnInit {
   public baseImgUrl = (`${environment.baseImgUrl}/`);
   public currentUserRole: string;
   public imgFolder;
-  public list;
+  public list: CourseModel[] | StudentModel[] | UserModel[];
+  public note: string;
   public roles = environment.roles;
   public actions = environment.actions;
   public titles = environment.titles;
-  public note: string;
 
   constructor(private userService: UserService, private studentsService: StudentsService, private courseService: CourseService, private utilsService: UtilsService) { }
 
@@ -36,46 +39,11 @@ export class ListComponent implements OnInit {
     this.getList();
   }
 
-  private getList(): void {
-    switch (this.title) {
-      case 'administrators':
-        this.utilsService.getList(this.userService, (e, res) => {
-          if (e) console.log(e);
-          else if (res) {
-            this.list = res;
-            this.note = res.length === 0 ? 'No users in the system' : null
-          }
-          else this.userService.updateList();
-        });
-        break;
-      case 'students':
-        this.utilsService.getList(this.studentsService, (e, res) => {
-          if (e) console.log(e);
-          else if (res) {
-            this.list = res;
-            this.note = res.length === 0 ? 'No students in the system' : null;
-          }
-          else this.studentsService.updateList();
-        });
-        break;
-      case 'courses':
-        this.utilsService.getList(this.courseService, (e, res) => {
-          if (e) console.log(e);
-          else if (res) {
-            this.list = res;
-            this.note = res.length === 0 ? 'No courses in the system' : null;
-          }
-          else this.courseService.updateList();
-        });
-        break;
-    }
-  }
-
-  onAction(title, action):void {
+  public onAction(title: string, action: string): void {
     this.mainContainerFilter.emit({ title: title, action: action });
   }
 
-  onItemClicked(title, itemId):void {
+  public onItemClicked(title: string, itemId: string): void {
     switch (title) {
       case 'administrators':
         this.utilsService.setInfo(this.userService, itemId);
@@ -87,5 +55,41 @@ export class ListComponent implements OnInit {
         this.utilsService.setInfo(this.courseService, itemId);
         break
     }
+  }
+
+  private getList(): void {
+    switch (this.title) {
+      case 'administrators':
+        this.utilsService.getList(this.userService, (e, res) => {
+          if (e) console.log(e);
+          else if (res) {
+            this.list = res;
+            this.note = res.length === 0 ? this.createNote('users') : null
+          } else this.utilsService.updateList(this.userService);
+        });
+        break;
+      case 'students':
+        this.utilsService.getList(this.studentsService, (e, res) => {
+          if (e) console.log(e);
+          else if (res) {
+            this.list = res;
+            this.note = res.length === 0 ? this.createNote('students') : null;
+          } else this.utilsService.updateList(this.studentsService);
+        });
+        break;
+      case 'courses':
+        this.utilsService.getList(this.courseService, (e, res) => {
+          if (e) console.log(e);
+          else if (res) {
+            this.list = res;
+            this.note = res.length === 0 ? this.createNote('courses') : null;
+          } else this.utilsService.updateList(this.courseService);
+        });
+        break;
+    }
+  }
+
+  private createNote(title: string): string {
+    return `No ${title} in the system`;
   }
 }

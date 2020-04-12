@@ -5,6 +5,7 @@ import { CourseService } from 'src/app/services/course.service';
 import { CourseModel } from 'src/app/models/course-model';
 import { environment } from 'src/environments/environment';
 import { UtilsService } from 'src/app/services/utils.service';
+import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
 
 @Component({
   selector: 'app-course-form',
@@ -12,21 +13,20 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./course-form.component.css']
 })
 export class CourseFormComponent implements OnInit {
+  @Input() mainContainerFilter: MainContainerFilterModel;
+  @Output() showSchoolMainPage: EventEmitter<MainContainerFilterModel> = new EventEmitter<MainContainerFilterModel>();
   public courseOldData: CourseModel;
   public courseNewData: CourseModel = {};
-  private roles = environment.roles;
+  public baseCourseImgUrl: string = (`${environment.baseImgUrl}/courseImages/`);
+  public image: string;
+  public imgBtnText: string = "Choose an Image"
   public actions = environment.actions;
-  public baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
-  public image;
-  public imgBtnText:string = "Choose an Image"
   private imagesToDelete: string[] = [];
-  private coursesList;
-  @Input() mainContainerFilter: { title: string, action: string };
-  @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
+  private coursesList: CourseModel[];
 
   constructor(private courseService: CourseService, private utilsService: UtilsService) { }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.imgBtnText = 'Change Image';
       this.utilsService.getInfo(this.courseService, (e, res) => {
@@ -44,15 +44,15 @@ export class CourseFormComponent implements OnInit {
     })
   }
 
-  save() {
+  public save(): void {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.courseNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
         if (!this.utilsService.isAlreadyExist(this.coursesList, this.courseNewData, 'name')) {
           this.utilsService.deleteUnsavedImages(this.courseNewData.image, this.imagesToDelete, this.courseService)
-          this.utilsService.insert(this.courseService, this.courseNewData, (e,res)=>{
-            if(e) console.log(e);
-            else this.showSchoolMainPage.emit('moreInfo');
+          this.utilsService.insert(this.courseService, this.courseNewData, (e, res) => {
+            if (e) console.log(e);
+            else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
           })
         } else {
           this.utilsService.alreadyExistAlert('course', 'name');
@@ -66,8 +66,8 @@ export class CourseFormComponent implements OnInit {
           this.imagesToDelete.push(this.courseOldData.image);
           this.utilsService.deleteUnsavedImages(this.courseNewData.image, this.imagesToDelete, this.courseService)
           this.utilsService.update(this.courseService, this.courseNewData, (e, res) => {
-            if(e) console.log(e);
-            else this.showSchoolMainPage.emit('moreInfo');
+            if (e) console.log(e);
+            else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
           });
         } else {
           this.utilsService.alreadyExistAlert('course', 'name');
@@ -77,11 +77,11 @@ export class CourseFormComponent implements OnInit {
     }
   }
 
-  onImageBtn(fileInput) {
+  public onImageBtn(fileInput): void {
     this.utilsService.onChoosingImage(fileInput);
   }
 
-  onPickedImg(fileInput) {
+  public onPickedImg(fileInput): void {
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.courseService, (e, res) => {
@@ -101,10 +101,10 @@ export class CourseFormComponent implements OnInit {
     }
   }
 
-  delete(id) {
+  public delete(id): void {
     this.utilsService.delete(id, this.courseOldData.name, 'course', this.courseService, (err, res) => {
       if (err) console.log(err);
-      else this.showSchoolMainPage.emit(null);
+      else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: null });
     })
   }
 }

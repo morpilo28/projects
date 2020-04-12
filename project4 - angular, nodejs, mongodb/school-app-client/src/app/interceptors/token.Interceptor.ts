@@ -11,15 +11,14 @@ export class TokenInterceptor implements HttpInterceptor {
     private token: string = '';
 
     constructor(private userService: UserService) {
-        this.userService.getCurrentUser().subscribe(res => {
-            this.token = res ? res.token : '';
-        });
+        this.userService.getCurrentUser().subscribe(
+            res => this.token = res ? res.token : '');
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         let _req = req.clone({
-                headers: req.headers.set('Authorization', 'Bearer ' + this.token)
-            });
-            return next.handle(_req);
+            headers: req.headers.set('Authorization', 'Bearer ' + this.token)
+        });
+        return next.handle(_req);
     }
 }

@@ -1,6 +1,6 @@
 <ng-container *ngIf="courseInfo">
     <div class="clearfix">
-        <span class="float-left ml-3 mt-2 font-weight-bold courseName">{{courseInfo.name}}</span>
+        <span class="float-left ml-3 mt-2 font-weight-bold courseName">{{courseInfo.name | titlecase}}</span>
         <button class="float-right mr-3 mt-2 rounded font-weight-bold" *ngIf="currentUser.role !== roles.sales"
             (click)="onEdit()">Edit</button>
     </div>
@@ -10,14 +10,14 @@
             <img class='float-left rounded' [src]='baseCourseImgUrl+courseInfo.image' [alt]='courseInfo.image'
                 width='200' height='210' />
             <div class="courseInfo float-left overflow-auto ml-2">
-                <h2>{{courseInfo.name}}<span *ngIf="courseInfo.courseStudents.length !== 0">, {{courseInfo.courseStudents.length}} students</span></h2>
+                <h2>{{courseInfo.name | titlecase}}<span *ngIf="courseInfo.courseStudents.length !== 0">, {{courseInfo.courseStudents.length}} students</span></h2>
                 <span>{{courseInfo.description}}</span>
             </div>
         </div>
         <div class="studentsContainer overflow-auto">
             <div class="mb-2 clearfix" *ngFor="let student of courseInfo.courseStudents">
                 <img class="float-left rounded" [src]="baseStudentImgUrl+student.image" [alt]="student.image" width="50" height="50" />
-                <div class="float-left studentName overflow-auto ml-2">{{student.name}}</div>
+                <div class="float-left studentName overflow-auto ml-2">{{student.name | titlecase}}</div>
             </div>
         </div>
     </div>

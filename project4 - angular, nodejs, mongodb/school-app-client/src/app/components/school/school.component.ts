@@ -2,56 +2,33 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
-import { CourseModel } from 'src/app/models/course-model';
 import { StudentsService } from 'src/app/services/students.service';
-import { StudentModel } from 'src/app/models/student-model';
 import { UtilsService } from 'src/app/services/utils.service';
+import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
 
 @Component({
   templateUrl: './school.component.html',
   styleUrls: ['./school.component.css']
 })
 export class SchoolComponent implements OnInit {
-  private coursesList: CourseModel[] = [];
-  private studentsList: StudentModel[] = [];
   public coursesCount: number = 0;
   public studentsCount: number = 0;
-  public _mainContainerFilter = { title: null, action: null };
-  private singleItemToEdit;
-  private courseStudentsOrStudentCourses;
+  public mainContainerFilter: MainContainerFilterModel = { title: null, action: null };
 
   constructor(private courseService: CourseService, private studentsService: StudentsService, private utilsService: UtilsService) { }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.utilsService.getList(this.courseService, (e, res) => {
       if (e) console.log(e);
-      else if (res) {
-        this.coursesList = res;
-        this.coursesCount = res.length;
-      };
+      else if (res) this.coursesCount = res.length;
     });
     this.utilsService.getList(this.studentsService, (e, res) => {
       if (e) console.log(e);
-      else if (res) {
-        this.studentsList = res;
-        this.studentsCount = res.length;
-      };
+      else if (res) this.studentsCount = res.length;
     });
   }
 
-  filterForMainContainer(value) {
-    this._mainContainerFilter = value;
-  }
-
-  onEdit(value) {
-    this._mainContainerFilter = value.mainContainerFilter;
-  }
-
-  componentLoading(component) {
-    if (!component) {
-      this._mainContainerFilter.action = null;
-    } else if (component === 'moreInfo') {
-      this._mainContainerFilter.action = 'moreInfo';
-    }
+  public componentLoading(componentFilter: MainContainerFilterModel): void {
+    this.mainContainerFilter = componentFilter;
   }
 }

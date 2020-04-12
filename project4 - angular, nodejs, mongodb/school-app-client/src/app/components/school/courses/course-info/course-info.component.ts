@@ -7,6 +7,7 @@ import { CourseService } from 'src/app/services/course.service';
 import { UserModel } from 'src/app/models/user-model';
 import { UserService } from 'src/app/services/user.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
 
 @Component({
   selector: 'app-course-info',
@@ -14,35 +15,32 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./course-info.component.css']
 })
 export class CourseInfoComponent implements OnInit {
-  @Input() mainContainerFilter: { title: string, action: string };
+  @Input() mainContainerFilter: MainContainerFilterModel;
+  @Output() onEditData: EventEmitter<MainContainerFilterModel> = new EventEmitter<MainContainerFilterModel>();
   public currentUser: UserModel;
   public courseInfo: CourseModel;
+  public baseCourseImgUrl: string = (`${environment.baseImgUrl}/courseImages/`);
+  public baseStudentImgUrl: string = (`${environment.baseImgUrl}/studentImages/`);
   public roles = environment.roles;
   private actions = environment.actions;
-  public baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
-  public baseStudentImgUrl = (`${environment.baseImgUrl}/studentImages/`);
-  //TODO: change any to type of something
-  @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private courseService: CourseService, private userService: UserService, private utilsService: UtilsService) { }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.utilsService.getInfo(this.courseService, (e, res) => {
-      if(e) console.log(e);
+      if (e) console.log(e);
       else this.courseInfo = res;
     });
     this.userService.getCurrentUser().subscribe(
-      res=> this.currentUser = res,
-      err=> console.log(err)
-      );
+      res => this.currentUser = res,
+      err => console.log(err)
+    );
   }
 
-  onEdit() {
+  public onEdit(): void {
     this.onEditData.emit({
-      mainContainerFilter: {
-        title: this.mainContainerFilter.title,
-        action: this.actions.edit
-      }
+      title: this.mainContainerFilter.title,
+      action: this.actions.edit
     });
   }
 }

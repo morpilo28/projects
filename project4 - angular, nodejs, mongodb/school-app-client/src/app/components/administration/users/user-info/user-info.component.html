@@ -11,7 +11,7 @@
         <img class='float-left rounded' [src]='baseUserImgUrl+userInfo.image' [alt]='userInfo.image' width='200'
             height='210' />
         <div class="userInfo float-left overflow-auto ml-3">
-            <h2 class="ml-1 font-weight-bold">{{userInfo.name}}</h2>
+            <h2 class="ml-1 font-weight-bold">{{userInfo.name | titlecase}}</h2>
             <span class="ml-1">{{userInfo.role}}</span><br>
             <span class="ml-1">{{userInfo.phone}}</span><br>
             <span class="ml-1">{{userInfo.email}}</span><br>

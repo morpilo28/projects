@@ -17,8 +17,8 @@ export class UserInfoComponent implements OnInit {
   @Output() onEditData: EventEmitter<MainContainerFilterModel> = new EventEmitter<MainContainerFilterModel>();
   public userInfo: UserModel;
   public currentUser: UserModel;
-  public roles = environment.roles;
   public baseUserImgUrl: string = (`${environment.baseImgUrl}/userImages/`);
+  public roles = environment.roles;
   private actions = environment.actions;
 
   constructor(private userService: UserService, private utilsService: UtilsService) { }

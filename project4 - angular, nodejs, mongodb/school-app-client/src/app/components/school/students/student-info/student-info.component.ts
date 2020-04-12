@@ -5,6 +5,7 @@ import { StudentModel } from 'src/app/models/student-model';
 import { environment } from 'src/environments/environment';
 import { StudentsService } from 'src/app/services/students.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
 
 @Component({
   selector: 'app-student-info',
@@ -12,30 +13,26 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./student-info.component.css']
 })
 export class StudentInfoComponent implements OnInit {
-  @Input() mainContainerFilter: { title: string, action: string };
+  @Input() mainContainerFilter: MainContainerFilterModel;
+  @Output() onEditData: EventEmitter<MainContainerFilterModel> = new EventEmitter<MainContainerFilterModel>();
   public studentInfo: StudentModel;
-  private roles = environment.roles;
+  public baseCourseImgUrl: string = (`${environment.baseImgUrl}/courseImages/`);
+  public baseStudentImgUrl: string = (`${environment.baseImgUrl}/studentImages/`);
   private actions = environment.actions;
-  public baseCourseImgUrl = (`${environment.baseImgUrl}/courseImages/`);
-  public baseStudentImgUrl = (`${environment.baseImgUrl}/studentImages/`);
-  //TODO: change any to type of something
-  @Output() onEditData: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private studentService: StudentsService, private utilsService: UtilsService) { }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.utilsService.getInfo(this.studentService, (e, res) => {
-      if(e) console.log(e);
+      if (e) console.log(e);
       else this.studentInfo = res;
     });
   }
 
-  onEdit() {
+  public onEdit(): void {
     this.onEditData.emit({
-      mainContainerFilter: {
-        title: this.mainContainerFilter.title,
-        action: this.actions.edit
-      }
+      title: this.mainContainerFilter.title,
+      action: this.actions.edit
     });
   }
 }

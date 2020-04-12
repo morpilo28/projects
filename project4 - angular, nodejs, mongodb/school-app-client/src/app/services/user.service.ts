@@ -45,7 +45,7 @@ export class UserService {
     });
   }
 
-  userLoginValidation(user: UserModel) {
+  public userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
       userLogged => {
         let userWithoutId = { ...userLogged };
@@ -57,21 +57,70 @@ export class UserService {
       }));
   }
 
-  setLocalStorage(name, user) {
-    window.localStorage.setItem(name, JSON.stringify(user));
-  }
-
-  clearLocalStorage() {
+  public clearLocalStorage() {
     window.localStorage.clear();
     this.currentUser.next(null);
   }
 
-  getCurrentUser(): Observable<UserModel> {
+  public getCurrentUser(): Observable<UserModel> {
     return this.currentUserObservable;
   }
 
-  setCurrentUser() {
+  public setCurrentUser() {
     this.currentUser.next(JSON.parse(window.localStorage.getItem('user')));
+  }
+
+  public getList(): Observable<UserModel[]> {
+    return this.usersListObservable;
+  }
+
+  public updateList() {
+    this.setList().subscribe();
+  }
+
+  public getInfo(): Observable<UserModel> {
+    return this.userInfoObservable;
+  }
+
+  public setInfo(userId: string): Observable<UserModel> {
+    return this.httpClient.get<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
+      this.userInfo.next(res);
+      return res;
+    }));
+  }
+
+  public insert(userToAdd: UserModel): Observable<UserModel> {
+    return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/register`, userToAdd).pipe(map(res => {
+      this.updateList();
+      return res;
+    }));
+  }
+
+  public delete(userId: string): Observable<UserModel> {
+    return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
+      this.updateList();
+      return res;
+    }));
+  }
+
+  public update(newUserData: UserModel): Observable<UserModel> {
+    return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
+      this.updateList();
+      this.updateCurrentUser(res);
+      return res;
+    }));
+  }
+
+  public uploadImg(imgFormData): Observable<any> {
+    return this.httpClient.post<any>(`${environment.serverUrl}/user/images`, imgFormData);
+  }
+
+  public deleteUnsavedImages(imageName: string): Observable<any> {
+    return this.httpClient.delete<any>(`${environment.serverUrl}/user/images/${imageName}`);
+  }
+
+  private setLocalStorage(name: string, user: UserModel) {
+    window.localStorage.setItem(name, JSON.stringify(user));
   }
 
   private updateCurrentUser(res: UserModel) {
@@ -87,59 +136,15 @@ export class UserService {
     }
   }
 
-  getList(): Observable<UserModel[]> {
-    return this.usersListObservable;
-  }
-
-  setList(): Observable<UserModel[]> {
+  private setList(): Observable<UserModel[]> {
     return this.httpClient.get<UserModel[]>(`${environment.serverUrl}/user`).pipe(map(res => {
       this.usersList.next(res);
       return res;
     }));
   }
 
-  updateList() {
-    this.setList().subscribe();
-  }
 
-  getInfo(): Observable<UserModel> {
-    return this.userInfoObservable;
-  }
 
-  setInfo(id): Observable<UserModel> {
-    return this.httpClient.get<UserModel>(`${environment.serverUrl}/user/${id}`).pipe(map(res => {
-      this.userInfo.next(res);
-      return res;
-    }));
-  }
 
-  insert(userToAdd): Observable<UserModel> {
-    return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/register`, userToAdd).pipe(map(res => {
-      this.updateList();
-      return res;
-    }));
-  }
 
-  delete(userId): Observable<UserModel> {
-    return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
-      this.updateList();
-      return res;
-    }));
-  }
-
-  update(newUserData): Observable<UserModel> {
-    return this.httpClient.put<UserModel>(`${environment.serverUrl}/user`, newUserData).pipe(map(res => {
-      this.updateList();
-      this.updateCurrentUser(res);
-      return res;
-    }));
-  }
-
-  uploadImg(imgFormData): Observable<any> {
-    return this.httpClient.post<any>(`${environment.serverUrl}/user/images`, imgFormData);
-  }
-
-  deleteUnsavedImages(imageName): Observable<any> {
-    return this.httpClient.delete<any>(`${environment.serverUrl}/user/images/${imageName}`);
-  }
 }
