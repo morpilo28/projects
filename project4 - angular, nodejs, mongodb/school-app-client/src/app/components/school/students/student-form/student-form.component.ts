@@ -14,6 +14,8 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./student-form.component.css']
 })
 export class StudentFormComponent implements OnInit {
+  @Input() mainContainerFilter: { title: string, action: string };
+  @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
   public studentOldData: StudentModel;
   public studentNewData: StudentModel = {};
   private roles = environment.roles;
@@ -25,8 +27,6 @@ export class StudentFormComponent implements OnInit {
   public allCourses: CourseModel[];
   private coursesChecked;
   private studentsList;
-  @Input() mainContainerFilter: { title: string, action: string };
-  @Output() showSchoolMainPage: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private studentService: StudentsService, private courseService: CourseService, private utilsService: UtilsService) { }
 

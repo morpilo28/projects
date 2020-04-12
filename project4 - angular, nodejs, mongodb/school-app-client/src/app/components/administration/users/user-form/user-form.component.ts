@@ -14,7 +14,7 @@ import { MainContainerFilterModel } from 'src/app/models/main-container-filter-m
 })
 export class UserFormComponent implements OnInit {
   @Input() mainContainerFilter: MainContainerFilterModel;
-  @Output() showUserMainPage: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() showUserMainPage: EventEmitter<MainContainerFilterModel> = new EventEmitter<MainContainerFilterModel>();
   public userOldData: UserModel;
   public userNewData: UserModel = {};
   public currentUser: UserModel;
@@ -28,7 +28,7 @@ export class UserFormComponent implements OnInit {
 
   constructor(private userService: UserService, private utilsService: UtilsService) { }
 
-  public ngOnInit():void {
+  public ngOnInit(): void {
     if (this.mainContainerFilter.action === this.actions.edit) {
       this.imgBtnText = 'Change Image';
       this.utilsService.getInfo(this.userService, (e, res) => {
@@ -50,11 +50,11 @@ export class UserFormComponent implements OnInit {
     })
   }
 
-  public onSelectedRole(role:string):void {
+  public onSelectedRole(role: string): void {
     this.userNewData.role = role;
   }
 
-  public save():void {
+  public save(): void {
     if (this.mainContainerFilter.action === this.actions.add) {
       this.userNewData.image = this.image;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
@@ -62,7 +62,7 @@ export class UserFormComponent implements OnInit {
           this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
           this.utilsService.insert(this.userService, this.userNewData, (e, res) => {
             if (e) console.log(e);
-            else this.showUserMainPage.emit(true);
+            else this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
           })
         } else {
           this.utilsService.alreadyExistAlert('user', 'email');
@@ -77,7 +77,7 @@ export class UserFormComponent implements OnInit {
           this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
           this.utilsService.update(this.userService, this.userNewData, (e, res) => {
             if (e) console.log(e);
-            else this.showUserMainPage.emit(true);
+            else this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
           });
         } else {
           this.utilsService.alreadyExistAlert('user', 'email');
@@ -87,11 +87,11 @@ export class UserFormComponent implements OnInit {
     }
   }
 
-  public onImageBtn(fileInput):void {
+  public onImageBtn(fileInput): void {
     this.utilsService.onChoosingImage(fileInput);
   }
 
-  public onPickedImg(fileInput):void {
+  public onPickedImg(fileInput): void {
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.userService, (e, res) => {
@@ -111,10 +111,10 @@ export class UserFormComponent implements OnInit {
     }
   }
 
-  public delete(id:string):void {
+  public delete(id: string): void {
     this.utilsService.delete(id, this.userOldData.name, 'user', this.userService, (err, res) => {
       if (err) console.log(err);
-      else this.showUserMainPage.emit(true);
+      else this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
     })
   }
 }

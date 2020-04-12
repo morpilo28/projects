@@ -1,27 +1,20 @@
 <!-- user's list -->
-<app-list class="administrators" title='administrators' (mainContainerFilter)='filterForMainContainer($event)'>
+<app-list class="administrators" title='administrators' (mainContainerFilter)='componentLoading($event)'>
 </app-list>
 
-<!-- only on start  -->
-<!-- TODO: maybe move it to a separate component -->
-<div class="main summary rounded" *ngIf="!_mainContainerFilter.action">
-        <h2 class="mb-4">Administration summary</h2>
-        <p>Owner: <strong>{{administratorsCount.owner}}</strong></p>
-        <p>Manager: <strong>{{administratorsCount.manager}}</strong></p>
-        <p>Sales: <strong>{{administratorsCount.sales}}</strong></p>
-        <p>Total of <strong><u>{{totalUsers}}</u></strong> administrators</p>
-</div>
+<!-- main  -->
+<app-user-main class="main summary rounded" *ngIf="!mainContainerFilter.action" [administratorsCount]='administratorsCount' [totalUsers]='totalUsers'></app-user-main>
 
 <!-- on add user -->
-<app-user-form class="main" *ngIf="_mainContainerFilter.action === 'add'" [mainContainerFilter]='_mainContainerFilter'
+<app-user-form class="main" *ngIf="mainContainerFilter.action === 'add'" [mainContainerFilter]='mainContainerFilter'
     (showUserMainPage)="componentLoading($event)">
 </app-user-form>
 
 <!-- on more info -->
-<app-user-info class="main" *ngIf="_mainContainerFilter.action === 'moreInfo'"
-    [mainContainerFilter]='_mainContainerFilter' (onEditData)="onEdit($event)"></app-user-info>
+<app-user-info class="main" *ngIf="mainContainerFilter.action === 'moreInfo'"
+    [mainContainerFilter]='mainContainerFilter' (onEditData)="componentLoading($event)"></app-user-info>
 
 <!-- on edit  user -->
-<app-user-form class="main" *ngIf="_mainContainerFilter.action === 'edit'" [mainContainerFilter]='_mainContainerFilter'
+<app-user-form class="main" *ngIf="mainContainerFilter.action === 'edit'" [mainContainerFilter]='mainContainerFilter'
     (showUserMainPage)="componentLoading($event)">
 </app-user-form>

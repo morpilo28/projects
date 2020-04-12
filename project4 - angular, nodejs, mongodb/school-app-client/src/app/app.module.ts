@@ -19,6 +19,8 @@ import { CourseInfoComponent } from './components/school/courses/course-info/cou
 import { UserFormComponent } from './components/administration/users/user-form/user-form.component';
 import { UserInfoComponent } from './components/administration/users/user-info/user-info.component';
 import { CurrentUserInfoComponent } from './components/current-user-info/current-user-info.component';
+import { UserMainComponent } from './components/administration/users/user-main/user-main.component';
+import { SchoolMainComponent } from './components/school/school-main/school-main.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,8 @@ import { CurrentUserInfoComponent } from './components/current-user-info/current
     CourseInfoComponent,
     UserFormComponent,
     CurrentUserInfoComponent,
+    UserMainComponent,
+    SchoolMainComponent,
   ],
   imports: [
     BrowserModule,

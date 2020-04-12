@@ -6,6 +6,7 @@ import { CourseService } from 'src/app/services/course.service';
 import { StudentsService } from 'src/app/services/students.service';
 import { environment } from 'src/environments/environment';
 import { UtilsService } from 'src/app/services/utils.service';
+import { MainContainerFilterModel } from 'src/app/models/main-container-filter-model';
 
 @Component({
   selector: 'app-list',
@@ -14,6 +15,7 @@ import { UtilsService } from 'src/app/services/utils.service';
 })
 export class ListComponent implements OnInit {
   @Input() title;
+  @Output() mainContainerFilter: EventEmitter<MainContainerFilterModel> = new EventEmitter<MainContainerFilterModel>();
   public baseImgUrl = (`${environment.baseImgUrl}/`);
   public currentUserRole: string;
   public imgFolder;
@@ -22,11 +24,10 @@ export class ListComponent implements OnInit {
   public actions = environment.actions;
   public titles = environment.titles;
   public note: string;
-  @Output() mainContainerFilter: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private userService: UserService, private studentsService: StudentsService, private courseService: CourseService, private utilsService: UtilsService) { }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.userService.getCurrentUser().subscribe(
       res => this.currentUserRole = res ? res.role : null,
       err => console.log(err)
@@ -35,14 +36,14 @@ export class ListComponent implements OnInit {
     this.getList();
   }
 
-  private getList() {
+  private getList(): void {
     switch (this.title) {
       case 'administrators':
         this.utilsService.getList(this.userService, (e, res) => {
           if (e) console.log(e);
           else if (res) {
             this.list = res;
-            this.note = res.length === 0? 'No users in the system' : null
+            this.note = res.length === 0 ? 'No users in the system' : null
           }
           else this.userService.updateList();
         });
@@ -52,7 +53,7 @@ export class ListComponent implements OnInit {
           if (e) console.log(e);
           else if (res) {
             this.list = res;
-            this.note = res.length === 0? 'No students in the system' : null;
+            this.note = res.length === 0 ? 'No students in the system' : null;
           }
           else this.studentsService.updateList();
         });
@@ -62,7 +63,7 @@ export class ListComponent implements OnInit {
           if (e) console.log(e);
           else if (res) {
             this.list = res;
-            this.note = res.length === 0? 'No courses in the system' : null;
+            this.note = res.length === 0 ? 'No courses in the system' : null;
           }
           else this.courseService.updateList();
         });
@@ -70,11 +71,11 @@ export class ListComponent implements OnInit {
     }
   }
 
-  onAction(title, action) {
+  onAction(title, action):void {
     this.mainContainerFilter.emit({ title: title, action: action });
   }
 
-  onItemClicked(title, itemId) {
+  onItemClicked(title, itemId):void {
     switch (title) {
       case 'administrators':
         this.utilsService.setInfo(this.userService, itemId);

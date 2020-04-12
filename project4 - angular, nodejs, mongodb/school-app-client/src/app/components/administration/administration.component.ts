@@ -16,7 +16,7 @@ import { MainContainerFilterModel } from 'src/app/models/main-container-filter-m
 //TODO: design page and check everything again
 
 export class AdministrationComponent implements OnInit {
-  public _mainContainerFilter: MainContainerFilterModel = { title: null, action: null };
+  public mainContainerFilter: MainContainerFilterModel = { title: null, action: null };
   public administratorsCount: { owner: number, manager: number, sales: number } = { owner: 0, manager: 0, sales: 0 };
   public totalUsers: number;
   private roles = environment.roles;
@@ -34,19 +34,9 @@ export class AdministrationComponent implements OnInit {
     })
   }
 
-  public filterForMainContainer(value: MainContainerFilterModel): void {
-    this._mainContainerFilter = value;
-  }
-
-  public onEdit(value: MainContainerFilterModel): void {
-    this._mainContainerFilter = value;
-  }
-
-  public componentLoading(component: boolean): void {
-    if (component) {
-      this._mainContainerFilter.action = null;
-      this.getAdministratorsCount();
-    }
+  public componentLoading(componentFilter: MainContainerFilterModel): void {
+    this.mainContainerFilter = componentFilter;
+    if (!componentFilter.action) this.getAdministratorsCount();
   }
 
   private getAdministratorsCount(): void {
