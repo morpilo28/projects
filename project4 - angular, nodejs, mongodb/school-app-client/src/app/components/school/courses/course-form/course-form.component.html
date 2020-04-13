@@ -23,6 +23,7 @@
         <div class="clearfix">
             <div class="labelProp float-left mr-2">Image</div>
             <button class="mb-2 float-left rounded font-weight-bold" id="imgPick" style="cursor:pointer" (click)="onImageBtn(fileInput)">{{imgBtnText}}</button>
+            <span *ngIf='loader' class="spinner-border ml-3" role="status"></span>
         </div>
         <div *ngIf="image">
             <img class="rounded" [src]="baseCourseImgUrl+image" [alt]="image" width="200" height="210" />

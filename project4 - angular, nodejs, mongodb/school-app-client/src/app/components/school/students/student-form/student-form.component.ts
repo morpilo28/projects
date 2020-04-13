@@ -21,6 +21,7 @@ export class StudentFormComponent implements OnInit {
   public studentNewData: StudentModel = {};
   public image: string;
   public imgBtnText: string = "Choose an Image";
+  public loader = this.utilsService.stopLoader();
   public allCourses: CourseModel[];
   public baseStudentImgUrl: string = (`${environment.baseImgUrl}/studentImages/`);
   public actions = environment.actions;
@@ -111,17 +112,20 @@ export class StudentFormComponent implements OnInit {
   }
 
   public onPickedImg(fileInput): void {
+    this.loader = this.utilsService.startLoader();
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.studentService, (e, res) => {
         if (e) console.log(e);
         else {
           this.image = res.imgName;
+          this.loader = this.utilsService.stopLoader();
           this.imgBtnText = res.btnText;
           this.imagesToDelete.push(res.imgName);
         }
       })
     } else {
+      this.loader = this.utilsService.stopLoader();
       if (this.studentOldData) this.image = this.studentOldData.image;
       else {
         this.image = null;
@@ -133,7 +137,10 @@ export class StudentFormComponent implements OnInit {
   public delete(id: string): void {
     this.utilsService.delete(id, this.studentOldData.name, 'student', this.studentService, (err, res) => {
       if (err) console.log(err);
-      else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+      else {
+        this.utilsService.deleteUnsavedImages(null, this.imagesToDelete, this.studentService);
+        this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+      };
     })
   }
 

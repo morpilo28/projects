@@ -51,7 +51,9 @@ export class UtilsService {
   }
 
   public deleteUnsavedImages(imageSaved, imagesToDelete, service) {
-    imagesToDelete = imagesToDelete.filter(image => image !== imageSaved);
+    if (imageSaved) {
+      imagesToDelete = imagesToDelete.filter(image => image !== imageSaved);
+    }
     imagesToDelete.forEach(imageName => service.deleteUnsavedImages(imageName).subscribe(
       res => console.log(res),
       err => console.log(err)
@@ -146,5 +148,13 @@ export class UtilsService {
     const formData = new FormData();
     formData.append('imgFile', imgFile);
     return formData;
+  }
+
+  public startLoader() {
+    return true;
+  }
+
+  public stopLoader() {
+    return false;
   }
 }

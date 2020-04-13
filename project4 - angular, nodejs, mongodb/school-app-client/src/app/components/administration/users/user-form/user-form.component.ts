@@ -20,6 +20,7 @@ export class UserFormComponent implements OnInit {
   public currentUser: UserModel;
   public image: string;
   public imgBtnText: string = "Choose an Image"
+  public loader = this.utilsService.stopLoader();
   public baseUserImgUrl: string = (`${environment.baseImgUrl}/userImages/`);
   public roles = environment.roles;
   public actions = environment.actions;
@@ -92,17 +93,20 @@ export class UserFormComponent implements OnInit {
   }
 
   public onPickedImg(fileInput): void {
+    this.loader = this.utilsService.startLoader();
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.userService, (e, res) => {
         if (e) console.log(e);
         else {
           this.image = res.imgName;
+          this.loader = this.utilsService.stopLoader();
           this.imgBtnText = res.btnText;
           this.imagesToDelete.push(res.imgName);
         }
       })
     } else {
+      this.loader = this.utilsService.stopLoader();
       if (this.userOldData) this.image = this.userOldData.image;
       else {
         this.image = null;
@@ -114,7 +118,10 @@ export class UserFormComponent implements OnInit {
   public delete(id: string): void {
     this.utilsService.delete(id, this.userOldData.name, 'user', this.userService, (err, res) => {
       if (err) console.log(err);
-      else this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+      else {
+        this.utilsService.deleteUnsavedImages(null, this.imagesToDelete, this.userService);
+        this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+      };
     })
   }
 }

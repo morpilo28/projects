@@ -20,6 +20,7 @@ export class CourseFormComponent implements OnInit {
   public baseCourseImgUrl: string = (`${environment.baseImgUrl}/courseImages/`);
   public image: string;
   public imgBtnText: string = "Choose an Image"
+  public loader = this.utilsService.stopLoader();
   public actions = environment.actions;
   private imagesToDelete: string[] = [];
   private coursesList: CourseModel[];
@@ -82,17 +83,20 @@ export class CourseFormComponent implements OnInit {
   }
 
   public onPickedImg(fileInput): void {
+    this.loader = this.utilsService.startLoader();
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.courseService, (e, res) => {
         if (e) console.log(e);
         else {
           this.image = res.imgName;
+          this.loader = this.utilsService.stopLoader();
           this.imgBtnText = res.btnText;
           this.imagesToDelete.push(res.imgName);
         }
       })
     } else {
+      this.loader = this.utilsService.stopLoader();
       if (this.courseOldData) this.image = this.courseOldData.image;
       else {
         this.image = null;
@@ -104,7 +108,10 @@ export class CourseFormComponent implements OnInit {
   public delete(id): void {
     this.utilsService.delete(id, this.courseOldData.name, 'course', this.courseService, (err, res) => {
       if (err) console.log(err);
-      else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+      else {
+        this.utilsService.deleteUnsavedImages(null, this.imagesToDelete, this.courseService);
+        this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+      };
     })
   }
 }
