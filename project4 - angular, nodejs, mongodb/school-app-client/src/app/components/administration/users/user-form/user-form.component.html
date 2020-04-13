@@ -16,11 +16,12 @@
         <label class="labelProp ml-2 mr-2" for="name">Name </label>
         <input (keyup.enter)='save()' id="name" [(ngModel)]="userNewData.name" />
     </div>
-    <div *ngIf="mainContainerFilter.action === actions.add">
-        <label class="labelProp ml-2 mr-2" for="pass">Password</label>
-        <input (keyup.enter)='save()' [type]="passInputType ? 'text' : 'password'" id="pass"
+    <div *ngIf="mainContainerFilter.action === actions.add" class="clearfix">
+        <label class="labelProp ml-2 mr-2 float-left" for="pass">Password</label>
+        <input class="float-left" (keyup.enter)='save()' [type]="passInputType ? 'text' : 'password'" id="pass"
             [(ngModel)]="userNewData.password" />
-        <mat-icon (click)="togglePassInput()">{{showPassIcon ? 'visibility_off' :'visibility'}}</mat-icon>
+            <!-- TODO: style the icon - try to put it inside the input or right next to it -->
+        <div class="ml-2 mt-1 float-left"><mat-icon (click)="togglePassInput()">{{showPassIcon ? 'visibility_off' :'visibility'}}</mat-icon></div>
     </div>
     <div>
         <label class="labelProp ml-2 mr-2" for="phone">Phone</label>

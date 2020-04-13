@@ -8,7 +8,8 @@
       </div>
       <div class="form-group">
           <input (keyup.enter)='onSubmitForm()' [(ngModel)]='user.password' [type]="passInputType ? 'text' : 'password'" class="form-control" placeholder="Password">
-          <mat-icon (click)="togglePassInput()">{{showPassIcon ? 'visibility_off' :'visibility'}}</mat-icon>
+          <!-- TODO: style the icon - try to put it inside the input or right next to it -->
+          <div class="mt-2 ml-1"><mat-icon (click)="togglePassInput()">{{showPassIcon ? 'visibility_off' :'visibility'}}</mat-icon></div>
       </div>
       <div class="form-group">
           <button (click)='onSubmitForm()' class="btn btn-primary btn-block">Log in</button>
