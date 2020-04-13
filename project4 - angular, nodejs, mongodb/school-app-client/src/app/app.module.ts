@@ -21,6 +21,8 @@ import { UserInfoComponent } from './components/administration/users/user-info/u
 import { CurrentUserInfoComponent } from './components/current-user-info/current-user-info.component';
 import { UserMainComponent } from './components/administration/users/user-main/user-main.component';
 import { SchoolMainComponent } from './components/school/school-main/school-main.component';
+import { SortListByNamePipe } from './pipes/sort-list-by-name.pipe';
+import { SortListByRolePipe } from './pipes/sort-list-by-role.pipe';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,8 @@ import { SchoolMainComponent } from './components/school/school-main/school-main
     CurrentUserInfoComponent,
     UserMainComponent,
     SchoolMainComponent,
+    SortListByNamePipe,
+    SortListByRolePipe,
   ],
   imports: [
     BrowserModule,

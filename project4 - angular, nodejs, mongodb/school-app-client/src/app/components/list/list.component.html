@@ -4,7 +4,7 @@
 <p class="text-danger">{{note}}</p>
 <div class='listContainer overflow-auto'>
     <ng-container *ngIf="list">
-        <ng-container *ngFor="let item of list">
+            <ng-container *ngFor="let item of (title !== 'administrators'? (list | sortListByName): (list|sortListByName|sortListByRole))">
             <ng-container
                 *ngIf="((title === titles.administrators) && ((currentUserRole === roles.manager && item.role !== roles.owner) || (currentUserRole === roles.owner))) || (title !== titles.administrators)">
                 <div class="item ml-2 clearfix overflow-auto" [id]='item._id'
