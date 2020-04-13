@@ -4,6 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatIconModule } from '@angular/material';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -23,6 +25,7 @@ import { UserMainComponent } from './components/administration/users/user-main/u
 import { SchoolMainComponent } from './components/school/school-main/school-main.component';
 import { SortListByNamePipe } from './pipes/sort-list-by-name.pipe';
 import { SortListByRolePipe } from './pipes/sort-list-by-role.pipe';
+
 
 @NgModule({
   declarations: [
@@ -47,7 +50,9 @@ import { SortListByRolePipe } from './pipes/sort-list-by-role.pipe';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatIconModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

@@ -20,7 +20,7 @@
         <label class="labelProp ml-2 mr-2" for="pass">Password</label>
         <input (keyup.enter)='save()' [type]="passInputType ? 'text' : 'password'" id="pass"
             [(ngModel)]="userNewData.password" />
-        <input type="checkbox" (click)="togglePassInputType()"> show password
+        <mat-icon (click)="togglePassInput()">{{showPassIcon ? 'visibility_off' :'visibility'}}</mat-icon>
     </div>
     <div>
         <label class="labelProp ml-2 mr-2" for="phone">Phone</label>

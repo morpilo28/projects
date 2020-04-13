@@ -22,6 +22,7 @@ export class UserFormComponent implements OnInit {
   public imgBtnText: string = "Choose an Image"
   public loader = this.utilsService.stopLoader();
   public passInputType: boolean = false;
+  public showPassIcon: boolean = false;
   public baseUserImgUrl: string = (`${environment.baseImgUrl}/userImages/`);
   public roles = environment.roles;
   public actions = environment.actions;
@@ -126,7 +127,8 @@ export class UserFormComponent implements OnInit {
     })
   }
 
-  public togglePassInputType() {
+  public togglePassInput() {
     this.passInputType = !this.passInputType;
+    this.showPassIcon = !this.showPassIcon;
   }
 }

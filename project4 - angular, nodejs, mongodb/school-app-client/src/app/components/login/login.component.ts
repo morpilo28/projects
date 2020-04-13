@@ -12,6 +12,8 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   public user: UserModel = { email: null, password: null }
   public note: string = null;
+  public passInputType: boolean = false;
+  public showPassIcon: boolean = false;
 
   constructor(private userService: UserService, private router: Router) { }
 
@@ -28,5 +30,10 @@ export class LoginComponent implements OnInit {
         this.user.email = null;
         this.user.password = null;
       });
+  }
+
+  public togglePassInput() {
+    this.passInputType = !this.passInputType;
+    this.showPassIcon = !this.showPassIcon;
   }
 }
