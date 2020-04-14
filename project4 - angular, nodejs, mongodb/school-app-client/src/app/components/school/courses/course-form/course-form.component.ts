@@ -79,9 +79,9 @@ export class CourseFormComponent implements OnInit {
             else {
               this.courseNewData.image = res ? res : this.courseNewData.image;
               this.utilsService.update(this.courseService, this.courseNewData, (e, res) => {
-            if (e) console.log(e);
-            else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
-          });
+                if (e) console.log(e);
+                else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
+              });
             }
           })
         } else {
@@ -106,7 +106,9 @@ export class CourseFormComponent implements OnInit {
   }
 
   public preview(files) {
+    this.loader = true;
     if (files.length === 0) {
+      this.loader = false;
       if (this.courseOldData) {
         this.imageName = this.courseOldData.image;
         this.imgURL = null;
@@ -123,6 +125,7 @@ export class CourseFormComponent implements OnInit {
     var mimeType = files[0].type;
     if (mimeType.match(/image\/*/) == null) {
       this.utilsService.notAnImgAlert();
+      this.loader = false;
       return;
     }
 
@@ -131,9 +134,10 @@ export class CourseFormComponent implements OnInit {
     reader.readAsDataURL(files[0]);
     reader.onload = (_event) => {
       this.imgURL = reader.result;
+      this.loader = false;
+      this.imageName = files[0].name;
+      this.imgBtnText = 'change image';
+      this.imageFile = files[0];
     }
-    this.imageName = files[0].name;
-    this.imgBtnText = 'change image';
-    this.imageFile = files[0];
   }
 }

@@ -123,7 +123,9 @@ export class UserFormComponent implements OnInit {
   }
 
   public preview(files): void {
+    this.loader = true;
     if (files.length === 0) {
+      this.loader = false;
       if (this.userOldData) {
         this.imageName = this.userOldData.image;
         this.imgURL = null;
@@ -140,6 +142,7 @@ export class UserFormComponent implements OnInit {
     var mimeType = files[0].type;
     if (mimeType.match(/image\/*/) == null) {
       this.utilsService.notAnImgAlert();
+      this.loader = false;
       return;
     }
 
@@ -148,9 +151,10 @@ export class UserFormComponent implements OnInit {
     reader.readAsDataURL(files[0]);
     reader.onload = (_event) => {
       this.imgURL = reader.result;
+      this.loader = false;
+      this.imageName = files[0].name;
+      this.imgBtnText = 'change image';
+      this.imageFile = files[0];
     }
-    this.imageName = files[0].name;
-    this.imgBtnText = 'change image';
-    this.imageFile = files[0];
   }
 }
