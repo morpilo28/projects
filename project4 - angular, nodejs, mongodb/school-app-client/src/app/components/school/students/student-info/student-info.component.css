@@ -3,13 +3,11 @@ hr {
 }
 
 .coursesContainer {
-  /* border: 1px solid black; */
   width: 98%;
   height: 260px;
 }
 
 .studentInfo {
-  /* border: 1px solid black; */
   width: 55%;
   height: 210px;
 }
@@ -21,6 +19,5 @@ hr {
 
 .courseName{
   height: 50px;
-    /* border: 1px solid black; */
     width: 85%;
 }

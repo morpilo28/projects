@@ -101,7 +101,7 @@ function update(collection, documentNewDataToUpdate, cb) {
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
-            documentNewDataToUpdate._id = new ObjectId(documentNewDataToUpdate._id); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
+            documentNewDataToUpdate._id = new ObjectId(documentNewDataToUpdate._id);
             DB.collection(collection).updateOne({ _id: documentNewDataToUpdate._id }, { $set: documentNewDataToUpdate }, (e, res) => {
                 if (e) {
                     console.log("can't update document");
@@ -130,7 +130,7 @@ function deleteDocument(collection, documentIdToDelete, cb) {
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
-            documentIdToDelete = new ObjectId(documentIdToDelete); //TODO: takes the string and make it to an ObjectId; needs to happend in the BL?!
+            documentIdToDelete = new ObjectId(documentIdToDelete);
             DB.collection(collection).deleteOne({ _id: documentIdToDelete }, (e, d) => {
                 if (e) {
                     console.log('cant delete from collection');

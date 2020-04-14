@@ -1,5 +1,5 @@
 "use strict";
-//TODO: change 'start' to ""ng serve -o" in package.json"
+
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms'

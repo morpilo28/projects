@@ -97,7 +97,6 @@ function deleteOne(userToDeleteId, cb) {
                     console.log(e);
                     cb(e);
                 } else {
-                    //TODO: maybe make it sync func or put cb after deleting image
                     deleteUtils.deleteImageFromFolder(userImageName, imgFolder, (e, d) => {
                         if(e){
                             console.log(e);

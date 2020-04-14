@@ -7,12 +7,10 @@ label{
 }
 
 .coursesBox{
-    /* border: 1px solid black; */
     height: 79px;
 }
 
 .courses{
-    /* border: 1px solid black; */
     width: 75%;
     height: 74px;
 }
@@ -27,19 +25,16 @@ label{
 }
 
 .studentName{
-    /* border: 1px solid black; */
     height: 30px;
     width: 95%;
 }
 
 .course{
-    /* border: 1px solid black; */
     width: 30%;
     height: 40px;
 }
 
 .courseName{
-    /* border: 1px solid black; */
     width: 80%;
     height: 30px;
     margin-top: 1px;

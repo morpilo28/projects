@@ -18,11 +18,9 @@ img {
 
 .listContainer {
     height: 490px;
-    /* background-color: yellow; */
 }
 
 .item {
-    /* background-color: purple; */
     height: 75px;
     width: 95%;
     min-width: 95%;

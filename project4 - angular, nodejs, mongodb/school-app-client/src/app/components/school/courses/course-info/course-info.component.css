@@ -3,19 +3,16 @@ hr {
 }
 
 .studentsContainer {
-    /* border: 1px solid black; */
     width: 98%;
     height: 200px;
 }
 
 .courseInfo {
-    /* border: 1px solid black; */
     width: 55%;
     height: 210px;
 }
 
 .studentsContainer {
-    /* border: 1px solid black; */
     width: 80%;
     height: 260px;
 }
@@ -28,6 +25,5 @@ hr {
 
 .studentName{
     height: 50px;
-    /* border: 1px solid black; */
     width: 80%;
 }

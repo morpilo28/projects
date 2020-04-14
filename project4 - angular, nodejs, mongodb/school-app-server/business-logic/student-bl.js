@@ -102,7 +102,6 @@ function updateOne(studentData, cb) {
                     }
                 }
                 else if (course.action === 'remove') {
-                    //TODO: maybe use find func
                     courseStudents = courseStudents.map((student, i) => {
                         if (studentNewData._id.toString() === student._id.toString()) {
                             courseStudents.splice(i, 1);
@@ -162,7 +161,6 @@ function deleteOne(studentToDeleteId, cb) {
                     console.log('problem with deleting student');
                     cb('problem with deleting student');
                 } else {
-                    //TODO: maybe make it sync func or put cb after deleting image
                     deleteUtils.deleteImageFromFolder(studentImageName, imgFolder, (e, d) => {
                         if(e){
                             console.log(e);

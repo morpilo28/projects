@@ -13,9 +13,6 @@ const userController = require('./controllers/users.ctrl');
 const courseController = require('./controllers/course.ctrl');
 const studentController = require('./controllers/student.ctrl');
 
-// const dbStarter = require('./install.db');
-// dbStarter.createDb();
-
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, '/images')));

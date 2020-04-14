@@ -5,7 +5,6 @@
 
 .loginForm {
     margin-bottom: 15px;
-    /* background: #f7f7f7; */
     background: azure;
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
     padding: 30px;
@@ -14,9 +13,3 @@
 img{
     width: 100%;
 }
-
-/* :host {
-    background-color: green;
-    size: 200px 200px;
-    display: block;
-} */

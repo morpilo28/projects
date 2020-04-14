@@ -12,9 +12,6 @@ import { MainContainerFilterModel } from 'src/app/models/main-container-filter-m
   styleUrls: ['./administration.component.css']
 })
 
-//TODO: on adding an image, add a spinner loader until the image is up
-//TODO: design page and check everything again
-
 export class AdministrationComponent implements OnInit {
   public mainContainerFilter: MainContainerFilterModel = { title: null, action: null };
   public administratorsCount: { owner: number, manager: number, sales: number } = { owner: 0, manager: 0, sales: 0 };

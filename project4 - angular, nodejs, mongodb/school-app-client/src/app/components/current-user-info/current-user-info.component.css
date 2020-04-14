@@ -1,6 +1,5 @@
 :host {
     position: relative;
-    /* border: 1px solid black; */
     float: right;
     width: 45%;
     height: 87px;
@@ -11,7 +10,6 @@
     right: 8%;
     top: 12%;
     float: right;
-    /* border: 1px solid black; */
 }
 
 .userImg {
@@ -19,7 +17,6 @@
     float: right;
     top: 7%;
     right: 10px;
-    /* border: 1px solid black; */
 }
 
 .logout{
