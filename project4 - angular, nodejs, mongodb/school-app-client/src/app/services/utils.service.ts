@@ -64,16 +64,13 @@ export class UtilsService {
     fileInput.click();
   }
 
-  public onPickedImg(imgFile, service, cb) {
-    const formData = this.createFormData(imgFile);
-    service.uploadImg(formData).subscribe(
-      res => {
-        cb(null, {
-          imgName: res.fileName,
-          btnText: 'Change Image',
-        });
-      },
-      err => cb(err));
+  public uploadImgOnPicked(imgFile, service, cb) {
+    if (imgFile) {
+      const formData = this.createFormData(imgFile);
+      service.uploadImg(formData).subscribe(
+        res => cb(null, res.fileName),
+        err => cb(err));
+    } else cb(null);
   }
 
   public delete(id, itemDeletedName, itemDeletedKind, service, cb) {
@@ -148,5 +145,9 @@ export class UtilsService {
     const formData = new FormData();
     formData.append('imgFile', imgFile);
     return formData;
+  }
+
+  public notAnImgAlert():void {
+    alert("Only images are supported.")
   }
 }

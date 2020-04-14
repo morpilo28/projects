@@ -1,11 +1,13 @@
 <div *ngIf='mainContainerFilter'>
-    <div class="ml-3 mt-2 font-weight-bold overflow-auto studentName" *ngIf="mainContainerFilter.action === actions.edit">Edit
+    <div class="ml-3 mt-2 font-weight-bold overflow-auto studentName"
+        *ngIf="mainContainerFilter.action === actions.edit">Edit
         {{studentOldData.name | titlecase}}</div>
     <div class="ml-3 mt-2 font-weight-bold" *ngIf="mainContainerFilter.action === actions.add">Add Student</div>
     <hr class="m-2">
     <div class="clearfix mb-3">
         <button class="font-weight-bold float-left ml-2 rounded" (click)="save()">Save</button>
-        <button *ngIf="mainContainerFilter.action === actions.edit" class="font-weight-bold float-right mr-2 rounded" (click)='delete(studentNewData._id)'>Delete</button>
+        <button *ngIf="mainContainerFilter.action === actions.edit" class="font-weight-bold float-right mr-2 rounded"
+            (click)='delete(studentNewData._id)'>Delete</button>
     </div>
     <input [(ngModel)]="studentNewData._id" hidden [id]='studentNewData._id' />
     <div>
@@ -13,25 +15,26 @@
         <input (keyup.enter)='save()' id="name" [(ngModel)]="studentNewData.name" /></div>
     <div>
         <label class="labelProp ml-2 mr-2" for="phone">Phone</label>
-        <input  (keyup.enter)='save()' id="phone" [(ngModel)]="studentNewData.phone" [value]="studentNewData.phone" />
+        <input (keyup.enter)='save()' id="phone" [(ngModel)]="studentNewData.phone" [value]="studentNewData.phone" />
     </div>
     <div>
         <label class="labelProp ml-2 mr-2" for="email">Email</label>
-        <input  (keyup.enter)='save()' id="email" [(ngModel)]="studentNewData.email" [value]="studentNewData.email" />
+        <input (keyup.enter)='save()' id="email" [(ngModel)]="studentNewData.email" [value]="studentNewData.email" />
     </div>
 
     <div class="mb-3 ml-2">
         <div class="clearfix">
             <div class="labelProp float-left mr-2">Image</div>
             <button class="mb-2 float-left rounded font-weight-bold" id="imgPick" style="cursor:pointer"
-                (click)="onImageBtn(fileInput)">{{imgBtnText}}</button>
-                <span *ngIf='loader' class="spinner-border ml-3" role="status"></span>
+                (click)="onImageBtn(file)">{{imgBtnText}}</button>
+            <!-- TODO: see if to use the spinner -->
+            <span *ngIf='loader' class="spinner-border ml-3" role="status"></span>
         </div>
-        <div *ngIf="image">
-            <img class="rounded" [src]="baseStudentImgUrl+image" [alt]="image" width="200" height="210" />
+        <div *ngIf='!imgURL && imageName'>
+            <img class="rounded" [src]="baseStudentImgUrl+imageName" [alt]="imageName" width="200" height="210" />
         </div>
-        <input #fileInput type="file" id='addedImage' required style="display:none"
-            (change)="onPickedImg(fileInput)" />
+        <img [src]="imgURL" height="210" width="200" *ngIf="imgURL">
+        <input #file type="file" accept='image/*' style="display:none" (change)="preview(file.files)" />
     </div>
 
     <div class="clearfix coursesBox overflow-auto">

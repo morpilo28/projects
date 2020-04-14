@@ -18,7 +18,10 @@ export class CourseFormComponent implements OnInit {
   public courseOldData: CourseModel;
   public courseNewData: CourseModel = {};
   public baseCourseImgUrl: string = (`${environment.baseImgUrl}/courseImages/`);
-  public image: string;
+  public imageName: string;
+  public imageFile = null;
+  public imagePath = null;
+  public imgURL: any = null;
   public imgBtnText: string = "Choose an Image"
   public loader = false;
   public actions = environment.actions;
@@ -35,7 +38,7 @@ export class CourseFormComponent implements OnInit {
         else {
           this.courseNewData = { ...res };
           this.courseOldData = res;
-          this.image = res.image;
+          this.imageName = res.image;
         }
       })
     } else this.courseNewData = { name: null, description: null, image: null, courseStudents: [] }
@@ -47,13 +50,18 @@ export class CourseFormComponent implements OnInit {
 
   public save(): void {
     if (this.mainContainerFilter.action === this.actions.add) {
-      this.courseNewData.image = this.image;
+      this.courseNewData.image = this.imageName;
       if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
         if (!this.utilsService.isAlreadyExist(this.coursesList, this.courseNewData, 'name')) {
-          this.utilsService.deleteUnsavedImages(this.courseNewData.image, this.imagesToDelete, this.courseService)
-          this.utilsService.insert(this.courseService, this.courseNewData, (e, res) => {
+          this.utilsService.uploadImgOnPicked(this.imageFile, this.courseService, (e, res) => {
             if (e) console.log(e);
-            else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
+            else {
+              this.courseNewData.image = res;
+              this.utilsService.insert(this.courseService, this.courseNewData, (e, res) => {
+                if (e) console.log(e);
+                else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
+              })
+            }
           })
         } else {
           this.utilsService.alreadyExistAlert('course', 'name');
@@ -61,15 +69,21 @@ export class CourseFormComponent implements OnInit {
         }
       } else this.utilsService.emptyFieldAlert();
     } else if (this.mainContainerFilter.action === this.actions.edit) {
-      this.courseNewData.image = this.image;
+      this.courseNewData.image = this.imageName;
       if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
         if (!this.utilsService.isAlreadyExist(this.coursesList, this.courseNewData, 'name')) {
           this.imagesToDelete.push(this.courseOldData.image);
           this.utilsService.deleteUnsavedImages(this.courseNewData.image, this.imagesToDelete, this.courseService)
-          this.utilsService.update(this.courseService, this.courseNewData, (e, res) => {
+          this.utilsService.uploadImgOnPicked(this.imageFile, this.courseService, (e, res) => {
+            if (e) console.log(e);
+            else {
+              this.courseNewData.image = res ? res : this.courseNewData.image;
+              this.utilsService.update(this.courseService, this.courseNewData, (e, res) => {
             if (e) console.log(e);
             else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
           });
+            }
+          })
         } else {
           this.utilsService.alreadyExistAlert('course', 'name');
           this.courseNewData.name = this.courseOldData.name;
@@ -82,36 +96,44 @@ export class CourseFormComponent implements OnInit {
     this.utilsService.onChoosingImage(fileInput);
   }
 
-  public onPickedImg(fileInput): void {
-    this.loader = true;
-    const imgFile = fileInput.files[0];
-    if (imgFile) {
-      this.utilsService.onPickedImg(imgFile, this.courseService, (e, res) => {
-        if (e) console.log(e);
-        else {
-          this.image = res.imgName;
-          this.loader = false;
-          this.imgBtnText = res.btnText;
-          this.imagesToDelete.push(res.imgName);
-        }
-      })
-    } else {
-      this.loader = false;
-      if (this.courseOldData) this.image = this.courseOldData.image;
-      else {
-        this.image = null;
-        this.imgBtnText = 'Choose an Image';
-      }
-    }
-  }
-
   public delete(id): void {
     this.utilsService.delete(id, this.courseOldData.name, 'course', this.courseService, (err, res) => {
       if (err) console.log(err);
       else {
-        this.utilsService.deleteUnsavedImages(null, this.imagesToDelete, this.courseService);
         this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: null });
       };
     })
+  }
+
+  public preview(files) {
+    if (files.length === 0) {
+      if (this.courseOldData) {
+        this.imageName = this.courseOldData.image;
+        this.imgURL = null;
+        this.imageFile = null;
+      }
+      else {
+        this.imageName = null;
+        this.imgBtnText = 'Choose an Image';
+        this.imgURL = null;
+      }
+      return;
+    }
+
+    var mimeType = files[0].type;
+    if (mimeType.match(/image\/*/) == null) {
+      this.utilsService.notAnImgAlert();
+      return;
+    }
+
+    var reader = new FileReader();
+    this.imagePath = files;
+    reader.readAsDataURL(files[0]);
+    reader.onload = (_event) => {
+      this.imgURL = reader.result;
+    }
+    this.imageName = files[0].name;
+    this.imgBtnText = 'change image';
+    this.imageFile = files[0];
   }
 }

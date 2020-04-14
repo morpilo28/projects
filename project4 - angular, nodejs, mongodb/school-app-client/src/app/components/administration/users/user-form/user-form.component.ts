@@ -18,7 +18,10 @@ export class UserFormComponent implements OnInit {
   public userOldData: UserModel;
   public userNewData: UserModel = {};
   public currentUser: UserModel;
-  public image: string;
+  public imageName: string;
+  public imageFile = null;
+  public imagePath = null;
+  public imgURL: any = null;
   public imgBtnText: string = "Choose an Image"
   public loader = false;
   public passInputType: boolean = false;
@@ -39,7 +42,7 @@ export class UserFormComponent implements OnInit {
         else {
           this.userNewData = { ...res };
           this.userOldData = res;
-          this.image = res.image;
+          this.imageName = res.image;
         }
       })
     } else this.userNewData = { name: null, phone: null, email: null, role: null, image: null, password: null }
@@ -59,13 +62,18 @@ export class UserFormComponent implements OnInit {
 
   public save(): void {
     if (this.mainContainerFilter.action === this.actions.add) {
-      this.userNewData.image = this.image;
+      this.userNewData.image = this.imageName;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
-          this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
-          this.utilsService.insert(this.userService, this.userNewData, (e, res) => {
+          this.utilsService.uploadImgOnPicked(this.imageFile, this.userService, (e, res) => {
             if (e) console.log(e);
-            else this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+            else {
+              this.userNewData.image = res;
+              this.utilsService.insert(this.userService, this.userNewData, (e, res) => {
+                if (e) console.log(e);
+                else this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+              })
+            }
           })
         } else {
           this.utilsService.alreadyExistAlert('user', 'email');
@@ -73,15 +81,21 @@ export class UserFormComponent implements OnInit {
         }
       } else this.utilsService.emptyFieldAlert();
     } else if (this.mainContainerFilter.action === this.actions.edit) {
-      this.userNewData.image = this.image;
+      this.userNewData.image = this.imageName;
       if (this.utilsService.areAllFieldsFull(this.userNewData)) {
         if (!this.utilsService.isAlreadyExist(this.usersList, this.userNewData, 'email')) {
           this.imagesToDelete.push(this.userOldData.image);
           this.utilsService.deleteUnsavedImages(this.userNewData.image, this.imagesToDelete, this.userService)
-          this.utilsService.update(this.userService, this.userNewData, (e, res) => {
+          this.utilsService.uploadImgOnPicked(this.imageFile, this.userService, (e, res) => {
             if (e) console.log(e);
-            else this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
-          });
+            else {
+              this.userNewData.image = res ? res : this.userNewData.image;
+              this.utilsService.update(this.userService, this.userNewData, (e, res) => {
+                if (e) console.log(e);
+                else this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
+              });
+            }
+          })
         } else {
           this.utilsService.alreadyExistAlert('user', 'email');
           this.userNewData.email = this.userOldData.email;
@@ -94,34 +108,10 @@ export class UserFormComponent implements OnInit {
     this.utilsService.onChoosingImage(fileInput);
   }
 
-  public onPickedImg(fileInput): void {
-    this.loader = true;
-    const imgFile = fileInput.files[0];
-    if (imgFile) {
-      this.utilsService.onPickedImg(imgFile, this.userService, (e, res) => {
-        if (e) console.log(e);
-        else {
-          this.image = res.imgName;
-          this.loader = false;
-          this.imgBtnText = res.btnText;
-          this.imagesToDelete.push(res.imgName);
-        }
-      })
-    } else {
-      this.loader = false;
-      if (this.userOldData) this.image = this.userOldData.image;
-      else {
-        this.image = null;
-        this.imgBtnText = 'Choose an Image';
-      }
-    }
-  }
-
   public delete(id: string): void {
     this.utilsService.delete(id, this.userOldData.name, 'user', this.userService, (err, res) => {
       if (err) console.log(err);
       else {
-        this.utilsService.deleteUnsavedImages(null, this.imagesToDelete, this.userService);
         this.showUserMainPage.emit({ title: this.mainContainerFilter.title, action: null });
       };
     })
@@ -130,5 +120,37 @@ export class UserFormComponent implements OnInit {
   public togglePassInput() {
     this.passInputType = !this.passInputType;
     this.showPassIcon = !this.showPassIcon;
+  }
+
+  public preview(files): void {
+    if (files.length === 0) {
+      if (this.userOldData) {
+        this.imageName = this.userOldData.image;
+        this.imgURL = null;
+        this.imageFile = null;
+      }
+      else {
+        this.imageName = null;
+        this.imgBtnText = 'Choose an Image';
+        this.imgURL = null;
+      }
+      return;
+    }
+
+    var mimeType = files[0].type;
+    if (mimeType.match(/image\/*/) == null) {
+      this.utilsService.notAnImgAlert();
+      return;
+    }
+
+    var reader = new FileReader();
+    this.imagePath = files;
+    reader.readAsDataURL(files[0]);
+    reader.onload = (_event) => {
+      this.imgURL = reader.result;
+    }
+    this.imageName = files[0].name;
+    this.imgBtnText = 'change image';
+    this.imageFile = files[0];
   }
 }
