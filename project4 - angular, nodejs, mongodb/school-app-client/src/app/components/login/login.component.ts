@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  public togglePassInput() {
+  public togglePassInput():void {
     this.passInputType = !this.passInputType;
     this.showPassIcon = !this.showPassIcon;
   }
