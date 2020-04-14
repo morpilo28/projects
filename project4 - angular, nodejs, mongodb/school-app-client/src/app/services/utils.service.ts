@@ -149,14 +149,4 @@ export class UtilsService {
     formData.append('imgFile', imgFile);
     return formData;
   }
-
-  public startLoader() {
-    //TODO: delete func - on each component write true or false
-    return true;
-  }
-
-  public stopLoader() {
-    //TODO: delete func - on each component write true or false
-    return false;
-  }
 }

@@ -20,7 +20,7 @@ export class UserFormComponent implements OnInit {
   public currentUser: UserModel;
   public image: string;
   public imgBtnText: string = "Choose an Image"
-  public loader = this.utilsService.stopLoader();
+  public loader = false;
   public passInputType: boolean = false;
   public showPassIcon: boolean = false;
   public baseUserImgUrl: string = (`${environment.baseImgUrl}/userImages/`);
@@ -95,20 +95,20 @@ export class UserFormComponent implements OnInit {
   }
 
   public onPickedImg(fileInput): void {
-    this.loader = this.utilsService.startLoader();
+    this.loader = true;
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.userService, (e, res) => {
         if (e) console.log(e);
         else {
           this.image = res.imgName;
-          this.loader = this.utilsService.stopLoader();
+          this.loader = false;
           this.imgBtnText = res.btnText;
           this.imagesToDelete.push(res.imgName);
         }
       })
     } else {
-      this.loader = this.utilsService.stopLoader();
+      this.loader = false;
       if (this.userOldData) this.image = this.userOldData.image;
       else {
         this.image = null;

@@ -20,7 +20,7 @@ export class CourseFormComponent implements OnInit {
   public baseCourseImgUrl: string = (`${environment.baseImgUrl}/courseImages/`);
   public image: string;
   public imgBtnText: string = "Choose an Image"
-  public loader = this.utilsService.stopLoader();
+  public loader = false;
   public actions = environment.actions;
   private imagesToDelete: string[] = [];
   private coursesList: CourseModel[];
@@ -83,20 +83,20 @@ export class CourseFormComponent implements OnInit {
   }
 
   public onPickedImg(fileInput): void {
-    this.loader = this.utilsService.startLoader();
+    this.loader = true;
     const imgFile = fileInput.files[0];
     if (imgFile) {
       this.utilsService.onPickedImg(imgFile, this.courseService, (e, res) => {
         if (e) console.log(e);
         else {
           this.image = res.imgName;
-          this.loader = this.utilsService.stopLoader();
+          this.loader = false;
           this.imgBtnText = res.btnText;
           this.imagesToDelete.push(res.imgName);
         }
       })
     } else {
-      this.loader = this.utilsService.stopLoader();
+      this.loader = false;
       if (this.courseOldData) this.image = this.courseOldData.image;
       else {
         this.image = null;
