@@ -11,5 +11,5 @@ function Student(obj) {
 
 module.exports = {
     Student: Student
-}
+};
 

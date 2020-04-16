@@ -3,17 +3,17 @@
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/';
 const ObjectId = require('mongodb').ObjectId;
-const DATABASE = 'school'
+const DATABASE = 'school';
 
 function get(collection, cb) {
-    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
-        if (e) {
+    MongoClient.connect(url, createNewMongoClient(), (err, client) => {
+        if (err) {
             console.log('problem connecting to mongoDB');
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
-            DB.collection(collection).find().toArray((e, d) => {
-                if (e) {
+            DB.collection(collection).find().toArray((err, d) => {
+                if (err) {
                     console.log('cant get data from collection');
                     cb('cant get data from collection');
                 } else {
@@ -26,15 +26,15 @@ function get(collection, cb) {
 }
 
 function getOne(collection, filterValue, cb) {
-    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
-        if (e) {
+    MongoClient.connect(url, createNewMongoClient(), (err, client) => {
+        if (err) {
             console.log('problem connecting to mongoDB');
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
             filterValue = new ObjectId(filterValue);
-            DB.collection(collection).findOne({ _id: filterValue }, (e, d) => {
-                if (e) {
+            DB.collection(collection).findOne({ _id: filterValue }, (err, d) => {
+                if (err) {
                     console.log('cant get data from collection');
                     cb('cant get data from collection');
                 } else {
@@ -47,14 +47,14 @@ function getOne(collection, filterValue, cb) {
 }
 
 function insert(collection, documentToAdd, cb) {
-    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
-        if (e) {
+    MongoClient.connect(url, createNewMongoClient(), (err, client) => {
+        if (err) {
             console.log('problem connecting to mongoDB');
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
-            DB.collection(collection).insertOne(documentToAdd, (e, insertedDocument) => {
-                if (e) {
+            DB.collection(collection).insertOne(documentToAdd, (err, insertedDocument) => {
+                if (err) {
                     console.log('cant insert document');
                     cb('cant insert document');
                 } else {
@@ -67,21 +67,20 @@ function insert(collection, documentToAdd, cb) {
 }
 
 function pushToArray(collection, id, objToPush, cb) {
-    //TODO: maybe put push to array func in bl and not in dal (in dal go only to update)
-    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
-        if (e) {
+    MongoClient.connect(url, createNewMongoClient(), (err, client) => {
+        if (err) {
             console.log('problem connecting to mongoDB');
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
             id = new ObjectId(id);
-            DB.collection(collection).updateOne({ _id: id }, { $push: { courseStudents: objToPush } }, (e, res) => {
-                if (e) {
+            DB.collection(collection).updateOne({ _id: id }, { $push: { courseStudents: objToPush } }, (err, res) => {
+                if (err) {
                     console.log("can't update on push to array func");
                     cb("can't update on push to array func");
                 } else {
-                    DB.collection(collection).findOne({ _id: id }, (e, d) => {
-                        if (e) {
+                    DB.collection(collection).findOne({ _id: id }, (err, d) => {
+                        if (err) {
                             cb("can't get updated document");
                             console.log("can't get updated document");
                         } else {
@@ -95,25 +94,25 @@ function pushToArray(collection, id, objToPush, cb) {
 }
 
 function update(collection, documentNewDataToUpdate, cb) {
-    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
-        if (e) {
+    MongoClient.connect(url, createNewMongoClient(), (err, client) => {
+        if (err) {
             console.log('problem connecting to mongoDB');
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
             documentNewDataToUpdate._id = new ObjectId(documentNewDataToUpdate._id);
-            DB.collection(collection).updateOne({ _id: documentNewDataToUpdate._id }, { $set: documentNewDataToUpdate }, (e, res) => {
-                if (e) {
+            DB.collection(collection).updateOne({ _id: documentNewDataToUpdate._id }, { $set: documentNewDataToUpdate }, (err, res) => {
+                if (err) {
                     console.log("can't update document");
                     cb("can't update document");
                 } else {
                     DB.collection(collection)
-                    .findOne({ _id: documentNewDataToUpdate._id }, (e, d) => {
-                        if (e) {
+                    .findOne({ _id: documentNewDataToUpdate._id }, (err, updatedDocument) => {
+                        if (err) {
                             console.log("can't find updated document");
                             cb("can't find updated document");
                         } else {
-                            cb(null, d);
+                            cb(null, updatedDocument);
                             closeMongoConnection(client);
                         }
                     });
@@ -124,15 +123,15 @@ function update(collection, documentNewDataToUpdate, cb) {
 }
 
 function deleteDocument(collection, documentIdToDelete, cb) {
-    MongoClient.connect(url, createNewMongoClient(), (e, client) => {
-        if (e) {
+    MongoClient.connect(url, createNewMongoClient(), (err, client) => {
+        if (err) {
             console.log('problem connecting to mongoDB');
             cb('problem connecting to mongoDB');
         } else {
             const DB = getDb(client);
             documentIdToDelete = new ObjectId(documentIdToDelete);
-            DB.collection(collection).deleteOne({ _id: documentIdToDelete }, (e, d) => {
-                if (e) {
+            DB.collection(collection).deleteOne({ _id: documentIdToDelete }, (err, deletionData) => {
+                if (err) {
                     console.log('cant delete from collection');
                     cb('cant delete from collection');
                 } else {

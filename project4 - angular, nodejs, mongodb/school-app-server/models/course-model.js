@@ -10,5 +10,5 @@ function Course(obj) {
 
 module.exports = {
     Course: Course
-}
+};
 

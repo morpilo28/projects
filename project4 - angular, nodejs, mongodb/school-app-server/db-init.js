@@ -2,7 +2,7 @@
 //TODO: insert updated objects for each collection (image must exist on server older)
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/';
-const DATABASE = 'school'
+const DATABASE = 'school';
 const courseCollection = 'course';
 const studentCollection = 'student';
 const administratorCollection = 'administrator';
@@ -15,7 +15,7 @@ MongoClient.connect(url, createNewMongoClient(), (err, db) => {
         "description": "b",
         "image": "butterfly-1586711510562.jpg",
         "courseStudents": []
-    }
+    };
     const student = {
         "name": "yael",
         "phone": "067-2674389",

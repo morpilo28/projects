@@ -23,8 +23,8 @@ export class StudentInfoComponent implements OnInit {
   constructor(private studentService: StudentsService, private utilsService: UtilsService) { }
 
   public ngOnInit(): void {
-    this.utilsService.getInfo(this.studentService, (e, res) => {
-      if (e) console.log(e);
+    this.utilsService.getInfo(this.studentService, (err, res) => {
+      if (err) console.log(err);
       else this.studentInfo = res;
     });
   }

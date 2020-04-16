@@ -7,7 +7,7 @@ const imgFolder = 'courseImages';
 const deleteUtils = require('../utils/deleteImage');
 const courseBl = require('../business-logic/course-bl');
 
-var upload = multer({
+const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, callback) { callback(null, path.join(__dirname, '/../images/courseImages')); },
         filename: function (req, file, callback) { callback(null, path.parse(file.originalname).name + '-' + Date.now() + path.extname(file.originalname)); }
@@ -27,22 +27,22 @@ function isFileTypeImg(file, callback) {
 }
 
 router.get('/', (req, res) => {
-    courseBl.get((e, data) => {
-        if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+    courseBl.get((err, allCourses) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
         } else {
-            return res.send(data);
+            return res.send(allCourses);
         }
     })
 });
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;
-    courseBl.getOne(id, (e, singleCourse) => {
-        if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+    courseBl.getOne(id, (err, singleCourse) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
         } else {
             return res.send(singleCourse);
         }
@@ -51,59 +51,59 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
     const courseToAdd = req.body;
-    courseBl.insertOne(courseToAdd, (e, data) => {
-        if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+    courseBl.insertOne(courseToAdd, (err, insertedCourse) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
         } else {
-            return res.send(data);
+            return res.send(insertedCourse);
         }
     });
-})
+});
 
 router.put('/', (req, res) => {
     const courseNewData = req.body;
-    courseBl.updateOne(courseNewData, (e, data) => {
-        if (e) {
+    courseBl.updateOne(courseNewData, (err, updatedCourse) => {
+        if (err) {
             return res.status(500).send();
         } else {
-            return res.send(data);
+            return res.send(updatedCourse);
         }
     })
 });
 
 router.delete('/:id', (req, res) => {
     const courseToDeleteId = req.params.id;
-    courseBl.deleteOne(courseToDeleteId, (e, data) => {
-        if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+    courseBl.deleteOne(courseToDeleteId, (err, deletedId) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
         } else {
-            return res.send(data);
+            return res.send(deletedId);
         }
     })
 });
 
 router.post('/images', upload, (req, res) => {
-    upload(req, res, (e) => {
-        if (e) {
+    upload(req, res, (err) => {
+        if (err) {
             return res.status(500).end('problem with uploading img');
         } else {
-            const resObj = {fileName:req.file.filename}
+            const resObj = { fileName: req.file.filename };
             return res.send(resObj);
         }
     })
-})
+});
 
-router.delete('/images/:imgName', (req,res)=>{
+router.delete('/images/:imgName', (req, res) => {
     const imageName = req.params.imgName;
-    deleteUtils.deleteImageFromFolder(imageName, imgFolder, (e,d)=>{
-        if(e){
+    deleteUtils.deleteImageFromFolder(imageName, imgFolder, (err, isImgDeleted) => {
+        if (err) {
             return res.status(500).end('problem with deleting course img');
-        }else{
-            return res.send(d);
+        } else {
+            return res.send(isImgDeleted);
         }
     });
-})
+});
 
 module.exports = router;

@@ -5,12 +5,11 @@ const path = require('path');
 const multer = require('multer');
 const imgFolder = 'userImages';
 const deleteUtils = require('../utils/deleteImage');
-var CryptoJS = require("crypto-js");
-var SHA256 = require("crypto-js/sha256");
+const CryptoJS = require("crypto-js");
+const SHA256 = require("crypto-js/sha256");
 const userBl = require('../business-logic/user-bl');
-const dal = require('../dal');
 
-var upload = multer({
+const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, callback) { callback(null, path.join(__dirname, '/../images/userImages')); },
         filename: function (req, file, callback) { callback(null, path.parse(file.originalname).name + '-' + Date.now() + path.extname(file.originalname)); }
@@ -30,9 +29,9 @@ function isFileTypeImg(file, callback) {
 }
 
 router.get('/', (req, res) => {
-    userBl.get((e, allUsers) => {
-        if (e) {
-            console.log(e);
+    userBl.get((err, allUsers) => {
+        if (err) {
+            console.log(err);
             return res.status(500).send();
         } else {
             return res.send(allUsers);
@@ -42,10 +41,10 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;
-    userBl.getOne(id, (e, singleUser) => {
-        if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+    userBl.getOne(id, (err, singleUser) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
         } else {
             return res.send(singleUser);
         }
@@ -58,12 +57,12 @@ router.post('/login', (req, res) => {
         password: CryptoJS.SHA256(req.body.password).toString(CryptoJS.enc.Hex),
     };
 
-    userBl.isUserExist(userToValidate, (e, data) => {
-        if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+    userBl.isUserExist(userToValidate, (err, userLogged) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
         } else {
-            return res.send(data);
+            return res.send(userLogged);
         }
     });
 });
@@ -72,59 +71,59 @@ router.post('/register', (req, res) => {
     const userToAdd = req.body;
     userToAdd.password = CryptoJS.SHA256(userToAdd.password).toString(CryptoJS.enc.Hex);
 
-    userBl.insertOne(userToAdd, (e, data) => {
-        if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+    userBl.insertOne(userToAdd, (err, insertedUser) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
         } else {
-            return res.send(data);
+            return res.send(insertedUser);
         }
     });
-})
+});
 
 router.put('/', (req, res) => {
     const userToUpdate = req.body;
-    userBl.updateOne(userToUpdate, (e, data) => {
-        if (e) {
+    userBl.updateOne(userToUpdate, (err, updatedUser) => {
+        if (err) {
             return res.status(500).send();
         } else {
-            return res.send(data);
+            return res.send(updatedUser);
         }
     })
 });
 
 router.delete('/:id', (req, res) => {
     const userToDeleteId = req.params.id;
-    userBl.deleteOne(userToDeleteId, (e, data) => {
-        if (e) {
-            console.log(e);
-            return res.status(500).send(e);
+    userBl.deleteOne(userToDeleteId, (err, deletedId) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
         } else {
-            return res.send(data);
+            return res.send(deletedId);
         }
     })
 });
 
 router.post('/images', upload, (req, res) => {
-    upload(req, res, (e) => {
-        if (e) {
+    upload(req, res, (err) => {
+        if (err) {
             return res.status(500).end('problem with uploading img');
         } else {
-            const resObj = { fileName: req.file.filename }
+            const resObj = { fileName: req.file.filename };
             return res.send(resObj);
         }
     })
-})
+});
 
 router.delete('/images/:imgName', (req, res) => {
     const imageName = req.params.imgName;
-    deleteUtils.deleteImageFromFolder(imageName, imgFolder, (e,d)=>{
-        if(e){
+    deleteUtils.deleteImageFromFolder(imageName, imgFolder, (err, isImgDeleted) => {
+        if (err) {
             return res.status(500).end('problem with deleting user img');
-        }else{
-            return res.send(d);
+        } else {
+            return res.send(isImgDeleted);
         }
     });
-})
+});
 
 module.exports = router;

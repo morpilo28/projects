@@ -8,8 +8,8 @@ const jwt = require('jsonwebtoken');
 const userModel = require('../models/user-model');
 
 function get(cb) {
-    dal.get(collection, (e, allUsers) => {
-        if (e) {
+    dal.get(collection, (err, allUsers) => {
+        if (err) {
             cb("can't get user's list");
         } else {
             allUsers = modelVariable(allUsers, userModel.User);
@@ -22,8 +22,8 @@ function get(cb) {
 }
 
 function getOne(id, cb) {
-    dal.getOne(collection, id, (e, user) => {
-        if (e) {
+    dal.getOne(collection, id, (err, user) => {
+        if (err) {
             cb("can't get user");
         } else {
             if (user) {
@@ -38,8 +38,8 @@ function getOne(id, cb) {
 }
 
 function isUserExist(userToValidate, cb) {
-    dal.get(collection, (e, allUsers) => {
-        if (e) {
+    dal.get(collection, (err, allUsers) => {
+        if (err) {
             cb("can't get user's list");
         } else {
             allUsers = modelVariable(allUsers, userModel.User);
@@ -61,9 +61,9 @@ function isUserExist(userToValidate, cb) {
 }
 
 function insertOne(userToAdd, cb) {
-    dal.insert(collection, userToAdd, (e, userInserted) => {
+    dal.insert(collection, userToAdd, (err, userInserted) => {
         userInserted = modelVariable(userInserted, userModel.User);
-        if (e) {
+        if (err) {
             cb("can't insert user");
         } else {
             deleteObjProp(userInserted, 'password');
@@ -73,12 +73,12 @@ function insertOne(userToAdd, cb) {
 }
 
 function updateOne(userToUpdate, cb) {
-    dal.update(collection, userToUpdate, (e, userUpdated) => {
+    dal.update(collection, userToUpdate, (err, userUpdated) => {
         userUpdated = modelVariable(userUpdated, userModel.User);
         delete userUpdated['password'];
-        if (e) {
-            console.log(e);
-            cb(e);
+        if (err) {
+            console.log(err);
+            cb(err);
         } else {
             cb(null, userUpdated);
         }
@@ -86,22 +86,22 @@ function updateOne(userToUpdate, cb) {
 }
 
 function deleteOne(userToDeleteId, cb) {
-    dal.getOne(collection, userToDeleteId, (e, user) => {
-        if (e) {
+    dal.getOne(collection, userToDeleteId, (err, user) => {
+        if (err) {
             console.log("can't get user");
         } else {
             user = modelVariable(user, userModel.User);
             const userImageName = user.image;
-            dal.deleteDocument(collection, userToDeleteId, (e, userDeletedId) => {
-                if (e) {
-                    console.log(e);
-                    cb(e);
+            dal.deleteDocument(collection, userToDeleteId, (err, userDeletedId) => {
+                if (err) {
+                    console.log(err);
+                    cb(err);
                 } else {
-                    deleteUtils.deleteImageFromFolder(userImageName, imgFolder, (e, d) => {
-                        if(e){
-                            console.log(e);
+                    deleteUtils.deleteImageFromFolder(userImageName, imgFolder, (err, isImgDeleted) => {
+                        if(err){
+                            console.log(err);
                         }else{
-                            console.log('user img deleted');
+                            console.log('is user img deleted');
                         }
                      });
                     cb(null, userDeletedId);

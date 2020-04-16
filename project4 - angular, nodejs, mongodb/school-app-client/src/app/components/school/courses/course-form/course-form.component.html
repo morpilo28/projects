@@ -26,9 +26,9 @@
             <span *ngIf='loader' class="spinner-border ml-3" role="status"></span>
         </div>
         <div *ngIf='!imgURL && imageName'>
-            <img class="rounded" [src]="baseCourseImgUrl+imageName" [alt]="imageName" width="200" height="210" />
+            <img class="rounded" [src]="baseCourseImgUrl+imageName" alt="Course Image" width="200" height="210" />
         </div>
-        <img [src]="imgURL" height="210" width="200" *ngIf="imgURL">
+        <img [src]="imgURL" alt="Course Image" height="210" width="200" *ngIf="imgURL">
         <input #file type="file" accept='image/*' style="display:none" (change)="preview(file.files)" />
     </div>
 

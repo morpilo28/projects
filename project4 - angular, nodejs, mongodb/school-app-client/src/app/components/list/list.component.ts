@@ -47,10 +47,10 @@ export class ListComponent implements OnInit {
     switch (title) {
       case 'administrators':
         this.utilsService.setInfo(this.userService, itemId);
-        break
+        break;
       case 'students':
         this.utilsService.setInfo(this.studentsService, itemId);
-        break
+        break;
       case 'courses':
         this.utilsService.setInfo(this.courseService, itemId);
         break
@@ -60,8 +60,8 @@ export class ListComponent implements OnInit {
   private getList(): void {
     switch (this.title) {
       case 'administrators':
-        this.utilsService.getList(this.userService, (e, res) => {
-          if (e) console.log(e);
+        this.utilsService.getList(this.userService, (err, res) => {
+          if (err) console.log(err);
           else if (res) {
             this.list = res;
             this.note = res.length === 0 ? this.createNote('users') : null
@@ -69,8 +69,8 @@ export class ListComponent implements OnInit {
         });
         break;
       case 'students':
-        this.utilsService.getList(this.studentsService, (e, res) => {
-          if (e) console.log(e);
+        this.utilsService.getList(this.studentsService, (err, res) => {
+          if (err) console.log(err);
           else if (res) {
             this.list = res;
             this.note = res.length === 0 ? this.createNote('students') : null;
@@ -78,8 +78,8 @@ export class ListComponent implements OnInit {
         });
         break;
       case 'courses':
-        this.utilsService.getList(this.courseService, (e, res) => {
-          if (e) console.log(e);
+        this.utilsService.getList(this.courseService, (err, res) => {
+          if (err) console.log(err);
           else if (res) {
             this.list = res;
             this.note = res.length === 0 ? this.createNote('courses') : null;

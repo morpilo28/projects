@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  public user: UserModel = { email: null, password: null }
+  public user: UserModel = { email: null, password: null };
   public note: string = null;
   public passInputType: boolean = false;
   public showPassIcon: boolean = false;
@@ -25,6 +25,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/']);
       },
       err => {
+        console.log(err);
         window.localStorage.clear();
         this.note = 'No user has been found!';
         this.user.email = null;

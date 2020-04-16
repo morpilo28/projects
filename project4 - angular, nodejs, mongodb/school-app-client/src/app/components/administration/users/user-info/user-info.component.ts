@@ -24,8 +24,8 @@ export class UserInfoComponent implements OnInit {
   constructor(private userService: UserService, private utilsService: UtilsService) { }
 
   public ngOnInit():void {
-    this.utilsService.getInfo(this.userService, (e, res) => {
-      if (e) console.log(e);
+    this.utilsService.getInfo(this.userService, (err, res) => {
+      if (err) console.log(err);
       else this.userInfo = res;
     });
     this.userService.getCurrentUser().subscribe(

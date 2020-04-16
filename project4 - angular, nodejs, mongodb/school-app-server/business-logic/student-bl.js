@@ -9,10 +9,10 @@ const deleteUtils = require('../utils/deleteImage');
 
 
 function get(cb) {
-    dal.get(studentCollection, (e, allStudents) => {
-        if (e) {
-            console.log(e);
-            cb(e);
+    dal.get(studentCollection, (err, allStudents) => {
+        if (err) {
+            console.log(err);
+            cb(err);
         } else {
             allStudents = modelVariable(allStudents, studentModel.Student);
             cb(null, allStudents);
@@ -21,8 +21,8 @@ function get(cb) {
 }
 
 function getOne(id, cb) {
-    dal.getOne(studentCollection, id, (e, student) => {
-        if (e) {
+    dal.getOne(studentCollection, id, (err, student) => {
+        if (err) {
             console.log("can't get student");
         } else {
             student = modelVariable(student, studentModel.Student);
@@ -33,8 +33,8 @@ function getOne(id, cb) {
 
 function insertOne(studentToAdd, cb) {
     studentToAdd = modelVariable(studentToAdd, studentModel.Student);
-    dal.insert(studentCollection, studentToAdd, (e, studentInserted) => {
-        if (e) {
+    dal.insert(studentCollection, studentToAdd, (err, studentInserted) => {
+        if (err) {
             console.log("can't insert student");
         } else {
             studentInserted = modelVariable(studentInserted, studentModel.Student);
@@ -42,8 +42,8 @@ function insertOne(studentToAdd, cb) {
             studentToAddToCourse = modelVariable(studentToAddToCourse, studentModel.Student);
             delete studentToAddToCourse['courses'];
             for (let i = 0; i < studentToAdd.courses.length; i++) {
-                dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse, (e, singleCourse) => {
-                    if (e) {
+                dal.pushToArray(courseCollection, studentToAdd.courses[i]._id, studentToAddToCourse, (err, singleCourse) => {
+                    if (err) {
                         cb("can't insert student into his checked courses");
                     } else {
                         singleCourse = modelVariable(singleCourse, courseModel.Course);
@@ -61,10 +61,10 @@ function updateOne(studentData, cb) {
     let studentOldData = studentData.old;
     studentNewData = modelVariable(studentNewData, studentModel.Student);
     studentOldData = modelVariable(studentOldData, studentModel.Student);
-    dal.update(studentCollection, studentNewData, (e, studentUpdated) => {
-        if (e) {
-            console.log(e);
-            cb(e);
+    dal.update(studentCollection, studentNewData, (err, studentUpdated) => {
+        if (err) {
+            console.log(err);
+            cb(err);
         } else {
             studentUpdated = modelVariable(studentUpdated, studentModel.Student);
             const coursesToUpdate = getCoursesToUpdate(studentData);
@@ -72,15 +72,15 @@ function updateOne(studentData, cb) {
 
             coursesToUpdate.forEach((course) => {
                 updateCourses(course, studentNewData);
-            })
+            });
             cb(null, studentUpdated);
         }
     });
 
     function updateCourses(course, studentToAddToCourse) {
-        dal.getOne(courseCollection, course._id, (e, d) => {
-            let courseStudents = d.courseStudents;
-            if (e) {
+        dal.getOne(courseCollection, course._id, (err, courseData) => {
+            let courseStudents = courseData.courseStudents;
+            if (err) {
                 console.log("can't get course");
             }
             else {
@@ -96,9 +96,9 @@ function updateOne(studentData, cb) {
                     }
                     if (!isExist) {
                         courseStudents.push(studentToAddToCourse);
-                        updateCourse(d);
+                        updateCourse(courseData);
                     } else {
-                        updateCourse(d);
+                        updateCourse(courseData);
                     }
                 }
                 else if (course.action === 'remove') {
@@ -106,7 +106,7 @@ function updateOne(studentData, cb) {
                         if (studentNewData._id.toString() === student._id.toString()) {
                             courseStudents.splice(i, 1);
                         }
-                        updateCourse(d);
+                        updateCourse(courseData);
                     });
                 }
             }
@@ -140,9 +140,9 @@ function updateOne(studentData, cb) {
         return coursesToUpdate
     }
 
-    function updateCourse(d) {
-        dal.update(courseCollection, d, (e, data) => {
-            if (e) {
+    function updateCourse(courseData) {
+        dal.update(courseCollection, courseData, (err, courseUpdated) => {
+            if (err) {
                 console.log('problem with updating the course');
             }
         });
@@ -150,26 +150,26 @@ function updateOne(studentData, cb) {
 }
 
 function deleteOne(studentToDeleteId, cb) {
-    dal.getOne(studentCollection, studentToDeleteId, (e, student) => {
-        if (e) {
+    dal.getOne(studentCollection, studentToDeleteId, (err, student) => {
+        if (err) {
             console.log("can't get student");
         } else {
             student = modelVariable(student, studentModel.Student);
             const studentImageName = student.image;
-            dal.deleteDocument(studentCollection, studentToDeleteId, (e, studentDeletedId) => {
-                if (e) {
+            dal.deleteDocument(studentCollection, studentToDeleteId, (err, studentDeletedId) => {
+                if (err) {
                     console.log('problem with deleting student');
                     cb('problem with deleting student');
                 } else {
-                    deleteUtils.deleteImageFromFolder(studentImageName, imgFolder, (e, d) => {
-                        if(e){
-                            console.log(e);
-                        }else{
+                    deleteUtils.deleteImageFromFolder(studentImageName, imgFolder, (err, isImgDeleted) => {
+                        if (err) {
+                            console.log(err);
+                        } else {
                             console.log('student img deleted');
                         }
-                     });
-                    dal.get(courseCollection, (e, allCourses) => {
-                        if (e) {
+                    });
+                    dal.get(courseCollection, (err, allCourses) => {
+                        if (err) {
                             console.log('problem with getting courses list');
                         } else {
                             allCourses = modelVariable(allCourses, courseModel.Course);
@@ -177,7 +177,7 @@ function deleteOne(studentToDeleteId, cb) {
                             for (let i = 0; i < allCourses.length; i++) {
                                 const singleCourseStudents = allCourses[i].courseStudents;
                                 for (let j = 0; j < (singleCourseStudents).length; j++) {
-                                    const studentId = singleCourseStudents[j]
+                                    const studentId = singleCourseStudents[j];
                                     if (((studentId._id).toString()) === studentToDeleteId) {
                                         (singleCourseStudents).splice(j, 1);
                                         coursesToUpdate.push(allCourses[i]);
@@ -185,8 +185,8 @@ function deleteOne(studentToDeleteId, cb) {
                                 }
                             }
                             coursesToUpdate.forEach((course) => {
-                                dal.update(courseCollection, course, (e, d) => {
-                                    if (e) {
+                                dal.update(courseCollection, course, (err, courseUpdated) => {
+                                    if (err) {
                                         console.log('problem with updating deletion of student from relevant courses');
                                     }
                                 })
@@ -217,4 +217,4 @@ module.exports = {
     insertOne: insertOne,
     updateOne: updateOne,
     deleteOne: deleteOne,
-}
+};

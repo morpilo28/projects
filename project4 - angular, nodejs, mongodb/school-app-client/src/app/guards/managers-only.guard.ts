@@ -21,8 +21,8 @@ export class ManagersOnlyGuard implements CanActivate {
       if (res) {
         try {
           subscription.unsubscribe();
-        } catch (e) {
-          // console.error(e);
+        } catch (ex) {
+          // console.error(ex);
         }
         if (res.role === 'sales') {
           alert('Restricted Area!');
@@ -34,8 +34,8 @@ export class ManagersOnlyGuard implements CanActivate {
 
     try {
       subscription.unsubscribe();
-    } catch (e) {
-      // console.error(e);
+    } catch (ex) {
+      // console.error(ex);
     }
     return this.isAManager;
   }

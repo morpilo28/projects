@@ -9,7 +9,7 @@ export class UtilsService {
 
   public areAllFieldsFull(formItems) {
     if (formItems) {
-      for (var key in formItems) {
+      for (const key in formItems) {
         if (formItems[key] === null || formItems[key] === undefined) {
           return false;
         } else if (typeof formItems[key] === 'string') {
@@ -31,12 +31,12 @@ export class UtilsService {
         if (dataFromList._id !== newData._id) {
           if (this.validateByField(field, dataFromList, newData)) {
             return true;
-          };
+          }
         }
       } else {
         if (this.validateByField(field, dataFromList, newData)) {
           return true;
-        };
+        }
       }
     }
     return false;
@@ -147,7 +147,15 @@ export class UtilsService {
     return formData;
   }
 
-  public notAnImgAlert():void {
+  public notAnImgAlert(): void {
     alert("Only images are supported.")
+  }
+
+  public imgBtnTextAfterSelection(): string {
+    return 'Change Image';
+  }
+
+  public imgBtnTextAfterCanceledSelection(): string {
+    return 'Choose an Image';
   }
 }

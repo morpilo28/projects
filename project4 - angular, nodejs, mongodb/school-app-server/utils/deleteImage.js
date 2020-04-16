@@ -5,11 +5,11 @@ const path = require('path').resolve(__dirname, '..');
 
 function deleteImageFromFolder(imageName,imgFolder, cb) {
     let ImageToDelete = (`${path}/images/${imgFolder}/${imageName}`);
-    fs.unlink(ImageToDelete, (e,d) => {
-        if (e) {
+    fs.unlink(ImageToDelete, (err) => {
+        if (err) {
             console.log(`problem with deleting image from ${imgFolder}`);
-            console.log(e);
-            cb(e);
+            console.log(err);
+            cb(err);
         }else{
             cb(null, {isDeleted: true});
         }
@@ -18,5 +18,5 @@ function deleteImageFromFolder(imageName,imgFolder, cb) {
 
 module.exports = {
     deleteImageFromFolder:deleteImageFromFolder
-}
+};
 

@@ -1,6 +1,6 @@
 <ng-container *ngIf="currentUser">
   <div class="header float-left">
-    <img src='../assets/images/logo.JPG' class='float-left logo' />
+    <img src='../assets/images/logo.JPG' alt="logo" class='float-left logo' />
     <nav *ngIf='isAllowed' class='float-left navbar'>
       <div class="schoolBar bar"> <span [routerLink]='["/"]'><b>School</b></span></div>
       <div class="adminBar bar"><span [routerLink]='["/administration"]'><b>Administration</b></span></div>

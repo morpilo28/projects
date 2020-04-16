@@ -13,13 +13,13 @@ import { BehaviorSubject, Observable, pipe } from 'rxjs';
 export class UserService {
   private userTokenAndId: UserModel;
   private currentUser: BehaviorSubject<UserModel>;
-  private currentUserObservable: Observable<UserModel>
+  private currentUserObservable: Observable<UserModel>;
 
   private usersList: BehaviorSubject<UserModel[]>;
   private usersListObservable: Observable<UserModel[]>;
 
-  private userInfo: BehaviorSubject<UserModel>
-  private userInfoObservable: Observable<UserModel>
+  private userInfo: BehaviorSubject<UserModel>;
+  private userInfoObservable: Observable<UserModel>;
 
   constructor(private httpClient: HttpClient) {
     this.currentUser = new BehaviorSubject<UserModel>(null);

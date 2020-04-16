@@ -22,7 +22,7 @@ app.use((req, res, next) => {
     const allowed = {
         onLogin: req.method === 'POST' && req.path === '/user/login',
         imgSrc: req.method === 'GET' && (req.path.indexOf('images') > -1)
-    }
+    };
 
     if (allowed.onLogin || allowed.imgSrc) {
         next();
@@ -39,7 +39,7 @@ app.use((req, res, next) => {
             res.status(401).send("Request doesn't have an authorization header");
         }
     }
-})
+});
 
 app.use('/user', userController);
 app.use('/course', courseController);

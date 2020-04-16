@@ -22,7 +22,7 @@ export class CourseFormComponent implements OnInit {
   public imageFile = null;
   public imagePath = null;
   public imgURL: any = null;
-  public imgBtnText: string = "Choose an Image"
+  public imgBtnText: string = this.utilsService.imgBtnTextAfterCanceledSelection();
   public loader = false;
   public actions = environment.actions;
   private imagesToDelete: string[] = [];
@@ -32,18 +32,18 @@ export class CourseFormComponent implements OnInit {
 
   public ngOnInit(): void {
     if (this.mainContainerFilter.action === this.actions.edit) {
-      this.imgBtnText = 'Change Image';
-      this.utilsService.getInfo(this.courseService, (e, res) => {
-        if (e) console.log(e);
+      this.imgBtnText = this.utilsService.imgBtnTextAfterSelection();
+      this.utilsService.getInfo(this.courseService, (err, res) => {
+        if (err) console.log(err);
         else {
           this.courseNewData = { ...res };
           this.courseOldData = res;
           this.imageName = res.image;
         }
       })
-    } else this.courseNewData = { name: null, description: null, image: null, courseStudents: [] }
-    this.utilsService.getList(this.courseService, (e, res) => {
-      if (e) console.log(e);
+    } else this.courseNewData = { name: null, description: null, image: null, courseStudents: [] };
+    this.utilsService.getList(this.courseService, (err, res) => {
+      if (err) console.log(err);
       else this.coursesList = res;
     })
   }
@@ -53,12 +53,12 @@ export class CourseFormComponent implements OnInit {
       this.courseNewData.image = this.imageName;
       if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
         if (!this.utilsService.isAlreadyExist(this.coursesList, this.courseNewData, 'name')) {
-          this.utilsService.uploadImgOnPicked(this.imageFile, this.courseService, (e, res) => {
-            if (e) console.log(e);
+          this.utilsService.uploadImgOnPicked(this.imageFile, this.courseService, (err, res) => {
+            if (err) console.log(err);
             else {
               this.courseNewData.image = res;
-              this.utilsService.insert(this.courseService, this.courseNewData, (e, res) => {
-                if (e) console.log(e);
+              this.utilsService.insert(this.courseService, this.courseNewData, (err, res) => {
+                if (err) console.log(err);
                 else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
               })
             }
@@ -73,13 +73,13 @@ export class CourseFormComponent implements OnInit {
       if (this.utilsService.areAllFieldsFull(this.courseNewData)) {
         if (!this.utilsService.isAlreadyExist(this.coursesList, this.courseNewData, 'name')) {
           this.imagesToDelete.push(this.courseOldData.image);
-          this.utilsService.deleteUnsavedImages(this.courseNewData.image, this.imagesToDelete, this.courseService)
-          this.utilsService.uploadImgOnPicked(this.imageFile, this.courseService, (e, res) => {
-            if (e) console.log(e);
+          this.utilsService.deleteUnsavedImages(this.courseNewData.image, this.imagesToDelete, this.courseService);
+          this.utilsService.uploadImgOnPicked(this.imageFile, this.courseService, (err, res) => {
+            if (err) console.log(err);
             else {
               this.courseNewData.image = res ? res : this.courseNewData.image;
-              this.utilsService.update(this.courseService, this.courseNewData, (e, res) => {
-                if (e) console.log(e);
+              this.utilsService.update(this.courseService, this.courseNewData, (err, res) => {
+                if (err) console.log(err);
                 else this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: 'moreInfo' });
               });
             }
@@ -101,7 +101,7 @@ export class CourseFormComponent implements OnInit {
       if (err) console.log(err);
       else {
         this.showSchoolMainPage.emit({ title: this.mainContainerFilter.title, action: null });
-      };
+      }
     })
   }
 
@@ -116,27 +116,27 @@ export class CourseFormComponent implements OnInit {
       }
       else {
         this.imageName = null;
-        this.imgBtnText = 'Choose an Image';
+        this.imgBtnText = this.utilsService.imgBtnTextAfterCanceledSelection();
         this.imgURL = null;
       }
       return;
     }
 
-    var mimeType = files[0].type;
+    const mimeType = files[0].type;
     if (mimeType.match(/image\/*/) == null) {
       this.utilsService.notAnImgAlert();
       this.loader = false;
       return;
     }
 
-    var reader = new FileReader();
+    const reader = new FileReader();
     this.imagePath = files;
     reader.readAsDataURL(files[0]);
     reader.onload = (_event) => {
       this.imgURL = reader.result;
       this.loader = false;
       this.imageName = files[0].name;
-      this.imgBtnText = 'change image';
+      this.imgBtnText = this.utilsService.imgBtnTextAfterSelection();
       this.imageFile = files[0];
     }
   }

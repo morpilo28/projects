@@ -12,5 +12,5 @@ function User(obj) {
 
 module.exports = {
     User:User
-}
+};
 

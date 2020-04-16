@@ -17,7 +17,7 @@ export class SortListByNamePipe implements PipeTransform {
       if (x > y) { return 1; }
 
       return 0;
-    })
+    });
     return list;
   }
 }

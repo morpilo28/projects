@@ -22,12 +22,12 @@ export class AdministrationComponent implements OnInit {
   constructor(private userService: UserService, private utilsService: UtilsService) { }
 
   public ngOnInit(): void {
-    this.utilsService.getList(this.userService, (e, res) => {
-      if (e) console.log(e);
+    this.utilsService.getList(this.userService, (err, res) => {
+      if (err) console.log(err);
       else if (res) {
         this.usersList = res;
         this.getAdministratorsCount();
-      };
+      }
     })
   }
 

@@ -18,12 +18,12 @@ export class SchoolComponent implements OnInit {
   constructor(private courseService: CourseService, private studentsService: StudentsService, private utilsService: UtilsService) { }
 
   public ngOnInit(): void {
-    this.utilsService.getList(this.courseService, (e, res) => {
-      if (e) console.log(e);
+    this.utilsService.getList(this.courseService, (err, res) => {
+      if (err) console.log(err);
       else if (res) this.coursesCount = res.length;
     });
-    this.utilsService.getList(this.studentsService, (e, res) => {
-      if (e) console.log(e);
+    this.utilsService.getList(this.studentsService, (err, res) => {
+      if (err) console.log(err);
       else if (res) this.studentsCount = res.length;
     });
   }

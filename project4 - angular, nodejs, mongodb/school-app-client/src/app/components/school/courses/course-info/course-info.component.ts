@@ -27,8 +27,8 @@ export class CourseInfoComponent implements OnInit {
   constructor(private courseService: CourseService, private userService: UserService, private utilsService: UtilsService) { }
 
   public ngOnInit(): void {
-    this.utilsService.getInfo(this.courseService, (e, res) => {
-      if (e) console.log(e);
+    this.utilsService.getInfo(this.courseService, (err, res) => {
+      if (err) console.log(err);
       else this.courseInfo = res;
     });
     this.userService.getCurrentUser().subscribe(

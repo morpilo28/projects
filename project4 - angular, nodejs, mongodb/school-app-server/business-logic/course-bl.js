@@ -8,9 +8,9 @@ const studentModel = require('../models/student-model');
 const courseModel = require('../models/course-model');
 
 function get(cb) {
-    dal.get(courseCollection, (e, allCourses) => {
-        if (e) {
-            cb(e);
+    dal.get(courseCollection, (err, allCourses) => {
+        if (err) {
+            cb(err);
         } else {
             allCourses = modelVariable(allCourses, courseModel.Course);
             cb(null, allCourses);
@@ -19,8 +19,8 @@ function get(cb) {
 }
 
 function getOne(id, cb) {
-    dal.getOne(courseCollection, id, (e, course) => {
-        if (e) {
+    dal.getOne(courseCollection, id, (err, course) => {
+        if (err) {
             cb("can't get course")
         } else {
             course = modelVariable(course, courseModel.Course);
@@ -31,8 +31,8 @@ function getOne(id, cb) {
 
 function insertOne(courseToAdd, cb) {
     courseToAdd = modelVariable(courseToAdd, courseModel.Course);
-    dal.insert(courseCollection, courseToAdd, (e, courseInserted) => {
-        if (e) {
+    dal.insert(courseCollection, courseToAdd, (err, courseInserted) => {
+        if (err) {
             cb("can't insert course")
         } else {
             courseInserted = modelVariable(courseInserted, courseModel.Course);
@@ -43,17 +43,17 @@ function insertOne(courseToAdd, cb) {
 
 function updateOne(courseNewData, cb) {
     courseNewData = modelVariable(courseNewData, courseModel.Course);
-    dal.update(courseCollection, courseNewData, (e, courseUpdated) => {
-        if (e) {
-            console.log(e);
-            cb(e);
+    dal.update(courseCollection, courseNewData, (err, courseUpdated) => {
+        if (err) {
+            console.log(err);
+            cb(err);
         } else {
             courseUpdated = modelVariable(courseUpdated, courseModel.Course);
             const studentsToUpdate = courseNewData.courseStudents;
             delete courseUpdated['courseStudents'];
             studentsToUpdate.forEach(student => {
-                dal.getOne(studentCollection, student._id, (e, student) => {
-                    if (e) {
+                dal.getOne(studentCollection, student._id, (err, student) => {
+                    if (err) {
                         console.log("can't get student");
                     }
                     else {
@@ -71,8 +71,8 @@ function updateOne(courseNewData, cb) {
         }
     });
     function updateStudent(student) {
-        dal.update(studentCollection, student, (e, data) => {
-            if (e) {
+        dal.update(studentCollection, student, (err, updatedStudent) => {
+            if (err) {
                 console.log('problem with updating the course');
             }
         });
@@ -80,20 +80,20 @@ function updateOne(courseNewData, cb) {
 }
 
 function deleteOne(courseToDeleteId, cb) {
-    dal.getOne(courseCollection, courseToDeleteId, (e, course) => {
+    dal.getOne(courseCollection, courseToDeleteId, (err, course) => {
         course = modelVariable(course, courseModel.Course);
-        if (e) {
+        if (err) {
             console.log("can't get course");
         } else {
             const courseImageName = course.image;
-            dal.deleteDocument(courseCollection, courseToDeleteId, (e, courseDeletedId) => {
-                if (e) {
-                    console.log(e);
-                    cb(e);
+            dal.deleteDocument(courseCollection, courseToDeleteId, (err, courseDeletedId) => {
+                if (err) {
+                    console.log(err);
+                    cb(err);
                 } else {
-                    deleteUtils.deleteImageFromFolder(courseImageName, imgFolder, (e, d) => {
-                        if(e){
-                            console.log(e);
+                    deleteUtils.deleteImageFromFolder(courseImageName, imgFolder, (err, isImgDeleted) => {
+                        if(err){
+                            console.log(err);
                         }else{
                             console.log('course img deleted');
                         }
@@ -122,4 +122,4 @@ module.exports = {
     insertOne: insertOne,
     updateOne: updateOne,
     deleteOne: deleteOne,
-}
+};
