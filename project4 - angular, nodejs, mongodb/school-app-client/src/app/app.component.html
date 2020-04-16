@@ -2,8 +2,8 @@
   <div class="header float-left">
     <img src='../assets/images/logo.JPG' alt="logo" class='float-left logo' />
     <nav *ngIf='isAllowed' class='float-left navbar'>
-      <div class="schoolBar bar"> <span [routerLink]='["/"]'><b>School</b></span></div>
-      <div class="adminBar bar"><span [routerLink]='["/administration"]'><b>Administration</b></span></div>
+      <div class="schoolBar bar pointerCursor"> <span [routerLink]='["/"]'><b>School</b></span></div>
+      <div class="adminBar bar pointerCursor"><span [routerLink]='["/administration"]'><b>Administration</b></span></div>
     </nav>
   </div>
   <app-current-user-info></app-current-user-info>

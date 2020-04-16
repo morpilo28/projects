@@ -1,5 +1,5 @@
 <h6 class="mb-3">
-    <span class="ml-2"> {{title}} </span> <span class="ml-4" (click)="onAction(title, actions.add)">+</span>
+    <span class="ml-2"> {{title}} </span> <span class="ml-4 pointerCursor" (click)="onAction(title, actions.add)">+</span>
 </h6>
 <p class="text-danger">{{note}}</p>
 <div class='listContainer overflow-auto'>
@@ -7,7 +7,7 @@
             <ng-container *ngFor="let item of (title !== 'administrators'? (list | sortListByName): (list|sortListByName|sortListByRole))">
             <ng-container
                 *ngIf="((title === titles.administrators) && ((currentUserRole === roles.manager && item.role !== roles.owner) || (currentUserRole === roles.owner))) || (title !== titles.administrators)">
-                <div class="item ml-2 clearfix overflow-auto" [id]='item._id'
+                <div class="item ml-2 clearfix overflow-auto pointerCursor rounded" [id]='item._id'
                     (click)="onItemClicked(title, item._id); onAction(title, actions.moreInfo)">
                     <img class='float-left' [src]='baseImgUrl+imgFolder+item.image' [alt]='item.image' />
                     <div class="info float-left overflow-auto">

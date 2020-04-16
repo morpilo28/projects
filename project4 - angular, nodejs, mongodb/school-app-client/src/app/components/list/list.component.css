@@ -3,6 +3,7 @@ h6 {
     width: 100%;
     font-size: 2em;
     margin: 10px 0 10px 0;
+    text-align: center;
 }
 
 img {
@@ -26,6 +27,7 @@ img {
     min-width: 95%;
     min-height: 75px;
     margin-bottom: 2%;
+    /* background-color: rgb(250, 235, 215); */
 }
 
 .info {

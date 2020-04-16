@@ -1,9 +1,9 @@
 "use strict";
 
-import {Injectable} from '@angular/core';
-import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router} from '@angular/router';
-import {Observable} from 'rxjs';
-import {UserService} from '../services/user.service';
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { UserService } from '../services/user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +22,9 @@ export class ManagersOnlyGuard implements CanActivate {
         try {
           subscription.unsubscribe();
         } catch (ex) {
-          // console.error(ex);
+          console.error(ex);
         }
-        if (res.role === 'sales') {
+        if (!res.role || res.role === 'sales') {
           alert('Restricted Area!');
           this.isAManager = false;
           this.router.navigate(['/']);
@@ -35,7 +35,7 @@ export class ManagersOnlyGuard implements CanActivate {
     try {
       subscription.unsubscribe();
     } catch (ex) {
-      // console.error(ex);
+      console.error(ex);
     }
     return this.isAManager;
   }
