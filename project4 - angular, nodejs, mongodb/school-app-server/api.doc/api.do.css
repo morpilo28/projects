@@ -1,0 +1,25 @@
+table,th,td {
+    border: 1px solid black;
+}
+
+th{
+    background-color: bisque;
+    padding: 10px;
+    font-size: 30px;
+    font-weight: bold;}
+
+.centerText{
+    text-align: center;
+    font-weight: bold;
+}
+
+.ctrlRow{
+    background-color: aquamarine;
+    height: 50px;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+div{
+    font-size: 25px;
+}
