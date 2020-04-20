@@ -19,20 +19,20 @@ https://github.com/morpilo28/project4-angular-nodejs-mongodb
 
    ### Owner
   ```
-    Email: mor@gmail.com
-    Password: mor
+    Email: sleepy@gmail.com
+    Password: sleepy
   ```
 
    ### Manager
   ```
-    Email: dor@gmail.com
-    Password: dor
+    Email: sneezy@gmail.com
+    Password: sneezy
   ```
 
    ### Sales
   ```
-    Email: oz@gmail.com
-    Password: oz
+    Email: happy@gmail.com
+    Password: happy
   ```
 
 ## Api Documentation
