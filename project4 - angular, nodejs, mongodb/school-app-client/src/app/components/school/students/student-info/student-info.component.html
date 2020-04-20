@@ -6,7 +6,7 @@
     <hr class="m-2">
     <div class="ml-2">
         <div class="clearfix mb-3">
-            <img class='float-left rounded' [src]='baseStudentImgUrl+studentInfo.image' [alt]='studentInfo.image'
+            <img *ngIf='studentInfo.image' class='float-left rounded' [src]='baseStudentImgUrl+studentInfo.image' [alt]='studentInfo.image'
                 width='200' height='210' />
             <div class="studentInfo float-left overflow-auto ml-3">
                 <h2>{{studentInfo.name | titlecase}}</h2>
@@ -16,7 +16,7 @@
         </div>
         <div class="coursesContainer overflow-auto">
             <div class="mb-2 clearfix" *ngFor="let course of studentInfo.courses | sortListByName">
-                <img class="float-left rounded" [src]="baseCourseImgUrl+course.image" [alt]="course.image" width="50" height="50" />
+                <img *ngIf='course.image' class="float-left rounded" [src]="baseCourseImgUrl+course.image" [alt]="course.image" width="50" height="50" />
                 <div class="ml-2 float-left overflow-auto courseName">{{course.name | titlecase}}</div>
             </div>
         </div>

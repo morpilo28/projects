@@ -16,7 +16,7 @@
         </div>
         <div class="studentsContainer overflow-auto">
             <div class="mb-2 clearfix" *ngFor="let student of courseInfo.courseStudents | sortListByName">
-                <img class="float-left rounded" [src]="baseStudentImgUrl+student.image" [alt]="student.image" width="50" height="50" />
+                <img *ngIf='student.image' class="float-left rounded" [src]="baseStudentImgUrl+student.image" [alt]="student.image" width="50" height="50" />
                 <div class="float-left studentName overflow-auto ml-2">{{student.name | titlecase}}</div>
             </div>
         </div>

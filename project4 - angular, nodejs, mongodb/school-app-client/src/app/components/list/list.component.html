@@ -9,7 +9,7 @@
                 *ngIf="((title === titles.administrators) && ((currentUserRole === roles.manager && item.role !== roles.owner) || (currentUserRole === roles.owner))) || (title !== titles.administrators)">
                 <div class="item ml-2 clearfix overflow-auto pointerCursor rounded" [id]='item._id'
                     (click)="onItemClicked(title, item._id); onAction(title, actions.moreInfo)">
-                    <img class='float-left' [src]='baseImgUrl+imgFolder+item.image' [alt]='item.image' />
+                    <img *ngIf='item.image' class='float-left' [src]='baseImgUrl+imgFolder+item.image' [alt]='item.image' />
                     <div class="info float-left overflow-auto">
                         <div>
                             {{item.name | titlecase}} 
