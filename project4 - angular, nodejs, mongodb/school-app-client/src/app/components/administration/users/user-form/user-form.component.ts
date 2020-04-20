@@ -39,7 +39,7 @@ export class UserFormComponent implements OnInit {
       this.imgBtnText = this.utilsService.imgBtnTextAfterSelection();
       this.utilsService.getInfo(this.userService, (err, res) => {
         if (err) console.log(err);
-        else {
+        else if (res) {
           this.userNewData = { ...res };
           this.userOldData = res;
           this.imageName = res.image;

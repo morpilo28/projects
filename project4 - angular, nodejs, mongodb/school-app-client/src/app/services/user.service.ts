@@ -48,7 +48,7 @@ export class UserService {
   public userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
       userValidated => {
-        this.setLocalStorage('user', { _id: userValidated._id, token: userValidated.token });
+        this.setLocalStorage('user', { _id: userValidated._id, token: userValidated.token, role:userValidated.role });
         this.currentUser.next(userValidated);
         return true;
       }));
@@ -106,6 +106,7 @@ export class UserService {
   public delete(userId: string): Observable<UserModel> {
     return this.httpClient.delete<UserModel>(`${environment.serverUrl}/user/${userId}`).pipe(map(res => {
       this.updateList();
+      this.userInfo.next(null);
       return res;
     }));
   }

@@ -519,8 +519,8 @@ function createApiDoc(controller, array) {
     for (let i = 0; i < array.length; i++) {
         template += `
 <tr>
-    <td>${array[i].des}</td>
-    <td>${array[i].method}
+    <td  class="centerText">${array[i].des}</td>
+    <td  class="centerText">${array[i].method}
         <br>
         ${array[i].path}
     </td>

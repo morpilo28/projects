@@ -35,7 +35,7 @@ export class CourseFormComponent implements OnInit {
       this.imgBtnText = this.utilsService.imgBtnTextAfterSelection();
       this.utilsService.getInfo(this.courseService, (err, res) => {
         if (err) console.log(err);
-        else {
+        else if(res) {
           this.courseNewData = { ...res };
           this.courseOldData = res;
           this.imageName = res.image;

@@ -7,7 +7,7 @@
     <hr class="m-2">
     <div class="ml-2">
         <div class="clearfix mb-3">
-            <img class='float-left rounded' [src]='baseCourseImgUrl+courseInfo.image' [alt]='courseInfo.image'
+            <img *ngIf='courseInfo.image' class='float-left rounded' [src]='baseCourseImgUrl+courseInfo.image' [alt]='courseInfo.image'
                 width='200' height='210' />
             <div class="courseInfo float-left overflow-auto ml-2">
                 <h2>{{courseInfo.name | titlecase}}<span *ngIf="courseInfo.courseStudents.length !== 0">, {{courseInfo.courseStudents.length}} students</span></h2>

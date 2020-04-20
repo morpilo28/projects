@@ -39,7 +39,7 @@ export class StudentFormComponent implements OnInit {
       this.imgBtnText = this.utilsService.imgBtnTextAfterSelection();
       this.utilsService.getInfo(this.studentService, (err, res) => {
         if (err) console.log(err);
-        else {
+        else if(res) {
           this.studentNewData = { ...res };
           this.studentOldData = res;
           this.imageName = res.image;

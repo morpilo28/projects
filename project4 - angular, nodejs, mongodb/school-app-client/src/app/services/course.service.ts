@@ -63,6 +63,7 @@ export class CourseService {
   public delete(courseId: string): Observable<CourseModel> {
     return this.httpClient.delete<CourseModel>(`${environment.serverUrl}/course/${courseId}`).pipe(map(res => {
       this.updateList();
+      this.coursesInfo.next(null);
       return res;
     }));
   }

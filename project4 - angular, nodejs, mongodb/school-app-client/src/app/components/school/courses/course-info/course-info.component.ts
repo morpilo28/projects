@@ -29,7 +29,7 @@ export class CourseInfoComponent implements OnInit {
   public ngOnInit(): void {
     this.utilsService.getInfo(this.courseService, (err, res) => {
       if (err) console.log(err);
-      else this.courseInfo = res;
+      else { this.courseInfo = res;}
     });
     this.userService.getCurrentUser().subscribe(
       res => this.currentUser = res,

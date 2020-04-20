@@ -8,7 +8,7 @@
     </div>
     <hr class="m-2">
     <div class="clearfix m-4 overflow-auto">
-        <img class='float-left rounded' [src]='baseUserImgUrl+userInfo.image' [alt]='userInfo.image' width='200'
+        <img *ngIf='userInfo.image' class='float-left rounded' [src]='baseUserImgUrl+userInfo.image' [alt]='userInfo.image' width='200'
             height='210' />
         <div class="userInfo float-left overflow-auto ml-3">
             <h2 class="ml-1 font-weight-bold">{{userInfo.name | titlecase}}</h2>

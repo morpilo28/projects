@@ -63,6 +63,7 @@ export class StudentsService {
   public delete(studentId: string): Observable<StudentModel> {
     return this.httpClient.delete<StudentModel>(`${environment.serverUrl}/student/${studentId}`).pipe(map(res => {
       this.updateList();
+      this.studentsInfo.next(null);
       return res;
     }));
   }
