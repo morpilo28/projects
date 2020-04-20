@@ -1,4 +1,5 @@
 "use strict";
+// TODO: delete json files;
 
 const SERVER_BASE_URL = 'http://localhost:5000';
 const CONTROLLERS = {
