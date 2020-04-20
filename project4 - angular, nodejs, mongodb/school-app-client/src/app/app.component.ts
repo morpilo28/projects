@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
     this.userService.getCurrentUser().subscribe(res => {
       this.currentUser = res;
       this.isAllowed = (!(!res || res.role === 'sales'));
-      //TODO: this.isAllowed = (!res || res.role === 'sales') ? false : true;
     })
   }
 
