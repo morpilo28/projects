@@ -28,7 +28,7 @@ export class UserService {
         o.next(res);
       });
     });
-    this.userTokenAndId = JSON.parse(window.localStorage.getItem('user'));
+    this.setUserTokenAndId();
 
     this.usersList = new BehaviorSubject<UserModel[]>(null);
     this.usersListObservable = new Observable((o) => {
@@ -48,7 +48,8 @@ export class UserService {
   public userLoginValidation(user: UserModel) {
     return this.httpClient.post<UserModel>(`${environment.serverUrl}/user/login`, user).pipe(map(
       userValidated => {
-        this.setLocalStorage('user', { _id: userValidated._id, token: userValidated.token, role:userValidated.role });
+        this.setLocalStorage('user', { _id: userValidated._id, token: userValidated.token, role: userValidated.role });
+        this.setUserTokenAndId();
         this.currentUser.next(userValidated);
         return true;
       }));
@@ -132,11 +133,9 @@ export class UserService {
   }
 
   private updateCurrentUser(res: UserModel) {
-    if(res){
-      if (this.userTokenAndId._id.toString() === res._id.toString()) {
-        res['token'] = this.userTokenAndId.token;
-        this.currentUser.next(res);
-      }
+    if (this.userTokenAndId._id.toString() === res._id.toString()) {
+      res['token'] = this.userTokenAndId.token;
+      this.currentUser.next(res);
     }
   }
 
@@ -145,5 +144,9 @@ export class UserService {
       this.usersList.next(res);
       return res;
     }));
+  }
+
+  private setUserTokenAndId(): void {
+    this.userTokenAndId = JSON.parse(window.localStorage.getItem('user'));
   }
 }
