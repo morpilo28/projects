@@ -95,20 +95,16 @@ const ENTITIES = {
     ]
 }
 
-MongoClient.connect(url, createNewMongoClient(), (err, db) => {
-    if (err) throw err;
-    const dbo = db.db(DATABASE);
+createDb();
 
-    createDbStarter(dbo, db, courseCollection, ENTITIES.courses);
-    createDbStarter(dbo, db, studentCollection, ENTITIES.students);
-    createDbStarter(dbo, db, administratorCollection, ENTITIES.administrators);
-});
-
-function createDbStarter(dbo, db, collection, array) {
-    dbo.collection(collection).insertMany(array, function (err, res) {
+function createDb() {
+    MongoClient.connect(url, createNewMongoClient(), (err, db) => {
         if (err) throw err;
-        console.log(`${collection} documents inserted`);
-        db.close();
+        const dbo = db.db(DATABASE);
+        
+        createCollections(dbo, db, courseCollection, ENTITIES.courses);
+        createCollections(dbo, db, studentCollection, ENTITIES.students);
+        createCollections(dbo, db, administratorCollection, ENTITIES.administrators);
     });
 }
 
@@ -117,4 +113,34 @@ function createNewMongoClient() {
         useNewUrlParser: true,
         useUnifiedTopology: true
     }
+}
+
+function createCollections(dbo, db, collection, array) {
+    dbo.collection(collection).insertMany(array, function (err, res) {
+        if (err) throw err;
+        console.log(`${collection} documents inserted`);
+        db.close();
+    });
+}
+
+// deleteAllCollections();
+
+function deleteAllCollections() {
+    MongoClient.connect(url, createNewMongoClient(), (err, db) => {
+        if (err) throw err;
+        const dbo = db.db(DATABASE);
+        
+        deleteCollection(dbo, db, courseCollection);
+        deleteCollection(dbo, db, studentCollection);
+        deleteCollection(dbo, db, administratorCollection);
+    });
+    
+}
+
+function deleteCollection(dbo, db, collection) {
+    dbo.collection(collection).drop(function (err, delOK) {
+        if (err) throw err;
+        if (delOK) console.log(`${collection}Collection deleted`);
+        db.close();
+    });
 }

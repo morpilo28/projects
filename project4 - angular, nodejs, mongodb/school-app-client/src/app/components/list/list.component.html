@@ -1,7 +1,7 @@
 <h6 class="mb-3">
     <span class="ml-2"> {{title}} </span> <span class="ml-4 pointerCursor" (click)="onAction(title, actions.add)">+</span>
 </h6>
-<p class="text-danger">{{note}}</p>
+<p class="text-danger text-center">{{note}}</p>
 <div class='listContainer overflow-auto'>
     <ng-container *ngIf="list">
             <ng-container *ngFor="let item of (title !== 'administrators'? (list | sortListByName): (list|sortListByName|sortListByRole))">

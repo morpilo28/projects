@@ -132,9 +132,11 @@ export class UserService {
   }
 
   private updateCurrentUser(res: UserModel) {
-    if (this.userTokenAndId._id.toString() === res._id.toString()) {
-      res['token'] = this.userTokenAndId.token;
-      this.currentUser.next(res);
+    if(res){
+      if (this.userTokenAndId._id.toString() === res._id.toString()) {
+        res['token'] = this.userTokenAndId.token;
+        this.currentUser.next(res);
+      }
     }
   }
 
