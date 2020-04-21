@@ -37,7 +37,7 @@
     </div>
 
     <div class="clearfix coursesBox overflow-auto">
-        <div class="float-left mr-4"><label>Courses</label></div>
+        <div class="float-left mr-4 ml-2"><label>Courses</label></div>
         <div class="courses overflow-auto float-left">
             <div *ngFor="let course of allCourses" class="course overflow-auto float-left verticalAlign mr-1 mb-1">
                 <input type="checkbox" [value]='course.name' [id]='course._id' [attr.data-img]="course.image"
