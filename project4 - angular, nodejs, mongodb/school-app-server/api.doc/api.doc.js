@@ -67,7 +67,7 @@ const userApi = [
     {
         "id": 3,
         "des": "Create New User",
-        "method": "GET",
+        "method": "POST",
         "path": "/user/register",
         "req": `
     {
@@ -161,7 +161,7 @@ const studentApi = [
         "des": "Get Students List",
         "method": "GET",
         "path": "/student",
-        "req": null,
+        "req": '',
         "res":
             `[
         {
@@ -341,7 +341,7 @@ const courseApi = [
         "des": "Get Courses List",
         "method": "GET",
         "path": "/course",
-        "req": null,
+        "req": '',
         "res":
             `[
         {
