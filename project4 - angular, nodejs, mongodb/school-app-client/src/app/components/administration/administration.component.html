@@ -2,7 +2,7 @@
 <app-list class="administrators" title='administrators' (mainContainerFilter)='componentLoading($event)'>
 </app-list>
 
-<!-- main  -->
+<!-- main -->
 <app-user-main class="main summary rounded" *ngIf="!mainContainerFilter.action" [administratorsCount]='administratorsCount' [totalUsers]='totalUsers'></app-user-main>
 
 <!-- on add user -->
