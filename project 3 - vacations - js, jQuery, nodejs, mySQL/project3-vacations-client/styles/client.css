@@ -1,0 +1,152 @@
+ * {
+     box-sizing: border-box;
+ }
+
+ input {
+     text-align: center;
+     width: 150px;
+ }
+
+ a.disable {
+     pointer-events: none;
+     cursor: default;
+ }
+
+ #add {
+    margin-bottom: 30px;
+    margin-left: 10px;
+    width: 132px;
+ }
+
+ .card {
+     float: left;
+     width: 19%;
+     height: 300px;
+     margin: 5px;
+ }
+
+ #main {
+     width: 100%;
+ }
+
+ .cardTextArea {
+     border: none;
+     width: 100%;
+     overflow: auto;
+     height: 150px;
+ }
+
+ #addedImage {
+     width: 100%;
+ }
+
+
+ body {
+     background-image: url('./images/10.jpg');
+     background-repeat: no-repeat;
+     width: 100%;
+     background-size: cover;
+ }
+
+ .form-signin {
+     width: 100%;
+     max-width: 330px;
+     padding: 15px;
+     margin: 0 auto;
+ }
+
+ .text-center {
+     text-align: center;
+ }
+
+ #userNameForTitle {
+     font-weight: bold;
+ }
+
+ #editImage {
+     width: 100%;
+ }
+
+ a {
+     color: black;
+     font-weight: bold;
+     background-color: thistle;
+     padding: 4px;
+     margin-right: 10px;
+     margin-left: 10px;
+ }
+
+ #registerPage, #loginPage{
+     margin-left: 0px;
+ }
+
+ a:hover {
+     color: white;
+     font-weight: bold;
+ }
+
+ .btn-circle {
+     width: 30px;
+     height: 30px;
+     border-radius: 15px;
+     text-align: center;
+     font-size: 100%;
+     line-height: 1.42857;
+     font-weight: bold;
+     padding: 0px;
+ }
+
+ .btnFollowPosition,
+ .btnFollowersPosition,
+ .btnDelete,
+ .btnEdit {
+     position: absolute;
+     right: 0;
+ }
+
+ .btnFollowersPosition {
+     bottom: 1px;
+ }
+
+ .followBtnColor {
+     color: black;
+     background-color: yellow;
+     border-color: #28a745;
+ }
+
+ .disabled {
+     pointer-events: none;
+ }
+
+ .btnDelete,
+ .btnEdit,
+ .unFollowBtnColor {
+     color: black;
+     background-color: white;
+     border-color: #28a745;
+ }
+
+ .btnDelete,
+ .btnFollowPosition {
+     top: 1px;
+ }
+
+ .btnEdit {
+     top: 35px;
+ }
+
+ h1{
+    font-size: 50px;
+    text-align: center;
+    margin-top: 30px;
+ }
+
+ #userNameForTitle{
+     font-size: 20px;
+     font-weight: bold;
+     position: absolute;
+     left: 0;
+     top: 0;
+     margin-left: 20px;
+     margin-top: 15px;
+ }

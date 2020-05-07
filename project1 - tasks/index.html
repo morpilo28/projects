@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Task Board</title>
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/fontawesome.min.css">
+    <link rel="stylesheet" href="styles/solid.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+    <div>
+        <h1 class="header">My Task Board</h1>
+    </div>
+    <form class="taskForm">
+        <div class="date col">
+            Date: <input id="dateInput" class="inputDesign" type="date" max="2030-01-01" required>
+        </div>
+        <div class="time col">
+            Time: <input id="timeInput" class="inputDesign" pattern="[0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}" type="time">
+        </div>
+        <div class="task col">
+            Task: <input id="taskInput" class="inputDesign" type="text" required>
+        </div>
+        <div class="buttons">
+            <button id="saveBtn" class="btn">Save Task</button>
+            <button id="cleanFormBtn" class="btn">Clean Form</button>
+        </div>
+    </form>
+    <div id="tasksAdded"></div>
+    <script src="main.js"></script>
+</body>
+
+</html>
